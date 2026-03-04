@@ -1,0 +1,60 @@
+# ================================================
+# Leveraged ETF Grid Buying Guide - Global Settings
+# ================================================
+
+# --- Data Source ---
+data:
+  cache_dir: "data/cache"
+  cache_expiry_hours: 4
+  max_history_years: 20
+  trading_days_per_year: 252
+
+# --- Grid Calculator Defaults ---
+grid:
+  default_levels: 10
+  default_spacing_pct: 5.0
+  default_weighting: "linear"
+  default_profit_target_pct: 10.0
+  max_levels: 40
+  auto_reference: "ath"       # ath / 52w_high / current
+
+# --- Signal Generation ---
+signals:
+  rsi_period: 14
+  sma_short: 20
+  sma_long: 50
+  sma_trend: 200
+  rsi_oversold: 30
+  rsi_overbought: 70
+
+# --- Backtest ---
+backtest:
+  default_period_years: 5
+  profit_target_pct: 10.0
+  enable_reinvest: true
+  crash_periods:
+    - name: "COVID-19"
+      start: "2020-02-19"
+      end: "2020-08-18"
+    - name: "2022 Bear Market"
+      start: "2021-12-27"
+      end: "2023-01-19"
+    - name: "Q4 2018"
+      start: "2018-10-01"
+      end: "2019-04-01"
+
+# --- Drawdown Analysis ---
+drawdown:
+  min_drawdown_pct: 10.0
+  recovery_thresholds: [10, 20, 30, 40, 50, 60, 70, 80]
+
+# --- Dashboard ---
+dashboard:
+  theme: "dark"
+  default_currency: "USD"
+  refresh_interval_seconds: 300
+
+# --- Storage ---
+storage:
+  db_type: "sqlite"
+  sqlite_path: "data/etf_guide.db"

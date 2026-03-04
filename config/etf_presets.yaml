@@ -1,0 +1,91 @@
+# ================================================
+# ETF Presets - Pre-configured leveraged ETF profiles
+# ================================================
+
+presets:
+  # --- NASDAQ ---
+  QLD:
+    name: "ProShares Ultra QQQ"
+    underlying: "QQQ"
+    leverage: 2
+    category: "NASDAQ"
+    suggested_budget: 10000
+    suggested_levels: 10
+    suggested_spacing: 5.0
+
+  TQQQ:
+    name: "ProShares UltraPro QQQ"
+    underlying: "QQQ"
+    leverage: 3
+    category: "NASDAQ"
+    suggested_budget: 10000
+    suggested_levels: 15
+    suggested_spacing: 5.0
+
+  # --- S&P 500 ---
+  SSO:
+    name: "ProShares Ultra S&P 500"
+    underlying: "SPY"
+    leverage: 2
+    category: "S&P 500"
+    suggested_budget: 10000
+    suggested_levels: 10
+    suggested_spacing: 4.0
+
+  UPRO:
+    name: "ProShares UltraPro S&P 500"
+    underlying: "SPY"
+    leverage: 3
+    category: "S&P 500"
+    suggested_budget: 10000
+    suggested_levels: 15
+    suggested_spacing: 4.0
+
+  # --- Semiconductor ---
+  SOXL:
+    name: "Direxion Daily Semiconductor Bull 3X"
+    underlying: "SOXX"
+    leverage: 3
+    category: "Semiconductor"
+    suggested_budget: 10000
+    suggested_levels: 15
+    suggested_spacing: 7.0
+
+  USD:
+    name: "ProShares Ultra Semiconductors"
+    underlying: "SOXX"
+    leverage: 2
+    category: "Semiconductor"
+    suggested_budget: 10000
+    suggested_levels: 10
+    suggested_spacing: 5.0
+
+  # --- Technology ---
+  TECL:
+    name: "Direxion Daily Technology Bull 3X"
+    underlying: "XLK"
+    leverage: 3
+    category: "Technology"
+    suggested_budget: 10000
+    suggested_levels: 15
+    suggested_spacing: 5.0
+
+  # --- Finance ---
+  FAS:
+    name: "Direxion Daily Financial Bull 3X"
+    underlying: "XLF"
+    leverage: 3
+    category: "Finance"
+    suggested_budget: 10000
+    suggested_levels: 12
+    suggested_spacing: 5.0
+
+# ETF underlying pairs (for decay analysis)
+underlying_pairs:
+  QLD: "QQQ"
+  TQQQ: "QQQ"
+  SSO: "SPY"
+  UPRO: "SPY"
+  SOXL: "SOXX"
+  TECL: "XLK"
+  FAS: "XLF"

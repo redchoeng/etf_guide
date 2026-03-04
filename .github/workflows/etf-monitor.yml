@@ -1,0 +1,56 @@
+name: ETF Monitor & Report
+
+on:
+  schedule:
+    # 평일 미국 장시간 (UTC 13-21시 = ET 08:00-16:00 = KST 22:00-06:00)
+    # 프리마켓 + 정규장 커버
+    - cron: '0 13-21 * * 1-5'
+
+    # 일일 요약 (한국시간 오전 7시 = UTC 22시, 매일)
+    - cron: '0 22 * * 1-5'
+
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  monitor-and-report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create .env
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" > .env
+          echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
+
+      - name: Run price check & Telegram alerts
+        run: python run_monitor.py --once --force
+
+      - name: Generate HTML report
+        run: python generate_report.py
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add etf_report_*.html index.html
+          git diff --staged --quiet || (git commit -m "ETF report update - $(date -u '+%Y-%m-%d %H:%M') UTC" && git push)

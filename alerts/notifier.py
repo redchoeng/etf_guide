@@ -1,12 +1,31 @@
-"""Telegram 알림 모듈."""
+"""Telegram 알림 모듈.
+
+중복 알림 방지를 위해 알림 이력을 메모리에 캐시합니다.
+같은 종목+레벨 조합은 1시간 이내 재발송하지 않습니다.
+"""
 
 import logging
 import os
+import time
 from typing import Optional
 
 import requests
 
 logger = logging.getLogger(__name__)
+
+# 중복 알림 방지 캐시: key -> timestamp
+_alert_cache: dict[str, float] = {}
+ALERT_COOLDOWN = 3600  # 1시간
+
+
+def _should_alert(key: str) -> bool:
+    """쿨다운 내 중복 알림 방지."""
+    now = time.time()
+    last = _alert_cache.get(key, 0)
+    if now - last < ALERT_COOLDOWN:
+        return False
+    _alert_cache[key] = now
+    return True
 
 
 class TelegramNotifier:
@@ -48,6 +67,9 @@ class TelegramNotifier:
     def send_grid_alert(self, ticker: str, level: int, target_price: float,
                         current_price: float, quantity: int) -> bool:
         """그리드 레벨 도달 알림."""
+        if not _should_alert(f"grid_{ticker}_{level}"):
+            return False
+
         msg = (
             f"📊 <b>그리드 매수 시그널</b>\n\n"
             f"종목: <b>{ticker}</b>\n"
@@ -63,6 +85,9 @@ class TelegramNotifier:
     def send_signal_alert(self, ticker: str, signal: str, strength: float,
                           price: float, rsi: float, reasons: list[str]) -> bool:
         """매수 시그널 알림."""
+        if not _should_alert(f"signal_{ticker}_{signal}"):
+            return False
+
         signal_kr = {
             "STRONG_BUY": "🟢 적극 매수",
             "BUY": "🔵 매수",
@@ -87,6 +112,9 @@ class TelegramNotifier:
                                  current_price: float, pnl_pct: float,
                                  total_shares: int) -> bool:
         """목표 수익률 도달 알림."""
+        if not _should_alert(f"profit_{ticker}"):
+            return False
+
         total_value = current_price * total_shares
         total_cost = avg_cost * total_shares
         profit = total_value - total_cost
@@ -105,10 +133,13 @@ class TelegramNotifier:
 
     def send_daily_summary(self, summaries: list[dict]) -> bool:
         """일일 종합 요약 알림."""
-        lines = ["📋 <b>일일 ETF 현황 요약</b>\n"]
+        lines = ["📋 <b>ETF 현황 요약</b>\n"]
 
         for s in summaries:
-            signal_emoji = {"STRONG_BUY": "🟢", "BUY": "🔵", "HOLD": "🟡", "WAIT": "🟠"}.get(s.get("signal", ""), "⚪")
+            signal_emoji = {
+                "STRONG_BUY": "🟢", "BUY": "🔵",
+                "HOLD": "🟡", "WAIT": "🟠",
+            }.get(s.get("signal", ""), "⚪")
             lines.append(
                 f"{signal_emoji} <b>{s['ticker']}</b>: "
                 f"${s['price']:.2f} (ATH대비 {s['drawdown']:.1f}%) "
@@ -119,10 +150,7 @@ class TelegramNotifier:
 
 
 def check_and_notify(config: dict):
-    """그리드 레벨 도달 및 시그널 체크 후 알림 발송.
-
-    scheduler나 cron에서 호출하도록 설계.
-    """
+    """그리드 레벨 도달 및 시그널 체크 후 알림 발송."""
     from engine.data_fetcher import ETFDataFetcher
     from engine.signal_generator import SignalGenerator
     from storage.db import Database
@@ -137,39 +165,52 @@ def check_and_notify(config: dict):
     signal_gen = SignalGenerator(config.get("signals", {}))
 
     etf_configs = db.get_all_etf_configs()
+    if not etf_configs:
+        logger.info("설정된 ETF 없음, 스킵")
+        return
+
     summaries = []
+    alerts_sent = 0
 
     for cfg in etf_configs:
         ticker = cfg["ticker"]
         current_price = fetcher.get_current_price(ticker)
         if not current_price:
+            logger.warning(f"{ticker} 가격 조회 실패")
             continue
 
-        # 그리드 레벨 체크
+        logger.info(f"{ticker}: ${current_price:.2f}")
+
+        # 1) 그리드 레벨 도달 체크
         grid_levels = db.get_grid_levels(ticker)
         for gl in grid_levels:
             if not gl.get("is_filled") and current_price <= gl["target_price"]:
-                notifier.send_grid_alert(
+                sent = notifier.send_grid_alert(
                     ticker, gl["level_number"], gl["target_price"],
                     current_price, gl["target_quantity"],
                 )
+                if sent:
+                    alerts_sent += 1
+                    logger.info(f"  🔔 그리드 레벨 {gl['level_number']} 도달 알림 발송")
 
-        # 시그널 체크
+        # 2) 시그널 체크
         df = fetcher.fetch_history(ticker, period="1y")
         if df is not None and not df.empty:
             signals = signal_gen.generate_signals(df, grid_levels)
             overall = signals.get("overall_signal", "HOLD")
 
             if overall in ("STRONG_BUY", "BUY"):
-                notifier.send_signal_alert(
+                sent = notifier.send_signal_alert(
                     ticker, overall,
                     signals.get("signal_strength", 0),
                     signals.get("current_price", 0),
                     signals.get("rsi_14", 0),
                     signals.get("reasons", []),
                 )
+                if sent:
+                    alerts_sent += 1
 
-            # 수익률 목표 체크
+            # 3) 수익률 목표 체크
             purchases = db.get_purchases(ticker)
             if purchases:
                 total_shares = sum(p["quantity"] for p in purchases)
@@ -180,9 +221,11 @@ def check_and_notify(config: dict):
                     profit_target = cfg.get("profit_target_pct", 10.0)
 
                     if pnl_pct >= profit_target:
-                        notifier.send_profit_target_alert(
+                        sent = notifier.send_profit_target_alert(
                             ticker, avg_cost, current_price, pnl_pct, total_shares,
                         )
+                        if sent:
+                            alerts_sent += 1
 
             summaries.append({
                 "ticker": ticker,
@@ -192,5 +235,8 @@ def check_and_notify(config: dict):
                 "signal": overall,
             })
 
-    if summaries:
+    # 요약은 1시간에 1번만
+    if summaries and _should_alert("daily_summary"):
         notifier.send_daily_summary(summaries)
+
+    logger.info(f"체크 완료: {len(summaries)}종목, {alerts_sent}건 알림")

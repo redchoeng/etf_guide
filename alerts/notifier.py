@@ -91,32 +91,27 @@ class TelegramNotifier:
             logger.error(f"Telegram 전송 오류: {e}")
             return False
 
-    def send_grid_alert(self, ticker: str, level: int, target_price: float,
-                        current_price: float, quantity: int, budget: float,
-                        direction: str = "down") -> bool:
-        """그리드 레벨 도달 알림 (방향 필터 적용)."""
-        prefix = "U" if direction == "up" else "L"
-        if not _should_alert(f"grid_{ticker}_{prefix}{level}"):
+    def send_drawdown_alert(self, ticker: str, current_price: float,
+                            drawdown_pct: float, ath: float,
+                            dd_zone: str, multiplier: float) -> bool:
+        """낙폭 구간 진입 알림."""
+        if not _should_alert(f"dd_{ticker}_{dd_zone}"):
             return False
 
-        if direction == "up":
-            emoji = "📈"
-            title = "상승 그리드 매수 시그널"
-            desc = "가격이 상승 그리드를 관통했습니다!"
-        else:
-            emoji = "📉"
-            title = "하락 그리드 매수 시그널"
-            desc = "가격이 하락 그리드를 관통했습니다!"
+        emoji_map = {
+            "-5%": "🟡", "-10%": "🟠", "-20%": "🔴",
+            "-30%": "🔴", "-40%": "💥", "-50%": "💥",
+        }
+        emoji = emoji_map.get(dd_zone, "📉")
 
         msg = (
-            f"{emoji} <b>{title}</b>\n\n"
+            f"{emoji} <b>낙폭 {dd_zone} 구간 진입</b>\n\n"
             f"종목: <b>{ticker}</b>\n"
-            f"레벨: {prefix}{level}\n"
-            f"목표가: ${target_price:.2f}\n"
             f"현재가: ${current_price:.2f}\n"
-            f"매수 수량: {quantity}주\n"
-            f"매수 금액: ${budget:,.0f}\n\n"
-            f"⚠️ {desc}"
+            f"ATH: ${ath:.2f}\n"
+            f"낙폭: {drawdown_pct:.1f}%\n"
+            f"매수 배수: <b>x{multiplier:.1f}</b>\n\n"
+            f"⚠️ 평소보다 {multiplier:.1f}배 매수 구간입니다!"
         )
         return self.send_message(msg)
 
@@ -152,7 +147,7 @@ class TelegramNotifier:
             f"종목: <b>{ticker}</b>\n"
             f"현재가: ${price:.2f} ({change_pct:+.1f}%)\n"
             f"ATH 대비: {drawdown:.1f}%\n\n"
-            f"📉 그리드 매수 기회일 수 있습니다!"
+            f"📉 낙폭 배수 매수 구간 체크!"
         )
         return self.send_message(msg)
 
@@ -196,7 +191,6 @@ def check_and_notify(config: dict):
     import numpy as np
     from engine.data_fetcher import ETFDataFetcher
     from engine.signal_generator import SignalGenerator
-    from engine.grid_calculator import GridCalculator
     from engine.macro_analyzer import MacroAnalyzer
 
     notifier = TelegramNotifier()
@@ -220,7 +214,6 @@ def check_and_notify(config: dict):
 
     fetcher = ETFDataFetcher(config.get("data", {}))
     signal_gen = SignalGenerator(config.get("signals", {}))
-    gc = GridCalculator(config.get("grid", {}))
 
     summaries = []
     price_state = _load_state()
@@ -286,52 +279,34 @@ def check_and_notify(config: dict):
                     alerts_sent += 1
                     logger.info(f"    🔔 매수 추천 알림 발송 ({score}점)")
 
-            # 2) 그리드 레벨 도달 체크 (방향 필터)
-            prev_px = price_state.get(ticker, current_price)
-            alloc_rate = {"BULL_STRONG": 0.75, "BULL": 0.70, "SIDEWAYS": 0.55, "CORRECTION": 0.50, "BEAR": 0.45, "CRISIS": 0.40}.get(regime, 0.55)
-            budget = preset.get("suggested_budget", 10000) * alloc_rate
-            grid = gc.calculate_grid(
-                reference_price=current_price,  # 리포트와 동일 기준
-                total_budget=budget,
-                num_levels=preset.get("suggested_levels", 10),
-                spacing_pct=preset.get("suggested_spacing", 5.0),
-                weighting="equal",
-            )
+            # 2) 낙폭 구간 진입 알림 (ATH 대비)
+            high = close.cummax()
+            ath = float(high.iloc[-1])
 
-            # 하락 그리드: 위→아래 관통 시에만 알림
-            for gl in grid:
-                tp = gl.target_price
-                if prev_px > tp >= current_price:
-                    sent = notifier.send_grid_alert(
-                        ticker, gl.level_number, tp,
-                        current_price, gl.quantity, gl.budget_allocation,
+            # 낙폭 구간 정의: (임계값, 구간명, 매수배수)
+            DD_ZONES = [
+                (-5,  "-5%",  1.0),
+                (-10, "-10%", 1.5),
+                (-20, "-20%", 2.0),
+                (-30, "-30%", 3.0),
+                (-40, "-40%", 4.0),
+                (-50, "-50%", 5.0),
+            ]
+
+            prev_dd = price_state.get(f"{ticker}_dd", 0)
+            # 현재 낙폭이 이전보다 깊어졌을 때 새 구간 진입 알림
+            for threshold, zone_name, mult in DD_ZONES:
+                if drawdown_pct <= threshold and prev_dd > threshold:
+                    sent = notifier.send_drawdown_alert(
+                        ticker, current_price, drawdown_pct,
+                        ath, zone_name, mult,
                     )
                     if sent:
                         alerts_sent += 1
-                        logger.info(f"    🔔 하락 L{gl.level_number} 관통 알림")
-                    break  # 가장 가까운 레벨만
-
-            # 상승 그리드: 아래→위 관통 시에만 알림
-            upside_grid = gc.calculate_upside_grid(
-                reference_price=current_price,
-                total_budget=budget,
-                num_levels=5,
-                spacing_pct=3.0,
-            )
-            for ugl in upside_grid:
-                tp = ugl.target_price
-                if prev_px < tp <= current_price:
-                    sent = notifier.send_grid_alert(
-                        ticker, ugl.level_number, tp,
-                        current_price, ugl.quantity, ugl.budget_allocation,
-                        direction="up",
-                    )
-                    if sent:
-                        alerts_sent += 1
-                        logger.info(f"    🔔 상승 U{ugl.level_number} 관통 알림")
-                    break
+                        logger.info(f"    🔔 낙폭 {zone_name} 구간 진입 알림")
 
             price_state[ticker] = current_price
+            price_state[f"{ticker}_dd"] = drawdown_pct
 
             # 3) 급락 알림 (1일 -5% 이상)
             if change_pct <= -5:

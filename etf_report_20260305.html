@@ -229,10 +229,10 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-03-05 23:02 KST</div>
+<div class="date">2026-03-05 23:28 KST</div>
 <div class="market-pulse">
 <div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
-<div class="pulse-item">VIX 22.0</div>
+<div class="pulse-item">VIX 22.6</div>
 <div class="pulse-item">1종목 매수 추천</div>
 </div>
 </div>
@@ -256,7 +256,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <span class="regime-badge">📈 상승장</span>
 </div>
 <div class="macro-chips">
-<div class="macro-chip">VIX <span class="val">22.0</span></div>
+<div class="macro-chip">VIX <span class="val">22.6</span></div>
 <div class="macro-chip">금리 <span class="val">4.14%</span></div>
 <div class="macro-chip">S&P500 <span class="val">-1.5%</span></div>
 <div class="macro-chip">매크로 <span class="val">60%</span></div>
@@ -276,8 +276,8 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="section">
 <div class="section-title">이 페이지 보는 법</div>
 <div class="tip-box">
-<p>각 ETF의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍이에요. <b>매수 계획표</b>에서 구체적인 매수 가격과 수량을 확인하세요.</p>
-<p>투자비율 <b>70%</b> / 예비금 <b>30%</b> (상승장) · 무한매수법: 매수만, 익절 없음</p>
+<p>매주 정해진 금액을 DCA 매수하되, <b>낙폭이 깊을수록 더 많이</b> 매수합니다. 낙폭 매수 가이드에서 현재 구간과 매수 배수를 확인하세요.</p>
+<p>시장: 상승장 · 적립식 + 낙폭 배수 매수 · 매도는 직접 판단</p>
 <div class="warn">손절 기준(-50%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
 </div>
 </div>
@@ -323,34 +323,22 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 </div>
 
 <div class="budget-input-area">
-<div><label>내 투자금</label><div class="bi-desc">금액 입력 시 매수 플랜이 자동 계산돼요</div></div>
+<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
 <div class="input-wrap">
 <span class="currency">$</span>
-<input type="number" id="bi-SOXL" value="10000" min="100" step="100" oninput="recalcGrid('SOXL')">
+<input type="number" id="bi-SOXL" value="200" min="10" step="10" oninput="recalcDCA('SOXL')">
 </div>
 </div>
 <div id="grid-wrap-SOXL">
 <div class="buy-plan">
-<div class="bp-title">무한매수 계획표</div>
-<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
+<div class="bp-title">낙폭 매수 가이드</div>
+<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
 <table>
-<tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$52.66 ←</td><td>--7.0%</td><td>9주</td><td>$500</td></tr><tr><td>L2</td><td>$48.69</td><td>--14.0%</td><td>10주</td><td>$500</td></tr><tr><td>L3</td><td>$44.73</td><td>--21.0%</td><td>11주</td><td>$500</td></tr><tr><td>L4</td><td>$40.77</td><td>--28.0%</td><td>12주</td><td>$500</td></tr><tr><td>L5</td><td>$36.80</td><td>--35.0%</td><td>13주</td><td>$500</td></tr><tr><td>L6</td><td>$32.84</td><td>--42.0%</td><td>15주</td><td>$500</td></tr>
-</table>
-<div class="more">+8개 레벨</div>
-<div class="budget-bar">
-<div class="seg active" style="flex:0.7">투자 70%</div>
-<div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
-</div>
-</div>
-<div class="buy-plan upside">
-<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>
-<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>
-<table>
-<tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>
-<tr><td>U1</td><td>$58.32</td><td>+3.0%</td><td>7주</td><td>$420</td></tr><tr><td>U2</td><td>$60.02</td><td>+6.0%</td><td>6주</td><td>$420</td></tr><tr><td>U3</td><td>$61.72</td><td>+9.0%</td><td>6주</td><td>$420</td></tr><tr><td>U4</td><td>$63.41</td><td>+12.0%</td><td>6주</td><td>$420</td></tr><tr><td>U5</td><td>$65.11</td><td>+15.0%</td><td>6주</td><td>$420</td></tr>
+<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
+<tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>$68.27 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$64.67</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$57.49</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$50.30</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$43.12</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$35.93</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
 </table>
 </div>
+
 </div>
 
 <div class="sell-ref">
@@ -429,34 +417,22 @@ ATH $71.86 · SMA20 $63.07 · SMA50 $58.01 · SMA200 $38.03 · 3M +44.5% · Vol 
 </div>
 
 <div class="budget-input-area">
-<div><label>내 투자금</label><div class="bi-desc">금액 입력 시 매수 플랜이 자동 계산돼요</div></div>
+<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
 <div class="input-wrap">
 <span class="currency">$</span>
-<input type="number" id="bi-QLD" value="10000" min="100" step="100" oninput="recalcGrid('QLD')">
+<input type="number" id="bi-QLD" value="200" min="10" step="10" oninput="recalcDCA('QLD')">
 </div>
 </div>
 <div id="grid-wrap-QLD">
 <div class="buy-plan">
-<div class="bp-title">무한매수 계획표</div>
-<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
+<div class="bp-title">낙폭 매수 가이드</div>
+<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
 <table>
-<tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$65.22 ←</td><td>--5.0%</td><td>10주</td><td>$700</td></tr><tr><td>L2</td><td>$61.79</td><td>--10.0%</td><td>11주</td><td>$700</td></tr><tr><td>L3</td><td>$58.35</td><td>--15.0%</td><td>11주</td><td>$700</td></tr><tr><td>L4</td><td>$54.92</td><td>--20.0%</td><td>12주</td><td>$700</td></tr><tr><td>L5</td><td>$51.49</td><td>--25.0%</td><td>13주</td><td>$700</td></tr><tr><td>L6</td><td>$48.06</td><td>--30.0%</td><td>14주</td><td>$700</td></tr>
-</table>
-<div class="more">+4개 레벨</div>
-<div class="budget-bar">
-<div class="seg active" style="flex:0.7">투자 70%</div>
-<div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
-</div>
-</div>
-<div class="buy-plan upside">
-<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>
-<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>
-<table>
-<tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>
-<tr><td>U1</td><td>$70.71</td><td>+3.0%</td><td>5주</td><td>$420</td></tr><tr><td>U2</td><td>$72.77</td><td>+6.0%</td><td>5주</td><td>$420</td></tr><tr><td>U3</td><td>$74.83</td><td>+9.0%</td><td>5주</td><td>$420</td></tr><tr><td>U4</td><td>$76.89</td><td>+12.0%</td><td>5주</td><td>$420</td></tr><tr><td>U5</td><td>$78.95</td><td>+15.0%</td><td>5주</td><td>$420</td></tr>
+<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
+<tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>$72.54 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$68.72</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$61.09</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$53.45</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$45.82</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$38.18</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
 </table>
 </div>
+
 </div>
 
 <div class="sell-ref">
@@ -535,34 +511,22 @@ ATH $76.36 · SMA20 $68.00 · SMA50 $70.39 · SMA200 $65.62 · 3M -2.9% · Vol 4
 </div>
 
 <div class="budget-input-area">
-<div><label>내 투자금</label><div class="bi-desc">금액 입력 시 매수 플랜이 자동 계산돼요</div></div>
+<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
 <div class="input-wrap">
 <span class="currency">$</span>
-<input type="number" id="bi-SSO" value="10000" min="100" step="100" oninput="recalcGrid('SSO')">
+<input type="number" id="bi-SSO" value="200" min="10" step="10" oninput="recalcDCA('SSO')">
 </div>
 </div>
 <div id="grid-wrap-SSO">
 <div class="buy-plan">
-<div class="bp-title">무한매수 계획표</div>
-<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
+<div class="bp-title">낙폭 매수 가이드</div>
+<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
 <table>
-<tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$55.50 ←</td><td>--4.0%</td><td>12주</td><td>$700</td></tr><tr><td>L2</td><td>$53.19</td><td>--8.0%</td><td>13주</td><td>$700</td></tr><tr><td>L3</td><td>$50.87</td><td>--12.0%</td><td>13주</td><td>$700</td></tr><tr><td>L4</td><td>$48.56</td><td>--16.0%</td><td>14주</td><td>$700</td></tr><tr><td>L5</td><td>$46.25</td><td>--20.0%</td><td>15주</td><td>$700</td></tr><tr><td>L6</td><td>$43.94</td><td>--24.0%</td><td>15주</td><td>$700</td></tr>
-</table>
-<div class="more">+4개 레벨</div>
-<div class="budget-bar">
-<div class="seg active" style="flex:0.7">투자 70%</div>
-<div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
-</div>
-</div>
-<div class="buy-plan upside">
-<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>
-<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>
-<table>
-<tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>
-<tr><td>U1</td><td>$59.54</td><td>+3.0%</td><td>7주</td><td>$420</td></tr><tr><td>U2</td><td>$61.28</td><td>+6.0%</td><td>6주</td><td>$420</td></tr><tr><td>U3</td><td>$63.01</td><td>+9.0%</td><td>6주</td><td>$420</td></tr><tr><td>U4</td><td>$64.75</td><td>+12.0%</td><td>6주</td><td>$420</td></tr><tr><td>U5</td><td>$66.48</td><td>+15.0%</td><td>6주</td><td>$420</td></tr>
+<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
+<tr><td style="color:#6b7684;font-weight:600">-5%</td><td>$57.08</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$54.07</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$48.06</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$42.06</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$36.05</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$30.04</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
 </table>
 </div>
+
 </div>
 
 <div class="sell-ref">
@@ -602,23 +566,22 @@ ATH $60.08 · SMA20 $58.16 · SMA50 $58.72 · SMA200 $54.07 · 3M +0.5% · Vol 3
 </div>
 
 <div class="strategy-box">
-<h3>무한매수법 전략 v3</h3>
-<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>강한 상승장</b> (투자 75%): 시드매수 30% + 상승 그리드(+3%마다 소량 매수) + 풀백 시 하락 그리드 + 주 1회 DCA</div></div>
-<div class="strat-item"><span class="emoji">📈</span><div class="desc"><b>상승장</b> (투자 70%): 시드매수 30% + 상승 그리드 + 눌림목 하락 그리드 + 주 1회 DCA</div></div>
-<div class="strat-item"><span class="emoji">➡️</span><div class="desc"><b>횡보장</b> (투자 55%): 하락 그리드 + 상승 그리드 + 주 1회 DCA</div></div>
-<div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>하락장</b> (투자 45%): 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유</div></div>
-<div class="strat-item"><span class="emoji">🔥</span><div class="desc"><b>위기</b> (투자 40%): 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유</div></div>
+<h3>낙폭 적립식 매수 전략 v4</h3>
+<div class="strat-item"><span class="emoji">📅</span><div class="desc"><b>기본</b>: 주 1회 정액 적립식 매수 (DCA) — 시장 상황과 무관하게 꾸준히</div></div>
+<div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>낙폭 -5~-10%</b>: 기본 DCA x1.5배 매수 — 조정 시작, 약간 더 담기</div></div>
+<div class="strat-item"><span class="emoji">🔴</span><div class="desc"><b>낙폭 -10~-20%</b>: 기본 DCA x2배 매수 — 본격 하락, 적극 매수 구간</div></div>
+<div class="strat-item"><span class="emoji">💥</span><div class="desc"><b>낙폭 -20% 이상</b>: 기본 DCA x3~5배 매수 — 폭락 = 최대 매수 기회</div></div>
+<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>상승장 진입</b>: 보유분 없으면 시드 30% 매수로 빠르게 탑승</div></div>
 <div class="strat-tips">
-상승 그리드: 가격 +3%마다 소량 매수 (예산 30%) · 하락 그리드: 레벨 도달 시 피라미딩 매수<br>
-유휴 현금 주 1회 DCA · 그리드 상단 15% 이탈 시 자동 리밸런싱<br>
-횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전
+떨어지면 더 산다 → 반등 시 폭발적 수익 · 올라도 매주 DCA로 기회 놓치지 않음<br>
+매도는 직접 판단 (레짐/수익률/ATH 참고) · 장기 보유 원칙
 <div class="warn">손절 기준 -50% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가</div>
 </div>
 </div>
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 23:02 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 23:28 KST</p>
 </div>
 </div>
 
@@ -806,7 +769,7 @@ function updateCard(ticker,data){
   // 실시간 그리드 매수 알림
   checkGridAlert(ticker,newPrice,data.prev);
   // 가격 변경 시 그리드 재계산
-  if(document.getElementById('bi-'+ticker))recalcGrid(ticker);
+  if(document.getElementById('bi-'+ticker))recalcDCA(ticker);
   // 매도 참고 지표 갱신
   if(typeof calcPnL==='function')calcPnL(ticker);
   if(typeof updateAthDD==='function')updateAthDD(ticker,newPrice);
@@ -817,48 +780,24 @@ function checkGridAlert(ticker,price,prev){
   const alertEl=document.getElementById('la-'+ticker);
   if(!card||!alertEl)return;
 
-  const grid=JSON.parse(card.dataset.grid||'[]');
-  const upgrid=JSON.parse(card.dataset.upgrid||'[]');
   const ath=parseFloat(card.dataset.ath)||0;
+  if(!ath)return;
+  const ddPct=((price-ath)/ath*100);
 
-  // 하락 그리드 레벨 도달 체크
-  let hit=null, near=null;
-  for(const g of grid){
-    if(price<=g.p){hit=g;break;}
-    if(!near&&price<=g.p*1.02){near=g;}
-  }
-
-  // 상승 그리드 레벨 도달 체크
-  let upHit=null;
-  for(const u of upgrid){
-    if(price>=u.p){upHit=u;}
-  }
-
-  const ddPct=ath>0?((price-ath)/ath*100):0;
-
+  // 낙폭 구간별 메시지
   let msg='',cls='';
-  if(hit){
-    msg='🟢 하락 L'+hit.l+' $'+hit.p.toFixed(2)+' 도달! '+hit.q+'주 매수 타이밍';
+  if(ddPct<=-40){
+    msg='💥 ATH 대비 '+ddPct.toFixed(1)+'% — x4~5배 적극 매수 구간';
     cls='buy';
-    if(localStorage.getItem(NOTI_KEY)==='true'){
-      sendNoti('🟢 '+ticker+' 하락 그리드 도달',
-        'L'+hit.l+' $'+hit.p.toFixed(2)+' — '+hit.q+'주 매수',
-        'grid-dn-'+ticker);
-    }
-  }else if(upHit){
-    msg='📈 상승 U'+upHit.l+' $'+upHit.p.toFixed(2)+' 도달 — '+upHit.q+'주 소량 매수';
-    cls='near';
-    if(localStorage.getItem(NOTI_KEY)==='true'){
-      sendNoti('📈 '+ticker+' 상승 그리드 도달',
-        'U'+upHit.l+' $'+upHit.p.toFixed(2)+' — '+upHit.q+'주 매수',
-        'grid-up-'+ticker);
-    }
-  }else if(near){
-    msg='🟡 L'+near.l+' 매수가 $'+near.p.toFixed(2)+'에 근접 중 (현재 $'+price.toFixed(2)+')';
-    cls='near';
   }else if(ddPct<=-20){
-    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% 하락 — 하위 그리드 매수 구간';
-    cls='drop';
+    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% — x2~3배 매수 구간';
+    cls='buy';
+  }else if(ddPct<=-10){
+    msg='🟠 ATH 대비 '+ddPct.toFixed(1)+'% — x1.5배 매수 구간';
+    cls='near';
+  }else if(ddPct<=-5){
+    msg='🟡 ATH 대비 '+ddPct.toFixed(1)+'% — 기본 DCA 매수';
+    cls='near';
   }
 
   if(msg){
@@ -921,90 +860,49 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
-// ── 예산 입력 → 그리드 재계산 ──
-function calcDownGrid(refPrice,budget,numLevels,spacingPct){
-  const perLevel=Math.round(budget/numLevels);
-  return Array.from({length:numLevels},(_,i)=>{
-    const drop=spacingPct*(i+1);
-    const p=+(refPrice*(1-drop/100)).toFixed(2);
-    const q=p>0?Math.floor(perLevel/p):0;
-    return {l:i+1,p:p,q:q,budget:perLevel,drop:drop};
-  }).filter(g=>g.p>0&&g.q>0);
-}
+// ── 주간 투자금 → 낙폭별 매수액 계산 ──
+const DD_MULT=[[-5,1.0],[-10,1.5],[-20,2.0],[-30,3.0],[-40,4.0],[-50,5.0]];
 
-function calcUpGrid(refPrice,budget,numLevels,spacingPct){
-  const per=Math.round(budget/numLevels);
-  return Array.from({length:numLevels},(_,i)=>{
-    const rise=spacingPct*(i+1);
-    const p=+(refPrice*(1+rise/100)).toFixed(2);
-    const q=Math.floor(per/p);
-    return {l:i+1,p:p,q:q,budget:per,rise:rise};
-  }).filter(g=>g.q>0);
-}
-
-function recalcGrid(ticker){
+function recalcDCA(ticker){
   const input=document.getElementById('bi-'+ticker);
   if(!input)return;
-  const budget=parseInt(input.value)||0;
-  if(budget<100)return;
+  const weeklyBudget=parseInt(input.value)||0;
+  if(weeklyBudget<10)return;
   const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(!card)return;
-  const config=JSON.parse(card.dataset.config||'{"levels":10,"spacing":5}');
 
   const prEl=document.getElementById('pr-'+ticker);
   const price=parseFloat(prEl.textContent.replace('$',''));
-  if(!price||price<=0)return;
+  const ath=parseFloat(card.dataset.ath)||0;
+  if(!price||price<=0||!ath)return;
 
-  const alloc=0.7;
-  const gridBudget=Math.round(budget*alloc);
-  const reserveBudget=budget-gridBudget;
+  const ddPct=((price-ath)/ath*100);
 
-  const down=calcDownGrid(price,gridBudget,config.levels,config.spacing);
-  const up=calcUpGrid(price,Math.round(gridBudget*0.3),5,3.0);
-
-  // data 속성 업데이트 (실시간 알림용)
-  card.dataset.grid=JSON.stringify(down.map(g=>({l:g.l,p:g.p,q:g.q})));
-  card.dataset.upgrid=JSON.stringify(up.map(g=>({l:g.l,p:g.p,q:g.q})));
-
-  // DOM 업데이트
   const wrap=document.getElementById('grid-wrap-'+ticker);
   if(!wrap)return;
 
-  // 하락 그리드 테이블
-  let dRows='';
-  const showMax=6;
-  down.slice(0,showMax).forEach(g=>{
-    dRows+='<tr><td>L'+g.l+'</td><td>$'+g.p.toFixed(2)+'</td><td>-'+g.drop.toFixed(1)+'%</td><td>'+g.q+'주</td><td>$'+g.budget.toLocaleString()+'</td></tr>';
+  let rows='';
+  DD_MULT.forEach(([th,mult])=>{
+    const pAt=+(ath*(1+th/100)).toFixed(2);
+    const amt=Math.round(weeklyBudget*mult);
+    const qty=pAt>0?Math.floor(amt/pAt):0;
+    const isActive=ddPct<=th;
+    const isCurrent=isActive&&!DD_MULT.some(([t2,_])=>t2<th&&ddPct<=t2);
+    const cls=isCurrent?' class="next-row"':'';
+    const marker=isCurrent?' ← 현재':'';
+    const colors={'-5':'#6b7684','-10':'#ff9500','-20':'#f04452','-30':'#f04452','-40':'#d91f11','-50':'#d91f11'};
+    const c=colors[th]||'#6b7684';
+    rows+='<tr'+cls+'><td style="color:'+c+';font-weight:600">'+th+'%</td><td>$'+pAt.toFixed(2)+marker+'</td><td style="color:'+c+';font-weight:700">x'+mult.toFixed(1)+'</td><td>$'+amt+' ('+qty+'주)</td></tr>';
   });
-  const remaining=down.length-showMax;
-  const moreHtml=remaining>0?'<div class="more">+'+remaining+'개 레벨</div>':'';
 
-  let dHtml='<div class="buy-plan">';
-  dHtml+='<div class="bp-title">무한매수 계획표</div>';
-  dHtml+='<div class="bp-sub">투자 $'+gridBudget.toLocaleString()+' + 예비금 $'+reserveBudget.toLocaleString()+' · 레벨 도달 시 매수 → 장기 보유</div>';
-  dHtml+='<table><tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>';
-  dHtml+=dRows+'</table>'+moreHtml;
-  dHtml+='<div class="budget-bar">';
-  dHtml+='<div class="seg active" style="flex:'+alloc+'">투자 '+(alloc*100).toFixed(0)+'%</div>';
-  dHtml+='<div class="seg reserve" style="flex:'+(1-alloc)+'">예비금 '+((1-alloc)*100).toFixed(0)+'%</div>';
-  dHtml+='</div></div>';
+  let html='<div class="buy-plan">';
+  html+='<div class="bp-title">낙폭 매수 가이드</div>';
+  html+='<div class="bp-sub">주 1회 $'+weeklyBudget+' 적립 · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>';
+  html+='<table><tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>주간 매수액</th></tr>';
+  html+=rows+'</table></div>';
 
-  // 상승 그리드 테이블
-  let uHtml='';
-  if(up.length>0){
-    let uRows='';
-    up.forEach(g=>{
-      uRows+='<tr><td>U'+g.l+'</td><td>$'+g.p.toFixed(2)+'</td><td>+'+g.rise.toFixed(1)+'%</td><td>'+g.q+'주</td><td>$'+g.budget.toLocaleString()+'</td></tr>';
-    });
-    uHtml='<div class="buy-plan upside">';
-    uHtml+='<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>';
-    uHtml+='<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>';
-    uHtml+='<table><tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>';
-    uHtml+=uRows+'</table></div>';
-  }
-
-  wrap.innerHTML=dHtml+uHtml;
-  localStorage.setItem('budget_'+ticker,budget);
+  wrap.innerHTML=html;
+  localStorage.setItem('weekly_'+ticker,weeklyBudget);
 }
 
 // ── 매도 참고 지표 ──
@@ -1081,10 +979,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 저장된 예산 복원
   document.querySelectorAll('.card[data-ticker]').forEach(card=>{
     const t=card.dataset.ticker;
-    const saved=localStorage.getItem('budget_'+t);
+    const saved=localStorage.getItem('weekly_'+t);
     if(saved){
       const input=document.getElementById('bi-'+t);
-      if(input){input.value=saved;recalcGrid(t);}
+      if(input){input.value=saved;recalcDCA(t);}
     }
     // 저장된 평균단가 복원
     const avgSaved=localStorage.getItem('avgcost_'+t);

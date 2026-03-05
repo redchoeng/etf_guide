@@ -736,8 +736,8 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="section">
 <div class="section-title">이 페이지 보는 법</div>
 <div class="tip-box">
-<p>각 ETF의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍이에요. <b>매수 계획표</b>에서 구체적인 매수 가격과 수량을 확인하세요.</p>
-<p>투자비율 <b>{allocation*100:.0f}%</b> / 예비금 <b>{(1-allocation)*100:.0f}%</b> ({regime_kr}) · 무한매수법: 매수만, 익절 없음</p>
+<p>매주 정해진 금액을 DCA 매수하되, <b>낙폭이 깊을수록 더 많이</b> 매수합니다. 낙폭 매수 가이드에서 현재 구간과 매수 배수를 확인하세요.</p>
+<p>시장: {regime_kr} · 적립식 + 낙폭 배수 매수 · 매도는 직접 판단</p>
 <div class="warn">손절 기준({STOP_LOSS_PCT:.0f}%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
 </div>
 </div>
@@ -771,52 +771,34 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         circumference = 2 * 3.14159 * 22
         stroke_offset = circumference * (1 - score_pct / 100)
 
-        # 매수 계획표
-        buy_table = ""
-        if r["grid_levels"]:
-            rows = ""
-            shown = 0
-            for gl in r["grid_levels"]:
-                if shown >= 6:
-                    break
-                is_next = r["next_buy"] and gl.level_number == r["next_buy"].level_number
-                tr_cls = ' class="next-row"' if is_next else ""
-                marker = " ←" if is_next else ""
-                rows += f'<tr{tr_cls}><td>L{gl.level_number}</td><td>${gl.target_price:.2f}{marker}</td><td>-{gl.drop_pct:.1f}%</td><td>{gl.quantity}주</td><td>${gl.budget_allocation:,.0f}</td></tr>'
-                shown += 1
+        # 낙폭 매수 가이드
+        dd_zones = [
+            (-5,  "x1.0", "#6b7684", "기본 DCA"),
+            (-10, "x1.5", "#ff9500", "1.5배 매수"),
+            (-20, "x2.0", "#f04452", "2배 매수"),
+            (-30, "x3.0", "#f04452", "3배 매수"),
+            (-40, "x4.0", "#d91f11", "4배 매수"),
+            (-50, "x5.0", "#d91f11", "5배 매수"),
+        ]
+        current_dd = r["drawdown_pct"]
+        dd_rows = ""
+        for threshold, mult, color, label in dd_zones:
+            price_at = r["ath"] * (1 + threshold / 100)
+            is_active = current_dd <= threshold
+            active_cls = ' class="next-row"' if is_active and (threshold == max(t for t, _, _, _ in dd_zones if current_dd <= t)) else ""
+            marker = " ← 현재" if active_cls else ""
+            dd_rows += f'<tr{active_cls}><td style="color:{color};font-weight:600">{threshold}%</td><td>${price_at:.2f}{marker}</td><td style="color:{color};font-weight:700">{mult}</td><td>{label}</td></tr>'
 
-            remaining = len(r["grid_levels"]) - shown
-            more = f'<div class="more">+{remaining}개 레벨</div>' if remaining > 0 else ""
-
-            alloc = r.get("allocation", 0.55)
-            buy_table = f"""<div class="buy-plan">
-<div class="bp-title">무한매수 계획표</div>
-<div class="bp-sub">투자 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f} · 레벨 도달 시 매수 → 장기 보유</div>
+        buy_table = f"""<div class="buy-plan">
+<div class="bp-title">낙폭 매수 가이드</div>
+<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
 <table>
-<tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-{rows}
+<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
+{dd_rows}
 </table>
-{more}
-<div class="budget-bar">
-<div class="seg active" style="flex:{alloc}">투자 {alloc*100:.0f}%</div>
-<div class="seg reserve" style="flex:{1-alloc}">예비금 {(1-alloc)*100:.0f}%</div>
-</div>
 </div>"""
 
-        # 상승 그리드 테이블
         upside_table = ""
-        if r["upside_grid"]:
-            up_rows = ""
-            for ugl in r["upside_grid"]:
-                up_rows += f'<tr><td>U{ugl.level_number}</td><td>${ugl.target_price:.2f}</td><td>+{ugl.drop_pct:.1f}%</td><td>{ugl.quantity}주</td><td>${ugl.budget_allocation:,.0f}</td></tr>'
-            upside_table = f"""<div class="buy-plan upside">
-<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>
-<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>
-<table>
-<tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>
-{up_rows}
-</table>
-</div>"""
 
         # 52주 위치 바
         bar_color = "#00c073" if r["pos_52w"] < 30 else ("#ff9500" if r["pos_52w"] < 70 else "#f04452")
@@ -875,10 +857,10 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 </div>
 
 <div class="budget-input-area">
-<div><label>내 투자금</label><div class="bi-desc">금액 입력 시 매수 플랜이 자동 계산돼요</div></div>
+<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
 <div class="input-wrap">
 <span class="currency">$</span>
-<input type="number" id="bi-{r['ticker']}" value="{r['total_budget']:.0f}" min="100" step="100" oninput="recalcGrid('{r['ticker']}')">
+<input type="number" id="bi-{r['ticker']}" value="200" min="10" step="10" oninput="recalcDCA('{r['ticker']}')">
 </div>
 </div>
 <div id="grid-wrap-{r['ticker']}">
@@ -925,16 +907,15 @@ ATH ${r['ath']:.2f} · SMA20 ${r['sma20']:.2f} · SMA50 ${r['sma50']:.2f} · SMA
 
     html += f"""
 <div class="strategy-box">
-<h3>무한매수법 전략 v3</h3>
-<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>강한 상승장</b> (투자 75%): 시드매수 30% + 상승 그리드(+3%마다 소량 매수) + 풀백 시 하락 그리드 + 주 1회 DCA</div></div>
-<div class="strat-item"><span class="emoji">📈</span><div class="desc"><b>상승장</b> (투자 70%): 시드매수 30% + 상승 그리드 + 눌림목 하락 그리드 + 주 1회 DCA</div></div>
-<div class="strat-item"><span class="emoji">➡️</span><div class="desc"><b>횡보장</b> (투자 55%): 하락 그리드 + 상승 그리드 + 주 1회 DCA</div></div>
-<div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>하락장</b> (투자 45%): 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유</div></div>
-<div class="strat-item"><span class="emoji">🔥</span><div class="desc"><b>위기</b> (투자 40%): 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유</div></div>
+<h3>낙폭 적립식 매수 전략 v4</h3>
+<div class="strat-item"><span class="emoji">📅</span><div class="desc"><b>기본</b>: 주 1회 정액 적립식 매수 (DCA) — 시장 상황과 무관하게 꾸준히</div></div>
+<div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>낙폭 -5~-10%</b>: 기본 DCA x1.5배 매수 — 조정 시작, 약간 더 담기</div></div>
+<div class="strat-item"><span class="emoji">🔴</span><div class="desc"><b>낙폭 -10~-20%</b>: 기본 DCA x2배 매수 — 본격 하락, 적극 매수 구간</div></div>
+<div class="strat-item"><span class="emoji">💥</span><div class="desc"><b>낙폭 -20% 이상</b>: 기본 DCA x3~5배 매수 — 폭락 = 최대 매수 기회</div></div>
+<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>상승장 진입</b>: 보유분 없으면 시드 30% 매수로 빠르게 탑승</div></div>
 <div class="strat-tips">
-상승 그리드: 가격 +3%마다 소량 매수 (예산 30%) · 하락 그리드: 레벨 도달 시 피라미딩 매수<br>
-유휴 현금 주 1회 DCA · 그리드 상단 15% 이탈 시 자동 리밸런싱<br>
-횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전
+떨어지면 더 산다 → 반등 시 폭발적 수익 · 올라도 매주 DCA로 기회 놓치지 않음<br>
+매도는 직접 판단 (레짐/수익률/ATH 참고) · 장기 보유 원칙
 <div class="warn">손절 기준 {STOP_LOSS_PCT:.0f}% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가</div>
 </div>
 </div>
@@ -1129,7 +1110,7 @@ function updateCard(ticker,data){{
   // 실시간 그리드 매수 알림
   checkGridAlert(ticker,newPrice,data.prev);
   // 가격 변경 시 그리드 재계산
-  if(document.getElementById('bi-'+ticker))recalcGrid(ticker);
+  if(document.getElementById('bi-'+ticker))recalcDCA(ticker);
   // 매도 참고 지표 갱신
   if(typeof calcPnL==='function')calcPnL(ticker);
   if(typeof updateAthDD==='function')updateAthDD(ticker,newPrice);
@@ -1140,48 +1121,24 @@ function checkGridAlert(ticker,price,prev){{
   const alertEl=document.getElementById('la-'+ticker);
   if(!card||!alertEl)return;
 
-  const grid=JSON.parse(card.dataset.grid||'[]');
-  const upgrid=JSON.parse(card.dataset.upgrid||'[]');
   const ath=parseFloat(card.dataset.ath)||0;
+  if(!ath)return;
+  const ddPct=((price-ath)/ath*100);
 
-  // 하락 그리드 레벨 도달 체크
-  let hit=null, near=null;
-  for(const g of grid){{
-    if(price<=g.p){{hit=g;break;}}
-    if(!near&&price<=g.p*1.02){{near=g;}}
-  }}
-
-  // 상승 그리드 레벨 도달 체크
-  let upHit=null;
-  for(const u of upgrid){{
-    if(price>=u.p){{upHit=u;}}
-  }}
-
-  const ddPct=ath>0?((price-ath)/ath*100):0;
-
+  // 낙폭 구간별 메시지
   let msg='',cls='';
-  if(hit){{
-    msg='🟢 하락 L'+hit.l+' $'+hit.p.toFixed(2)+' 도달! '+hit.q+'주 매수 타이밍';
+  if(ddPct<=-40){{
+    msg='💥 ATH 대비 '+ddPct.toFixed(1)+'% — x4~5배 적극 매수 구간';
     cls='buy';
-    if(localStorage.getItem(NOTI_KEY)==='true'){{
-      sendNoti('🟢 '+ticker+' 하락 그리드 도달',
-        'L'+hit.l+' $'+hit.p.toFixed(2)+' — '+hit.q+'주 매수',
-        'grid-dn-'+ticker);
-    }}
-  }}else if(upHit){{
-    msg='📈 상승 U'+upHit.l+' $'+upHit.p.toFixed(2)+' 도달 — '+upHit.q+'주 소량 매수';
-    cls='near';
-    if(localStorage.getItem(NOTI_KEY)==='true'){{
-      sendNoti('📈 '+ticker+' 상승 그리드 도달',
-        'U'+upHit.l+' $'+upHit.p.toFixed(2)+' — '+upHit.q+'주 매수',
-        'grid-up-'+ticker);
-    }}
-  }}else if(near){{
-    msg='🟡 L'+near.l+' 매수가 $'+near.p.toFixed(2)+'에 근접 중 (현재 $'+price.toFixed(2)+')';
-    cls='near';
   }}else if(ddPct<=-20){{
-    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% 하락 — 하위 그리드 매수 구간';
-    cls='drop';
+    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% — x2~3배 매수 구간';
+    cls='buy';
+  }}else if(ddPct<=-10){{
+    msg='🟠 ATH 대비 '+ddPct.toFixed(1)+'% — x1.5배 매수 구간';
+    cls='near';
+  }}else if(ddPct<=-5){{
+    msg='🟡 ATH 대비 '+ddPct.toFixed(1)+'% — 기본 DCA 매수';
+    cls='near';
   }}
 
   if(msg){{
@@ -1244,90 +1201,49 @@ document.addEventListener('visibilitychange',()=>{{
   }}
 }});
 
-// ── 예산 입력 → 그리드 재계산 ──
-function calcDownGrid(refPrice,budget,numLevels,spacingPct){{
-  const perLevel=Math.round(budget/numLevels);
-  return Array.from({{length:numLevels}},(_,i)=>{{
-    const drop=spacingPct*(i+1);
-    const p=+(refPrice*(1-drop/100)).toFixed(2);
-    const q=p>0?Math.floor(perLevel/p):0;
-    return {{l:i+1,p:p,q:q,budget:perLevel,drop:drop}};
-  }}).filter(g=>g.p>0&&g.q>0);
-}}
+// ── 주간 투자금 → 낙폭별 매수액 계산 ──
+const DD_MULT=[[-5,1.0],[-10,1.5],[-20,2.0],[-30,3.0],[-40,4.0],[-50,5.0]];
 
-function calcUpGrid(refPrice,budget,numLevels,spacingPct){{
-  const per=Math.round(budget/numLevels);
-  return Array.from({{length:numLevels}},(_,i)=>{{
-    const rise=spacingPct*(i+1);
-    const p=+(refPrice*(1+rise/100)).toFixed(2);
-    const q=Math.floor(per/p);
-    return {{l:i+1,p:p,q:q,budget:per,rise:rise}};
-  }}).filter(g=>g.q>0);
-}}
-
-function recalcGrid(ticker){{
+function recalcDCA(ticker){{
   const input=document.getElementById('bi-'+ticker);
   if(!input)return;
-  const budget=parseInt(input.value)||0;
-  if(budget<100)return;
+  const weeklyBudget=parseInt(input.value)||0;
+  if(weeklyBudget<10)return;
   const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(!card)return;
-  const config=JSON.parse(card.dataset.config||'{{"levels":10,"spacing":5}}');
 
   const prEl=document.getElementById('pr-'+ticker);
   const price=parseFloat(prEl.textContent.replace('$',''));
-  if(!price||price<=0)return;
+  const ath=parseFloat(card.dataset.ath)||0;
+  if(!price||price<=0||!ath)return;
 
-  const alloc=0.7;
-  const gridBudget=Math.round(budget*alloc);
-  const reserveBudget=budget-gridBudget;
+  const ddPct=((price-ath)/ath*100);
 
-  const down=calcDownGrid(price,gridBudget,config.levels,config.spacing);
-  const up=calcUpGrid(price,Math.round(gridBudget*0.3),5,3.0);
-
-  // data 속성 업데이트 (실시간 알림용)
-  card.dataset.grid=JSON.stringify(down.map(g=>({{l:g.l,p:g.p,q:g.q}})));
-  card.dataset.upgrid=JSON.stringify(up.map(g=>({{l:g.l,p:g.p,q:g.q}})));
-
-  // DOM 업데이트
   const wrap=document.getElementById('grid-wrap-'+ticker);
   if(!wrap)return;
 
-  // 하락 그리드 테이블
-  let dRows='';
-  const showMax=6;
-  down.slice(0,showMax).forEach(g=>{{
-    dRows+='<tr><td>L'+g.l+'</td><td>$'+g.p.toFixed(2)+'</td><td>-'+g.drop.toFixed(1)+'%</td><td>'+g.q+'주</td><td>$'+g.budget.toLocaleString()+'</td></tr>';
+  let rows='';
+  DD_MULT.forEach(([th,mult])=>{{
+    const pAt=+(ath*(1+th/100)).toFixed(2);
+    const amt=Math.round(weeklyBudget*mult);
+    const qty=pAt>0?Math.floor(amt/pAt):0;
+    const isActive=ddPct<=th;
+    const isCurrent=isActive&&!DD_MULT.some(([t2,_])=>t2<th&&ddPct<=t2);
+    const cls=isCurrent?' class="next-row"':'';
+    const marker=isCurrent?' ← 현재':'';
+    const colors={{'-5':'#6b7684','-10':'#ff9500','-20':'#f04452','-30':'#f04452','-40':'#d91f11','-50':'#d91f11'}};
+    const c=colors[th]||'#6b7684';
+    rows+='<tr'+cls+'><td style="color:'+c+';font-weight:600">'+th+'%</td><td>$'+pAt.toFixed(2)+marker+'</td><td style="color:'+c+';font-weight:700">x'+mult.toFixed(1)+'</td><td>$'+amt+' ('+qty+'주)</td></tr>';
   }});
-  const remaining=down.length-showMax;
-  const moreHtml=remaining>0?'<div class="more">+'+remaining+'개 레벨</div>':'';
 
-  let dHtml='<div class="buy-plan">';
-  dHtml+='<div class="bp-title">무한매수 계획표</div>';
-  dHtml+='<div class="bp-sub">투자 $'+gridBudget.toLocaleString()+' + 예비금 $'+reserveBudget.toLocaleString()+' · 레벨 도달 시 매수 → 장기 보유</div>';
-  dHtml+='<table><tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>';
-  dHtml+=dRows+'</table>'+moreHtml;
-  dHtml+='<div class="budget-bar">';
-  dHtml+='<div class="seg active" style="flex:'+alloc+'">투자 '+(alloc*100).toFixed(0)+'%</div>';
-  dHtml+='<div class="seg reserve" style="flex:'+(1-alloc)+'">예비금 '+((1-alloc)*100).toFixed(0)+'%</div>';
-  dHtml+='</div></div>';
+  let html='<div class="buy-plan">';
+  html+='<div class="bp-title">낙폭 매수 가이드</div>';
+  html+='<div class="bp-sub">주 1회 $'+weeklyBudget+' 적립 · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>';
+  html+='<table><tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>주간 매수액</th></tr>';
+  html+=rows+'</table></div>';
 
-  // 상승 그리드 테이블
-  let uHtml='';
-  if(up.length>0){{
-    let uRows='';
-    up.forEach(g=>{{
-      uRows+='<tr><td>U'+g.l+'</td><td>$'+g.p.toFixed(2)+'</td><td>+'+g.rise.toFixed(1)+'%</td><td>'+g.q+'주</td><td>$'+g.budget.toLocaleString()+'</td></tr>';
-    }});
-    uHtml='<div class="buy-plan upside">';
-    uHtml+='<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>';
-    uHtml+='<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>';
-    uHtml+='<table><tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>';
-    uHtml+=uRows+'</table></div>';
-  }}
-
-  wrap.innerHTML=dHtml+uHtml;
-  localStorage.setItem('budget_'+ticker,budget);
+  wrap.innerHTML=html;
+  localStorage.setItem('weekly_'+ticker,weeklyBudget);
 }}
 
 // ── 매도 참고 지표 ──
@@ -1404,10 +1320,10 @@ document.addEventListener('DOMContentLoaded',()=>{{
   // 저장된 예산 복원
   document.querySelectorAll('.card[data-ticker]').forEach(card=>{{
     const t=card.dataset.ticker;
-    const saved=localStorage.getItem('budget_'+t);
+    const saved=localStorage.getItem('weekly_'+t);
     if(saved){{
       const input=document.getElementById('bi-'+t);
-      if(input){{input.value=saved;recalcGrid(t);}}
+      if(input){{input.value=saved;recalcDCA(t);}}
     }}
     // 저장된 평균단가 복원
     const avgSaved=localStorage.getItem('avgcost_'+t);

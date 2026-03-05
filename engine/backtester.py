@@ -1,12 +1,12 @@
-"""무한매수법 그리드 백테스터.
+"""낙폭 기반 적립식 매수 백테스터.
 
-레짐(상승/하락/횡보) 감지 → 동적 투자비율, 시드매수, 그리드 리밸런싱.
+적립식 DCA + 떨어지면 더 사는 컨셉.
 매수만 하고 익절하지 않는 '무한매수법' 전략.
 
 핵심 원리:
-  - 하락 시 그리드 레벨마다 더 많이 매수 (피라미딩)
+  - 기본: 주 1회 정액 적립식 매수 (DCA)
+  - 낙폭 깊을수록 매수 금액 증가 (낙폭 배수)
   - 상승장 진입 시 시드매수로 참여
-  - 가격 상승 시 그리드 리밸런싱 (새 기준가로 재설정)
   - 장기 보유, 익절 없음 → 복리 효과 극대화
 """
 
@@ -127,15 +127,35 @@ def detect_regime(close: pd.Series, idx: int) -> str:
 
 
 class GridBacktester:
-    """무한매수법 그리드 백테스터.
+    """낙폭 기반 적립식 매수 백테스터.
 
-    상승장: 시드매수 → 눌림목 그리드 추가매수 → 장기 보유
-    하락장: 그리드 분할매수 → 장기 보유
-    현금 유휴 시: DCA 소량 매수로 현금 효율화
+    기본: 주 1회 DCA 적립식 매수
+    하락 시: 낙폭 배수만큼 매수 금액 증가
+    상승장: 시드매수로 빠르게 참여
     """
+
+    # 낙폭 구간별 매수 배수 (ATH 대비)
+    DRAWDOWN_MULTIPLIER = [
+        # (낙폭 이상, 매수 배수)
+        (-5,  1.0),   # -5% 미만: 기본 DCA
+        (-10, 1.5),   # -5~-10%: 1.5배
+        (-20, 2.0),   # -10~-20%: 2배
+        (-30, 3.0),   # -20~-30%: 3배
+        (-40, 4.0),   # -30~-40%: 4배
+        (-50, 5.0),   # -40~-50%: 5배
+    ]
 
     def __init__(self, config: dict = None):
         config = config or {}
+
+    @staticmethod
+    def _get_dd_multiplier(dd_pct: float) -> float:
+        """낙폭(%)에 해당하는 매수 배수 반환."""
+        mult = 1.0
+        for threshold, m in GridBacktester.DRAWDOWN_MULTIPLIER:
+            if dd_pct <= threshold:
+                mult = m
+        return mult
 
     def run_backtest(
         self,
@@ -148,7 +168,7 @@ class GridBacktester:
         reinvest_profits: bool = True,
         total_budget: float = None,
     ) -> BacktestResult:
-        """무한매수법 그리드 백테스트 실행 (매수만, 익절 없음)."""
+        """낙폭 기반 적립식 매수 백테스트 (매수만, 익절 없음)."""
         close = df["Close"].dropna()
 
         if start_date:
@@ -165,38 +185,30 @@ class GridBacktester:
         spacing_pct = abs(grid_levels[0].drop_pct) if grid_levels else 5.0
         num_levels = len(grid_levels)
 
+        # ── DCA 기본 금액: 예산을 기간에 걸쳐 분배 ──
+        total_weeks = max(1, len(close) // 5)
+        base_dca = total_budget / total_weeks  # 주당 기본 매수액
+
         # ── 상태 ──
         remaining_budget = total_budget
         shares_held = 0
         avg_cost = 0.0
-        filled_levels: set[int] = set()
         trades: list[BacktestTrade] = []
         equity_data: list[dict] = []
         max_unrealized_loss_pct = 0.0
 
-        current_grid = list(grid_levels)
-        grid_ref_price = grid_levels[0].target_price / (1 - abs(grid_levels[0].drop_pct) / 100) if grid_levels else float(close.iloc[0])
-
         seed_buy_done = False
-        last_rebalance_idx = -999
         prev_regime = ""
         regime_changes = 0
         seed_buy_count = 0
-        rebalance_count = 0
         idle_dca_count = 0
-        upside_buy_count = 0
-
-        # 상승 그리드 초기화 (예산의 30%로 소량 분할매수)
-        upside_grid = GridCalculator().calculate_upside_grid(
-            reference_price=grid_ref_price,
-            total_budget=total_budget,
-            num_levels=5,
-            spacing_pct=3.0,
-        )
-        upside_filled: set[int] = set()
+        last_dca_idx = -999
 
         close_values = close.values
         close_index = close.index
+
+        # ATH 추적 (rolling)
+        running_ath = float(close_values[0])
 
         for i in range(len(close_values)):
             date = close_index[i]
@@ -207,17 +219,20 @@ class GridBacktester:
                 regime_changes += 1
             prev_regime = regime
 
-            allocation = REGIME_ALLOCATION.get(regime, 0.55)
+            # ATH 업데이트
+            if price > running_ath:
+                running_ath = price
 
-            # ── 1. 시드 매수 (상승장 진입) ──
+            # 현재 낙폭
+            dd_pct = (price - running_ath) / running_ath * 100 if running_ath > 0 else 0
+            dd_mult = self._get_dd_multiplier(dd_pct)
+
+            # ── 1. 시드 매수 (상승장 진입, 보유분 없을 때) ──
             if (regime in ("BULL", "BULL_STRONG")
                     and shares_held == 0
                     and not seed_buy_done
                     and remaining_budget > 0):
-                seed_amount = min(
-                    remaining_budget * 0.30,
-                    remaining_budget,
-                )
+                seed_amount = min(remaining_budget * 0.30, remaining_budget)
                 seed_qty = math.floor(seed_amount / price)
                 if seed_qty > 0:
                     cost = seed_qty * price
@@ -235,59 +250,11 @@ class GridBacktester:
                         note=f"seed 30% entry",
                     ))
 
-            # ── 2. 그리드 매수 (RSI 필터: 횡보장에선 RSI<35일 때만) ──
-            # RSI 계산 (14일)
-            if i >= 15:
-                delta = close.iloc[max(0, i - 14):i + 1].diff().dropna()
-                gain = delta.where(delta > 0, 0.0).mean()
-                loss = (-delta.where(delta < 0, 0.0)).mean()
-                rsi = 100 - (100 / (1 + gain / loss)) if loss != 0 else 100
-            else:
-                rsi = 50.0
-
-            for gl in current_grid:
-                if gl.level_number in filled_levels:
-                    continue
-                if price <= gl.target_price:
-                    # 횡보장: RSI<40 과매도일 때만 매수 (진짜 저점 필터)
-                    if regime == "SIDEWAYS" and rsi >= 40:
-                        continue
-
-                    buy_qty = gl.quantity
-                    cost = buy_qty * price
-
-                    if cost > remaining_budget:
-                        buy_qty = math.floor(remaining_budget / price)
-                        cost = buy_qty * price
-
-                    if buy_qty > 0:
-                        total_cost_before = shares_held * avg_cost
-                        shares_held += buy_qty
-                        avg_cost = (total_cost_before + cost) / shares_held
-                        remaining_budget -= cost
-                        filled_levels.add(gl.level_number)
-
-                        trades.append(BacktestTrade(
-                            date=date, action="BUY", price=round(price, 2),
-                            quantity=buy_qty, grid_level=gl.level_number,
-                            cost_basis=round(avg_cost, 2),
-                            regime=regime,
-                        ))
-
-            # ── 3. 유휴 현금 DCA (레짐별 차등) ──
-            # BULL/BULL_STRONG: 주 1회 5% | SIDEWAYS: 2주 1회 2% | CORRECTION/BEAR: 중단
-            idle_threshold = total_budget * 0.05
-            if regime in ("BULL", "BULL_STRONG"):
-                dca_interval, dca_rate = 5, 0.05    # 주 1회, 5%
-            elif regime == "SIDEWAYS":
-                dca_interval, dca_rate = 10, 0.02   # 2주 1회, 2%
-            else:
-                dca_interval, dca_rate = 0, 0       # 중단
-
-            if (dca_interval > 0
-                    and remaining_budget > idle_threshold
-                    and i % dca_interval == 0 and i > 0):
-                dca_amount = min(remaining_budget * dca_rate, remaining_budget)
+            # ── 2. 주간 DCA (낙폭 배수 적용) ──
+            # 매주 1회 (5거래일 간격), 낙폭 깊을수록 더 많이 매수
+            if (i - last_dca_idx >= 5 and i > 0
+                    and remaining_budget > total_budget * 0.02):
+                dca_amount = min(base_dca * dd_mult, remaining_budget)
                 dca_qty = math.floor(dca_amount / price)
                 if dca_qty > 0:
                     cost = dca_qty * price
@@ -296,76 +263,16 @@ class GridBacktester:
                     avg_cost = (total_cost_before + cost) / shares_held if shares_held > 0 else price
                     remaining_budget -= cost
                     idle_dca_count += 1
+                    last_dca_idx = i
 
+                    dd_label = f"dd {dd_pct:.0f}% x{dd_mult:.1f}"
                     trades.append(BacktestTrade(
-                        date=date, action="DCA_IDLE", price=round(price, 2),
+                        date=date, action="DCA", price=round(price, 2),
                         quantity=dca_qty, grid_level=0,
                         cost_basis=round(avg_cost, 2),
                         regime=regime,
-                        note=f"idle cash DCA",
+                        note=dd_label,
                     ))
-
-            # ── 4. 상승 그리드 매수 (BULL/BULL_STRONG에서만, 횡보장 제외) ──
-            if (regime in ("BULL", "BULL_STRONG")
-                    and remaining_budget > total_budget * 0.03
-                    and upside_grid):
-                for ugl in upside_grid:
-                    if ugl.level_number in upside_filled:
-                        continue
-                    if price >= ugl.target_price:
-                        buy_qty = min(ugl.quantity, math.floor(remaining_budget / price))
-                        if buy_qty > 0:
-                            cost = buy_qty * price
-                            total_cost_before = shares_held * avg_cost
-                            shares_held += buy_qty
-                            avg_cost = (total_cost_before + cost) / shares_held if shares_held > 0 else price
-                            remaining_budget -= cost
-                            upside_filled.add(ugl.level_number)
-                            upside_buy_count += 1
-
-                            trades.append(BacktestTrade(
-                                date=date, action="BUY_UP", price=round(price, 2),
-                                quantity=buy_qty, grid_level=ugl.level_number,
-                                cost_basis=round(avg_cost, 2),
-                                regime=regime,
-                                note=f"upside grid L{ugl.level_number}",
-                            ))
-
-            # ── 5. 그리드 리밸런싱 (BULL/BULL_STRONG에서만 허용) ──
-            if (i - last_rebalance_idx >= 22 and current_grid
-                    and regime in ("BULL", "BULL_STRONG")):
-                top_price = current_grid[0].target_price
-                if price > top_price * 1.15:
-                    alloc_budget = max(remaining_budget, 0) * allocation
-                    if alloc_budget > 0:
-                        current_grid = GridCalculator().calculate_grid(
-                            reference_price=price,
-                            total_budget=alloc_budget,
-                            num_levels=num_levels,
-                            spacing_pct=spacing_pct,
-                            weighting="equal",
-                        )
-                        filled_levels = set()
-                        grid_ref_price = price
-                        last_rebalance_idx = i
-                        rebalance_count += 1
-                        seed_buy_done = False
-                        # 상승 그리드도 새 기준가로 리셋
-                        upside_grid = GridCalculator().calculate_upside_grid(
-                            reference_price=price,
-                            total_budget=max(remaining_budget, 0),
-                            num_levels=8,
-                            spacing_pct=3.0,
-                        )
-                        upside_filled = set()
-
-                        trades.append(BacktestTrade(
-                            date=date, action="REBALANCE",
-                            price=round(price, 2), quantity=0,
-                            grid_level=0, cost_basis=0,
-                            regime=regime,
-                            note=f"grid reset from ${top_price:.2f}",
-                        ))
 
             # ── MDD 추적 ──
             if shares_held > 0 and avg_cost > 0:
@@ -404,7 +311,7 @@ class GridBacktester:
         eq_dd = ((eq_series - eq_cummax) / eq_cummax * 100)
         max_dd = float(eq_dd.min())
 
-        num_buys = sum(1 for t in trades if t.action in ("BUY", "SEED_BUY", "DCA_IDLE"))
+        num_buys = sum(1 for t in trades if t.action in ("DCA", "SEED_BUY"))
 
         leverage_decay = self._estimate_leverage_decay(close, equity_df)
 
@@ -431,11 +338,11 @@ class GridBacktester:
                 "spacing_pct": spacing_pct,
             },
             seed_buys=seed_buy_count,
-            rebalances=rebalance_count,
+            rebalances=0,
             regime_changes=regime_changes,
             leverage_decay_pct=round(leverage_decay, 2),
             idle_dca_buys=idle_dca_count,
-            upside_buys=upside_buy_count,
+            upside_buys=0,
         )
 
     def _estimate_leverage_decay(self, close: pd.Series, equity_df: pd.DataFrame) -> float:

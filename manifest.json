@@ -4,9 +4,10 @@
   "description": "레버리지 ETF 무한매수법 그리드 전략 가이드",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#87CEEB",
-  "theme_color": "#2196F3",
+  "background_color": "#f2f4f6",
+  "theme_color": "#3182f6",
   "orientation": "portrait-primary",
+  "permissions": ["notifications"],
   "icons": [
     {
       "src": "icons/icon-192.png",

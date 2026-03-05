@@ -419,6 +419,33 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
     macro_pct = macro.get("macro_score", 0.5)
     allocation = REGIME_ALLOCATION.get(regime, 0.55)
 
+    # 알림 데이터 생성
+    noti_items = []
+    noti_js_arr = []
+    for r in results:
+        if r["score"] >= 70:
+            noti_items.append(("buy", f"<b>{r['ticker']}</b> 매수 점수 {r['score']}점 — 적극 매수 구간"))
+            noti_js_arr.append(f'{{"type":"buy","ticker":"{r["ticker"]}","msg":"{r["ticker"]} {r["score"]}점 — 적극 매수 구간"}}')
+        elif r["score"] >= 60:
+            noti_items.append(("buy", f"<b>{r['ticker']}</b> 매수 점수 {r['score']}점 — 매수 고려"))
+            noti_js_arr.append(f'{{"type":"buy","ticker":"{r["ticker"]}","msg":"{r["ticker"]} {r["score"]}점 — 매수 고려"}}')
+        if r["rsi"] < 30:
+            noti_items.append(("warn", f"<b>{r['ticker']}</b> RSI {r['rsi']:.0f} — 과매도 진입"))
+            noti_js_arr.append(f'{{"type":"warn","ticker":"{r["ticker"]}","msg":"{r["ticker"]} RSI {r["rsi"]:.0f} 과매도"}}')
+        if r["drawdown_pct"] <= -25:
+            noti_items.append(("warn", f"<b>{r['ticker']}</b> 낙폭 {r['drawdown_pct']:.1f}% — 그리드 하위 레벨 도달"))
+            noti_js_arr.append(f'{{"type":"warn","ticker":"{r["ticker"]}","msg":"{r["ticker"]} 낙폭 {r["drawdown_pct"]:.1f}%"}}')
+    if vix >= 30:
+        noti_items.append(("warn", f"VIX {vix:.1f} — 공포 구간, 분할매수 기회"))
+        noti_js_arr.append(f'{{"type":"warn","ticker":"MACRO","msg":"VIX {vix:.1f} 공포구간"}}')
+    if not noti_items:
+        noti_items.append(("info", "현재 특별한 매수 시그널이 없습니다. 그리드 레벨 도달 시 알려드릴게요."))
+
+    noti_html = ""
+    for ntype, text in noti_items[:6]:
+        noti_html += f'<div class="noti-alert"><div class="na-dot {ntype}"></div><div class="na-text">{text}</div></div>'
+    noti_js_data = "[" + ",".join(noti_js_arr) + "]"
+
     html = f"""<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>우당탕탕 딩쵱 하우스 마련 대작전 - {now.strftime('%Y-%m-%d')}</title>
@@ -531,6 +558,28 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .popup ul{{list-style:none}}
 .popup li{{padding:6px 0;font-size:13px;color:#4e5968;line-height:1.5}}
 .popup .sec{{font-weight:700;color:#191f28;background:#f2f4f6;padding:8px 12px;margin:10px 0 6px;border-radius:8px;font-size:13px}}
+.noti-bar{{background:#fff;border-radius:16px;padding:14px 20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:space-between}}
+.noti-bar .noti-left{{display:flex;align-items:center;gap:10px}}
+.noti-bar .noti-icon{{width:36px;height:36px;border-radius:10px;background:#e8f3ff;display:flex;align-items:center;justify-content:center;font-size:18px}}
+.noti-bar .noti-text{{font-size:13px;color:#4e5968}}
+.noti-bar .noti-text b{{color:#191f28}}
+.noti-toggle{{position:relative;width:48px;height:28px;border-radius:14px;border:none;cursor:pointer;transition:background 0.2s;flex-shrink:0}}
+.noti-toggle.on{{background:#3182f6}}
+.noti-toggle.off{{background:#e5e8eb}}
+.noti-toggle::after{{content:'';position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.15);transition:left 0.2s}}
+.noti-toggle.off::after{{left:3px}}
+.noti-toggle.on::after{{left:23px}}
+.noti-status{{font-size:11px;color:#8b95a1;margin-top:4px}}
+.noti-alert-list{{margin-top:10px;display:none}}
+.noti-alert-list.show{{display:block}}
+.noti-alert{{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #f2f4f6;font-size:12px}}
+.noti-alert:last-child{{border-bottom:none}}
+.noti-alert .na-dot{{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}}
+.noti-alert .na-dot.buy{{background:#00c073}}
+.noti-alert .na-dot.warn{{background:#ff9500}}
+.noti-alert .na-dot.info{{background:#3182f6}}
+.noti-alert .na-text{{color:#4e5968;line-height:1.5}}
+.noti-alert .na-text b{{color:#191f28}}
 @media(max-width:600px){{.stats-row{{grid-template-columns:repeat(2,1fr)}}.stat:nth-child(2){{border-right:none}}.metrics{{grid-template-columns:repeat(2,1fr)}}.metric:nth-child(2){{border-right:none}}.metric:nth-child(3),.metric:nth-child(4){{border-top:1px solid #f2f4f6}}.container{{padding:0 12px 32px}}.price{{font-size:22px}}}}
 </style></head><body>
 <div class="container">
@@ -538,6 +587,20 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
 <div class="date">{now.strftime('%Y-%m-%d %H:%M')} KST 업데이트</div>
+</div>
+
+<div class="noti-bar" id="notiBar">
+<div class="noti-left">
+<div class="noti-icon">🔔</div>
+<div>
+<div class="noti-text"><b>매수 알림</b> {len(noti_items)}건</div>
+<div class="noti-status" id="notiStatus">알림 허용 시 시그널을 푸시로 받아요</div>
+</div>
+</div>
+<button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
+</div>
+<div class="noti-alert-list" id="notiList">
+{noti_html}
 </div>
 
 <div class="section">
@@ -733,7 +796,92 @@ sma:{{t:'추세 (이동평균선 배열)',c:[
 function showInfo(k){{const d=info[k];document.getElementById('popT').textContent=d.t;let h='';d.c.forEach(s=>{{h+='<li class="sec">'+s.s+'</li>';s.i.forEach(i=>{{h+='<li>'+i+'</li>'}});}});document.getElementById('popC').innerHTML=h;document.getElementById('ov').classList.add('show');document.getElementById('pop').classList.add('show');}}
 function hideInfo(){{document.getElementById('ov').classList.remove('show');document.getElementById('pop').classList.remove('show');}}
 document.addEventListener('keydown',e=>{{if(e.key==='Escape')hideInfo();}});
-if('serviceWorker' in navigator){{navigator.serviceWorker.register('./sw.js').catch(()=>{{}});}}
+
+// === 알림 시스템 ===
+const NOTI_KEY='ding_noti_enabled';
+const NOTI_SENT_KEY='ding_noti_sent';
+const alerts={noti_js_data};
+let swReg=null;
+
+// SW 등록
+if('serviceWorker' in navigator){{
+  navigator.serviceWorker.register('./sw.js').then(r=>{{swReg=r;}}).catch(()=>{{}});
+}}
+
+// 알림 토글 UI 초기화
+function initNoti(){{
+  const enabled=localStorage.getItem(NOTI_KEY)==='true';
+  const toggle=document.getElementById('notiToggle');
+  const status=document.getElementById('notiStatus');
+  const list=document.getElementById('notiList');
+  if(enabled && Notification.permission==='granted'){{
+    toggle.className='noti-toggle on';
+    status.textContent='알림이 켜져 있어요';
+    list.classList.add('show');
+    fireAlerts();
+  }}else{{
+    toggle.className='noti-toggle off';
+    status.textContent='알림 허용 시 시그널을 푸시로 받아요';
+    list.classList.remove('show');
+  }}
+}}
+
+// 알림 토글
+function toggleNoti(){{
+  const toggle=document.getElementById('notiToggle');
+  const isOn=toggle.classList.contains('on');
+  if(isOn){{
+    localStorage.setItem(NOTI_KEY,'false');
+    initNoti();
+  }}else{{
+    if(!('Notification' in window)){{
+      document.getElementById('notiStatus').textContent='이 브라우저는 알림을 지원하지 않아요';
+      return;
+    }}
+    Notification.requestPermission().then(p=>{{
+      if(p==='granted'){{
+        localStorage.setItem(NOTI_KEY,'true');
+        initNoti();
+      }}else{{
+        document.getElementById('notiStatus').textContent='알림이 차단되었어요. 브라우저 설정에서 허용해주세요';
+      }}
+    }});
+  }}
+}}
+
+// 시그널 알림 발송
+function fireAlerts(){{
+  const today=new Date().toDateString();
+  const sent=localStorage.getItem(NOTI_SENT_KEY);
+  if(sent===today)return; // 하루 1회만
+
+  if(alerts.length===0)return;
+  localStorage.setItem(NOTI_SENT_KEY,today);
+
+  // 가장 중요한 알림 1개는 즉시
+  sendNoti('🔔 딩쵱 매수 시그널',alerts[0].msg,'ding-main');
+
+  // 나머지는 30초 간격으로
+  alerts.slice(1,4).forEach((a,i)=>{{
+    setTimeout(()=>{{sendNoti('📊 '+a.ticker,a.msg,'ding-'+a.ticker);}}, (i+1)*30000);
+  }});
+}}
+
+function sendNoti(title,body,tag){{
+  if(swReg){{
+    swReg.active?.postMessage({{type:'SHOW_NOTIFICATION',title,body,tag}});
+  }}else{{
+    new Notification(title,{{body,icon:'./icons/icon-192.png',tag}});
+  }}
+}}
+
+// 알림바 클릭 시 목록 토글
+document.getElementById('notiBar').addEventListener('click',e=>{{
+  if(e.target.id==='notiToggle')return;
+  document.getElementById('notiList').classList.toggle('show');
+}});
+
+initNoti();
 </script>
 </body></html>"""
 

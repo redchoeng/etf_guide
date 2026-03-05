@@ -400,7 +400,7 @@ def signal_emoji(score_or_signal):
 
 
 def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
-    """2.0 스타일 사용자용 HTML 리포트."""
+    """토스 스타일 사용자용 HTML 리포트."""
     total = len(results)
     buy_count = len([r for r in results if r["score"] >= 60])
     avg_score = sum(r["score"] for r in results) / total if total else 0
@@ -423,165 +423,178 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>우당탕탕 딩쵱 하우스 마련 대작전 - {now.strftime('%Y-%m-%d')}</title>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#2196F3">
+<meta name="theme-color" content="#3182f6">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="딩쵱 대작전">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#87CEEB 0%,#98D8C8 30%,#F7DC6F 70%,#FADBD8 100%);background-attachment:fixed;padding:15px;color:#5D4E37;min-height:100vh}}
-.cloud{{position:fixed;background:#fff;border-radius:50px;opacity:0.6;animation:float 35s infinite linear;z-index:0;pointer-events:none}}
-.cloud::before,.cloud::after{{content:'';position:absolute;background:#fff;border-radius:50%}}
-.c1{{width:80px;height:32px;top:6%;left:-80px}}.c1::before{{width:40px;height:40px;top:-20px;left:12px}}.c1::after{{width:28px;height:28px;top:-12px;left:44px}}
-.c2{{width:100px;height:40px;top:18%;left:-100px;animation-delay:-12s}}.c2::before{{width:50px;height:50px;top:-25px;left:18px}}.c2::after{{width:35px;height:35px;top:-15px;left:58px}}
-.c3{{width:70px;height:28px;top:32%;left:-70px;animation-delay:-22s}}.c3::before{{width:35px;height:35px;top:-18px;left:10px}}.c3::after{{width:24px;height:24px;top:-10px;left:38px}}
-@keyframes float{{0%{{transform:translateX(0)}}100%{{transform:translateX(calc(100vw + 150px))}}}}
-.container{{max-width:1200px;margin:0 auto;position:relative;z-index:10}}
-.header{{background:#fff;border-radius:25px;padding:30px;margin-bottom:20px;box-shadow:0 6px 0 #2196F3;border:3px solid #5D4E37;text-align:center}}
-.header h1{{font-size:1.6em;margin-bottom:5px;text-shadow:2px 2px 0 #E3F2FD}}
-.header .sub{{color:#7B6B4F;font-size:0.9em}}
-.header .date{{color:#2196F3;font-weight:700;margin-top:8px}}
-.macro-bar{{background:#fff;border-radius:18px;padding:16px;border:3px solid #5D4E37;box-shadow:0 4px 0 {rc};margin-bottom:20px}}
-.macro-bar .regime{{font-size:1.1em;font-weight:700;color:{rc};margin-bottom:6px}}
-.macro-bar .macro-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}}
-.macro-bar .mg{{background:{rbg};border-radius:10px;padding:8px;text-align:center;border:1px solid {rc}20}}
-.macro-bar .mg .ml{{font-size:0.65em;color:#7B6B4F}}
-.macro-bar .mg .mv{{font-size:0.95em;font-weight:700;color:{rc}}}
-.macro-bar .desc{{font-size:0.82em;color:#7B6B4F;line-height:1.4;background:{rbg};padding:10px;border-radius:10px}}
-.summary{{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}}
-.sum-card{{background:#FFF8DC;border-radius:15px;padding:14px;text-align:center;border:2px solid #5D4E37}}
-.sum-card .label{{font-size:0.75em;color:#7B6B4F}}
-.sum-card .value{{font-size:1.4em;font-weight:700;color:#FF6B35;margin-top:2px}}
-.sum-card .value.buy{{color:#2E7D32}}
-.sum-card .value.best{{color:#2196F3}}
-.guide-box{{background:#fff;border-radius:18px;padding:18px;border:3px solid #5D4E37;box-shadow:0 4px 0 #E8A838;margin-bottom:20px}}
-.guide-box h3{{color:#5D4E37;font-size:1em;margin-bottom:8px}}
-.guide-box p{{font-size:0.85em;color:#7B6B4F;line-height:1.5}}
-.guide-box .tip{{background:#FFF8DC;border-radius:10px;padding:10px;margin-top:8px;font-size:0.8em;border:1px dashed #C4A35A}}
-.guide-box .warn-tip{{background:#FFEBEE;border-radius:10px;padding:10px;margin-top:8px;font-size:0.8em;border:1px dashed #E53935;color:#C62828}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:15px;margin-bottom:20px}}
-.card{{background:#fff;border-radius:18px;padding:18px;border:3px solid #5D4E37;box-shadow:0 5px 0 #E8A838;transition:transform 0.2s}}
-.card:hover{{transform:translateY(-3px)}}
-.card.top{{box-shadow:0 5px 0 #4CAF50;border-color:#2E7D32}}
-.card-head{{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:2px dashed #C4A35A}}
-.ticker{{font-size:1.3em;font-weight:700;color:#5D4E37}}
-.etf-sub{{font-size:0.72em;color:#7B6B4F;margin-top:1px}}
-.badge{{display:inline-block;padding:2px 7px;border-radius:8px;font-size:0.68em;font-weight:700;margin-left:4px}}
-.badge.lev{{background:#7C4DFF;color:#fff}}
-.badge.cat{{background:#2196F3;color:#fff}}
-.badge.trend-up{{background:#4CAF50;color:#fff}}
-.badge.trend-dn{{background:#F44336;color:#fff}}
-.score-circle{{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1em;border:3px solid #5D4E37;flex-shrink:0}}
-.verdict-box{{border-radius:12px;padding:12px;margin-bottom:12px}}
-.verdict-box .vd-title{{font-weight:700;font-size:0.95em;margin-bottom:4px}}
-.verdict-box .vd-detail{{font-size:0.8em;line-height:1.4}}
-.price-row{{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}}
-.price{{font-size:1.2em;font-weight:700}}
-.chg{{padding:3px 8px;border-radius:8px;font-size:0.85em}}
-.up{{background:#E8F5E9;color:#2E7D32}}
-.down{{background:#FFEBEE;color:#C62828}}
-.metrics{{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}}
-.metric{{background:#FFF8DC;padding:8px 4px;border-radius:10px;text-align:center;border:2px solid #C4A35A;cursor:pointer;transition:all 0.2s}}
-.metric:hover{{transform:scale(1.05);box-shadow:0 3px 8px rgba(0,0,0,0.12)}}
-.metric.hi{{background:linear-gradient(135deg,#4CAF50,#45A049);border-color:#388E3C}}
-.metric.hi .ml,.metric.hi .mv{{color:#fff}}
-.metric.warn{{background:linear-gradient(135deg,#FF9800,#F57C00);border-color:#E65100}}
-.metric.warn .ml,.metric.warn .mv{{color:#fff}}
-.ml{{font-size:0.62em;color:#7B6B4F}}
-.mv{{font-size:0.85em;font-weight:700;color:#5D4E37}}
-.buy-plan{{background:#E8F5E9;border-radius:12px;padding:12px;margin-top:8px;border:2px solid #4CAF50}}
-.buy-plan .bp-title{{font-size:0.8em;font-weight:700;color:#2E7D32;margin-bottom:6px}}
-.buy-plan table{{width:100%;font-size:0.78em;border-collapse:collapse}}
-.buy-plan th{{text-align:left;color:#2E7D32;padding:3px 4px;border-bottom:1px solid #A5D6A7;font-weight:700}}
-.buy-plan td{{padding:4px;border-bottom:1px solid #C8E6C9}}
-.buy-plan tr.next-row{{background:#C8E6C9;font-weight:700;border-radius:6px}}
-.buy-plan tr.next-row td{{color:#1B5E20}}
-.buy-plan .more{{text-align:center;color:#7B6B4F;font-size:0.75em;padding:4px}}
-.budget-bar{{display:flex;gap:4px;margin-top:6px;font-size:0.72em}}
-.budget-bar .seg{{padding:4px 8px;border-radius:6px;text-align:center}}
-.budget-bar .seg.active{{background:#4CAF50;color:#fff}}
-.budget-bar .seg.reserve{{background:#FFE082;color:#5D4E37}}
-.risk-row{{display:flex;gap:8px;margin-top:6px;font-size:0.72em}}
-.risk-row .risk-item{{background:#FFF3E0;padding:4px 8px;border-radius:6px;border:1px solid #FFB74D}}
-.risk-row .risk-item.danger{{background:#FFEBEE;border-color:#EF9A9A;color:#C62828}}
-.pos-bar{{height:8px;background:#E0E0E0;border-radius:4px;margin:4px 0;overflow:hidden}}
-.pos-bar .fill{{height:100%;border-radius:4px;transition:width 0.5s}}
-.details{{font-size:0.7em;color:#9E9E9E;padding-top:6px;margin-top:6px;border-top:1px dashed #C4A35A}}
-.overlay{{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999}}
+body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f4f6;color:#191f28;min-height:100vh;-webkit-font-smoothing:antialiased}}
+.container{{max-width:680px;margin:0 auto;padding:0 16px 40px}}
+.header{{padding:24px 0 20px;text-align:center}}
+.header h1{{font-size:22px;font-weight:700;color:#191f28;letter-spacing:-0.5px}}
+.header .sub{{color:#8b95a1;font-size:13px;margin-top:4px;font-weight:400}}
+.header .date{{color:#3182f6;font-size:12px;font-weight:500;margin-top:8px}}
+.section{{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.section-title{{font-size:15px;font-weight:700;color:#191f28;margin-bottom:14px;letter-spacing:-0.3px}}
+.macro-chips{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}}
+.macro-chip{{background:#f2f4f6;border-radius:20px;padding:6px 14px;font-size:12px;color:#4e5968;display:flex;align-items:center;gap:4px}}
+.macro-chip .val{{font-weight:700;color:#191f28}}
+.regime-badge{{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;color:{rc};background:{rbg}}}
+.macro-desc{{font-size:13px;color:#6b7684;line-height:1.6;margin-top:8px}}
+.stats-row{{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #f2f4f6}}
+.stat{{text-align:center;padding:16px 8px;border-right:1px solid #f2f4f6}}
+.stat:last-child{{border-right:none}}
+.stat .sl{{font-size:11px;color:#8b95a1;font-weight:400}}
+.stat .sv{{font-size:20px;font-weight:700;color:#191f28;margin-top:2px}}
+.stat .sv.blue{{color:#3182f6}}
+.stat .sv.green{{color:#00c073}}
+.tip-box{{background:#f8f9fa;border-radius:12px;padding:14px 16px;margin-top:12px}}
+.tip-box p{{font-size:13px;color:#4e5968;line-height:1.6}}
+.tip-box p+p{{margin-top:6px}}
+.tip-box .warn{{color:#f04452;font-size:12px;margin-top:8px;padding:10px 12px;background:#fff5f5;border-radius:8px}}
+.card{{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:transform 0.15s ease}}
+.card:active{{transform:scale(0.98)}}
+.card-head{{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}}
+.card-head .left{{flex:1}}
+.ticker{{font-size:18px;font-weight:700;color:#191f28;letter-spacing:-0.3px}}
+.etf-sub{{font-size:12px;color:#8b95a1;margin-top:2px}}
+.tags{{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}}
+.tag{{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}}
+.tag.lev{{background:#f3f0ff;color:#6b4eff}}
+.tag.cat{{background:#e8f3ff;color:#3182f6}}
+.tag.trend-up{{background:#e8faf0;color:#00a661}}
+.tag.trend-dn{{background:#fff5f5;color:#f04452}}
+.score-ring{{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}}
+.score-ring .num{{font-size:16px;font-weight:700}}
+.score-ring svg{{position:absolute;top:0;left:0;transform:rotate(-90deg)}}
+.verdict-bar{{border-radius:10px;padding:12px 14px;margin-bottom:14px}}
+.verdict-bar .vd-title{{font-weight:700;font-size:14px;margin-bottom:2px}}
+.verdict-bar .vd-detail{{font-size:12px;line-height:1.5;opacity:0.85}}
+.price-area{{margin-bottom:14px}}
+.price{{font-size:26px;font-weight:700;letter-spacing:-0.5px}}
+.chg-pill{{display:inline-block;padding:3px 8px;border-radius:6px;font-size:13px;font-weight:500;margin-left:8px}}
+.chg-pill.up{{background:#e8faf0;color:#00a661}}
+.chg-pill.down{{background:#fff5f5;color:#f04452}}
+.range-bar{{margin:10px 0 14px}}
+.range-labels{{display:flex;justify-content:space-between;font-size:11px;color:#8b95a1;margin-bottom:4px}}
+.range-track{{height:6px;background:#f2f4f6;border-radius:3px;position:relative;overflow:hidden}}
+.range-fill{{height:100%;border-radius:3px;transition:width 0.5s}}
+.range-dot{{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #3182f6;transform:translateX(-50%);box-shadow:0 1px 3px rgba(0,0,0,0.15)}}
+.metrics{{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:12px;overflow:hidden;border:1px solid #f2f4f6;margin-bottom:14px}}
+.metric{{padding:10px 4px;text-align:center;border-right:1px solid #f2f4f6;cursor:pointer;transition:background 0.15s}}
+.metric:last-child{{border-right:none}}
+.metric:active{{background:#f8f9fa}}
+.metric.hi{{background:#e8faf0}}
+.metric.warn{{background:#fff5f5}}
+.ml{{font-size:11px;color:#8b95a1;font-weight:400}}
+.mv{{font-size:14px;font-weight:700;color:#191f28;margin-top:1px}}
+.metric.hi .mv{{color:#00a661}}
+.metric.warn .mv{{color:#f04452}}
+.buy-plan{{background:#f8f9fa;border-radius:12px;padding:14px;margin-bottom:10px}}
+.buy-plan .bp-title{{font-size:13px;font-weight:700;color:#191f28;margin-bottom:4px}}
+.buy-plan .bp-sub{{font-size:11px;color:#3182f6;margin-bottom:10px}}
+.buy-plan table{{width:100%;font-size:12px;border-collapse:collapse}}
+.buy-plan th{{text-align:left;color:#8b95a1;padding:4px;font-weight:500;font-size:11px;border-bottom:1px solid #e5e8eb}}
+.buy-plan td{{padding:6px 4px;border-bottom:1px solid #f2f4f6;color:#191f28}}
+.buy-plan tr.next-row{{background:#e8f3ff}}
+.buy-plan tr.next-row td{{color:#3182f6;font-weight:700}}
+.buy-plan .more{{text-align:center;color:#8b95a1;font-size:12px;padding:6px 0}}
+.budget-bar{{display:flex;gap:4px;margin-top:8px;border-radius:8px;overflow:hidden;height:28px;font-size:11px;font-weight:500}}
+.budget-bar .seg{{display:flex;align-items:center;justify-content:center}}
+.budget-bar .seg.active{{background:#3182f6;color:#fff}}
+.budget-bar .seg.reserve{{background:#e5e8eb;color:#4e5968}}
+.info-row{{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}}
+.info-chip{{background:#f2f4f6;border-radius:6px;padding:4px 10px;font-size:11px;color:#4e5968}}
+.info-chip.danger{{background:#fff5f5;color:#f04452}}
+.details{{font-size:11px;color:#b0b8c1;padding-top:10px;margin-top:10px;border-top:1px solid #f2f4f6;letter-spacing:-0.2px}}
+.strategy-box{{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.strategy-box h3{{font-size:15px;font-weight:700;margin-bottom:12px}}
+.strat-item{{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f2f4f6;font-size:13px}}
+.strat-item:last-child{{border-bottom:none}}
+.strat-item .emoji{{font-size:16px;flex-shrink:0;width:24px}}
+.strat-item .desc{{color:#4e5968;line-height:1.5}}
+.strat-item .desc b{{color:#191f28}}
+.strat-tips{{margin-top:12px;padding:12px;background:#f8f9fa;border-radius:10px;font-size:12px;color:#6b7684;line-height:1.6}}
+.strat-tips .warn{{color:#f04452;margin-top:6px;padding:8px 10px;background:#fff5f5;border-radius:6px;font-size:11px}}
+.footer{{text-align:center;padding:24px 0;font-size:12px;color:#b0b8c1}}
+.footer a{{color:#3182f6;text-decoration:none;font-weight:500}}
+.overlay{{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;backdrop-filter:blur(2px)}}
 .overlay.show{{display:block}}
-.popup{{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;padding:22px;max-width:420px;width:92%;max-height:80vh;overflow-y:auto;z-index:10000;border:4px solid #5D4E37;box-shadow:0 8px 0 #C4A35A}}
+.popup{{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 32px;max-height:70vh;overflow-y:auto;z-index:10000;box-shadow:0 -4px 20px rgba(0,0,0,0.1)}}
 .popup.show{{display:block}}
-.popup h3{{color:#5D4E37;border-bottom:3px solid #2196F3;padding-bottom:10px;margin-bottom:15px}}
-.popup .close{{position:absolute;top:10px;right:15px;background:#E53935;color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:1.2em}}
+.popup .handle{{width:36px;height:4px;background:#e5e8eb;border-radius:2px;margin:0 auto 16px}}
+.popup h3{{font-size:16px;font-weight:700;color:#191f28;margin-bottom:16px}}
+.popup .close{{position:absolute;top:16px;right:16px;background:#f2f4f6;color:#6b7684;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}}
 .popup ul{{list-style:none}}
-.popup li{{padding:5px 0;border-bottom:1px dashed #C4A35A;font-size:0.88em}}
-.popup .sec{{font-weight:700;color:#2196F3;background:#E3F2FD;padding:8px;margin:8px -10px;border-radius:8px}}
-.footer{{background:#fff;border-radius:18px;padding:20px;text-align:center;border:3px solid #5D4E37;margin-top:20px}}
-.footer p{{font-size:0.82em;color:#7B6B4F;margin:3px 0}}
-.footer a{{color:#2196F3;text-decoration:none;font-weight:700}}
-@media(max-width:600px){{.summary{{grid-template-columns:repeat(2,1fr)}}.metrics{{grid-template-columns:repeat(2,1fr)}}.grid{{grid-template-columns:1fr}}.header h1{{font-size:1.3em}}.macro-bar .macro-grid{{grid-template-columns:repeat(2,1fr)}}}}
+.popup li{{padding:6px 0;font-size:13px;color:#4e5968;line-height:1.5}}
+.popup .sec{{font-weight:700;color:#191f28;background:#f2f4f6;padding:8px 12px;margin:10px 0 6px;border-radius:8px;font-size:13px}}
+@media(max-width:600px){{.stats-row{{grid-template-columns:repeat(2,1fr)}}.stat:nth-child(2){{border-right:none}}.metrics{{grid-template-columns:repeat(2,1fr)}}.metric:nth-child(2){{border-right:none}}.metric:nth-child(3),.metric:nth-child(4){{border-top:1px solid #f2f4f6}}.container{{padding:0 12px 32px}}.price{{font-size:22px}}}}
 </style></head><body>
-<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
 <div class="container">
 <div class="header">
-<div style="font-size:2.2em">🏠</div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
-<div class="sub">무한매수법 그리드 전략 | 언제 · 얼마에 · 몇 주 사야 하는지</div>
-<div class="date">🕐 {now.strftime('%Y-%m-%d %H:%M')} KST 업데이트</div>
+<div class="sub">무한매수법 그리드 전략</div>
+<div class="date">{now.strftime('%Y-%m-%d %H:%M')} KST 업데이트</div>
 </div>
 
-<div class="macro-bar">
-<div class="regime">{remoji} 현재 시장: {regime_kr}</div>
-<div class="macro-grid">
-<div class="mg"><div class="ml">VIX (공포지수)</div><div class="mv">{vix:.1f}</div></div>
-<div class="mg"><div class="ml">미국 10Y 금리</div><div class="mv">{rate:.2f}%</div></div>
-<div class="mg"><div class="ml">S&P500 1개월</div><div class="mv">{sp500_1m:+.1f}%</div></div>
-<div class="mg"><div class="ml">매크로 점수</div><div class="mv">{macro_pct:.0%}</div></div>
+<div class="section">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+<span class="regime-badge">{remoji} {regime_kr}</span>
 </div>
-<div class="desc">{macro_desc}</div>
+<div class="macro-chips">
+<div class="macro-chip">VIX <span class="val">{vix:.1f}</span></div>
+<div class="macro-chip">금리 <span class="val">{rate:.2f}%</span></div>
+<div class="macro-chip">S&P500 <span class="val">{sp500_1m:+.1f}%</span></div>
+<div class="macro-chip">매크로 <span class="val">{macro_pct:.0%}</span></div>
 </div>
-
-<div class="summary">
-<div class="sum-card"><div class="label">분석 ETF</div><div class="value">{total}개</div></div>
-<div class="sum-card"><div class="label">매수 추천</div><div class="value buy">{buy_count}개</div></div>
-<div class="sum-card"><div class="label">평균 점수</div><div class="value">{avg_score:.0f}점</div></div>
-<div class="sum-card"><div class="label">최고 점수</div><div class="value best">{best['ticker'] if best else '-'} {best['score'] if best else 0}점</div></div>
+<div class="macro-desc">{macro_desc}</div>
 </div>
 
-<div class="guide-box">
-<h3>💡 이 페이지 보는 법</h3>
-<p>각 ETF 카드의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍입니다.<br>
-<b>매수 계획표</b>에서 "얼마에 몇 주 사야 하는지" 구체적 금액을 확인하세요.<br>
-시장 환경(상승장/하락장)에 따라 점수 기준이 자동 조정됩니다.</p>
-<div class="tip">💰 투자비율 {allocation*100:.0f}% / 예비금 {(1-allocation)*100:.0f}% (레짐: {regime_kr}) | ♾️ 무한매수법: 매수만, 익절 없음 | 🛑 손절 {STOP_LOSS_PCT:.0f}%</div>
-<div class="tip">📌 전략: 하락 시 그리드 레벨마다 자동 매수 → 상승 시 그리드 리밸런싱 → 장기 보유 (복리 효과 극대화)</div>
-<div class="warn-tip">⚠️ 손절 기준({STOP_LOSS_PCT:.0f}%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요. 레버리지 디케이로 회복이 매우 어려울 수 있습니다.</div>
+<div class="section">
+<div class="stats-row">
+<div class="stat"><div class="sl">분석 ETF</div><div class="sv">{total}</div></div>
+<div class="stat"><div class="sl">매수 추천</div><div class="sv green">{buy_count}</div></div>
+<div class="stat"><div class="sl">평균 점수</div><div class="sv">{avg_score:.0f}</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">{best['ticker'] if best else '-'} {best['score'] if best else 0}</div></div>
+</div>
 </div>
 
-<div class="grid">
+<div class="section">
+<div class="section-title">이 페이지 보는 법</div>
+<div class="tip-box">
+<p>각 ETF의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍이에요. <b>매수 계획표</b>에서 구체적인 매수 가격과 수량을 확인하세요.</p>
+<p>투자비율 <b>{allocation*100:.0f}%</b> / 예비금 <b>{(1-allocation)*100:.0f}%</b> ({regime_kr}) · 무한매수법: 매수만, 익절 없음</p>
+<div class="warn">손절 기준({STOP_LOSS_PCT:.0f}%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
+</div>
+</div>
+
 """
 
     for i, r in enumerate(results):
-        is_top = r["score"] >= 60
-        card_cls = "card top" if is_top else "card"
         chg_cls = "up" if r["change_pct"] >= 0 else "down"
         sign = "+" if r["change_pct"] >= 0 else ""
         vc, vbg, vborder = verdict_color(r["score"])
 
-        # 추세 배지
-        trend_badge = ""
+        # 추세 태그
+        trend_tag = ""
         if r["trend_aligned"]:
-            trend_badge = '<span class="badge trend-up">정배열</span>'
+            trend_tag = '<span class="tag trend-up">정배열</span>'
         elif r["price"] < r["sma200"]:
-            trend_badge = '<span class="badge trend-dn">하락추세</span>'
+            trend_tag = '<span class="tag trend-dn">하락추세</span>'
 
         # 메트릭 하이라이트
         rsi_cls = "hi" if r["rsi"] < 35 else ("warn" if r["rsi"] > 65 else "")
         dd_cls = "hi" if r["drawdown_pct"] <= -15 else ""
         mom_cls = "hi" if r["mom_1m"] < -3 else ("warn" if r["mom_1m"] > 8 else "")
         sma_cls = "hi" if r["trend_aligned"] else ("warn" if r["price"] < r["sma200"] else "")
+
+        # 스코어 링 SVG (토스 스타일 원형 프로그레스)
+        score_pct = min(r["score"], 100)
+        circumference = 2 * 3.14159 * 22
+        stroke_offset = circumference * (1 - score_pct / 100)
 
         # 매수 계획표
         buy_table = ""
@@ -593,17 +606,17 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
                     break
                 is_next = r["next_buy"] and gl.level_number == r["next_buy"].level_number
                 tr_cls = ' class="next-row"' if is_next else ""
-                marker = " 👈" if is_next else ""
+                marker = " ←" if is_next else ""
                 rows += f'<tr{tr_cls}><td>L{gl.level_number}</td><td>${gl.target_price:.2f}{marker}</td><td>-{gl.drop_pct:.1f}%</td><td>{gl.quantity}주</td><td>${gl.budget_allocation:,.0f}</td></tr>'
                 shown += 1
 
             remaining = len(r["grid_levels"]) - shown
-            more = f'<div class="more">+{remaining}개 레벨 더 있음</div>' if remaining > 0 else ""
+            more = f'<div class="more">+{remaining}개 레벨</div>' if remaining > 0 else ""
 
             alloc = r.get("allocation", 0.55)
             buy_table = f"""<div class="buy-plan">
-<div class="bp-title">📋 무한매수 계획표 (투자 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f})</div>
-<div style="background:#E8F5E9;padding:6px;border-radius:6px;margin-bottom:6px;font-size:0.72em;color:#2E7D32">♾️ 무한매수법: 레벨 도달 시 매수 → 장기 보유 (익절 없음)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f} · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
 {rows}
@@ -616,36 +629,37 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 </div>"""
 
         # 52주 위치 바
-        bar_color = "#4CAF50" if r["pos_52w"] < 30 else ("#FF9800" if r["pos_52w"] < 70 else "#F44336")
-        pos_bar = f"""<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: ${r['low_52w']:.2f} ← <b>${r['price']:.2f}</b> → ${r['high_52w']:.2f}</div>
-<div class="pos-bar"><div class="fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div></div>"""
-
-        # 리스크 표시
-        risk_html = f"""<div class="risk-row">
-<div class="risk-item">♾️ 무한매수: 익절 없이 장기 보유</div>
-<div class="risk-item danger">🛑 손절가: ${r['stop_loss_price']:.2f} ({STOP_LOSS_PCT:.0f}%)</div>
+        bar_color = "#00c073" if r["pos_52w"] < 30 else ("#ff9500" if r["pos_52w"] < 70 else "#f04452")
+        pos_bar = f"""<div class="range-bar">
+<div class="range-labels"><span>${r['low_52w']:.2f}</span><span>52주</span><span>${r['high_52w']:.2f}</span></div>
+<div class="range-track"><div class="range-fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div><div class="range-dot" style="left:{r['pos_52w']:.0f}%"></div></div>
 </div>"""
 
-        html += f"""<div class="{card_cls}">
+        html += f"""<div class="card">
 <div class="card-head">
-<div>
-<span class="ticker">{r['ticker']}</span>
-<span class="badge lev">{r['leverage']}x</span>
-<span class="badge cat">{r['category']}</span>
-{trend_badge}
-<div class="etf-sub">{r['name']} (기초: {r['underlying']})</div>
+<div class="left">
+<div class="ticker">{r['ticker']}</div>
+<div class="etf-sub">{r['name']} · 기초: {r['underlying']}</div>
+<div class="tags">
+<span class="tag lev">{r['leverage']}x</span>
+<span class="tag cat">{r['category']}</span>
+{trend_tag}
 </div>
-<div class="score-circle" style="background:{vbg};color:{vc};border-color:{vborder}">{r['score']}점</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="{vborder}" stroke-width="4" stroke-dasharray="{circumference:.1f}" stroke-dashoffset="{stroke_offset:.1f}" stroke-linecap="round"/></svg>
+<span class="num" style="color:{vc}">{r['score']}</span>
+</div>
 </div>
 
-<div class="verdict-box" style="background:{vbg};border:2px solid {vborder}">
+<div class="verdict-bar" style="background:{vbg}">
 <div class="vd-title" style="color:{vc}">{signal_emoji(r['score'])} {r['verdict']}</div>
 <div class="vd-detail" style="color:{vc}">{r['verdict_detail']}</div>
 </div>
 
-<div class="price-row">
+<div class="price-area">
 <span class="price">${r['price']:.2f}</span>
-<span class="chg {chg_cls}">{sign}{r['change_pct']:.2f}%</span>
+<span class="chg-pill {chg_cls}">{sign}{r['change_pct']:.2f}%</span>
 </div>
 
 {pos_bar}
@@ -658,40 +672,41 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 </div>
 
 {buy_table}
-{risk_html}
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 ${r['stop_loss_price']:.2f} ({STOP_LOSS_PCT:.0f}%)</span>
+</div>
 
 <div class="details">
-ATH ${r['ath']:.2f} | SMA20 ${r['sma20']:.2f} | SMA50 ${r['sma50']:.2f} | SMA200 ${r['sma200']:.2f} | 3M {r['mom_3m']:+.1f}% | Vol {r['vol_annual']:.0f}%
+ATH ${r['ath']:.2f} · SMA20 ${r['sma20']:.2f} · SMA50 ${r['sma50']:.2f} · SMA200 ${r['sma200']:.2f} · 3M {r['mom_3m']:+.1f}% · Vol {r['vol_annual']:.0f}%
 </div>
 </div>
 """
 
-    html += f"""</div>
-
-<div class="guide-box">
-<h3>📖 무한매수법 전략 v3</h3>
-<p>
-<b>♾️ 핵심 원리</b>: 매수만 하고 익절하지 않는다. 하락할수록 더 많이 사서 평단가를 낮추고, 장기 보유로 복리 효과를 극대화한다.<br><br>
-<b>🚀 강한 상승장 (투자 75%)</b>: 시드매수 30% 진입 → 풀백 시 그리드 추가매수 → 장기 보유<br>
-<b>📈 상승장 (투자 70%)</b>: 시드매수 30% → 눌림목 그리드 매수 → 장기 보유<br>
-<b>➡️ 횡보장 (투자 55%)</b>: 그리드 레벨 도달 시 매수 + 유휴 현금 DCA<br>
-<b>📉 하락장 (투자 45%)</b>: 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유<br>
-<b>🔥 위기 (투자 40%)</b>: 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유
-</p>
-<div class="tip">📌 그리드 상단 15% 이탈 시 자동 리밸런싱 (새 기준가로 그리드 재설정) | 유휴 현금 월 1회 DCA 자동 매수</div>
-<div class="tip">⚡ 횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전</div>
-<div class="warn-tip">🛑 손절 기준 {STOP_LOSS_PCT:.0f}% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가 (레버리지 디케이로 회복 매우 어려움)</div>
+    html += f"""
+<div class="strategy-box">
+<h3>무한매수법 전략 v3</h3>
+<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>강한 상승장</b> (투자 75%): 시드매수 30% 진입 → 풀백 시 그리드 추가매수 → 장기 보유</div></div>
+<div class="strat-item"><span class="emoji">📈</span><div class="desc"><b>상승장</b> (투자 70%): 시드매수 30% → 눌림목 그리드 매수 → 장기 보유</div></div>
+<div class="strat-item"><span class="emoji">➡️</span><div class="desc"><b>횡보장</b> (투자 55%): 그리드 레벨 도달 시 매수 + 유휴 현금 DCA</div></div>
+<div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>하락장</b> (투자 45%): 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유</div></div>
+<div class="strat-item"><span class="emoji">🔥</span><div class="desc"><b>위기</b> (투자 40%): 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유</div></div>
+<div class="strat-tips">
+그리드 상단 15% 이탈 시 자동 리밸런싱 · 유휴 현금 월 1회 DCA 자동 매수<br>
+횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전
+<div class="warn">손절 기준 {STOP_LOSS_PCT:.0f}% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가</div>
+</div>
 </div>
 
 <div class="footer">
-<p>⚠️ 본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p>레버리지 ETF는 높은 위험을 수반합니다. 투자 결정은 본인 책임입니다.</p>
-<p style="margin-top:8px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> | 자동 생성 ({now.strftime('%Y-%m-%d %H:%M')} KST)</p>
+<p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · {now.strftime('%Y-%m-%d %H:%M')} KST</p>
 </div>
 </div>
 
 <div class="overlay" id="ov" onclick="hideInfo()"></div>
-<div class="popup" id="pop"><button class="close" onclick="hideInfo()">&times;</button><h3 id="popT"></h3><ul id="popC"></ul></div>
+<div class="popup" id="pop"><div class="handle"></div><button class="close" onclick="hideInfo()">✕</button><h3 id="popT"></h3><ul id="popC"></ul></div>
 <script>
 const info={{
 rsi:{{t:'RSI (상대강도지수)',c:[

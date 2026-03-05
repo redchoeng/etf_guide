@@ -119,6 +119,14 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
                 next_buy = gl
                 break
 
+        # 상승 그리드 (가격 상승 시 소량 분할매수)
+        upside_grid = gc.calculate_upside_grid(
+            reference_price=current_price,
+            total_budget=grid_budget,
+            num_levels=5,
+            spacing_pct=3.0,
+        )
+
         # 52주
         high_52w = float(close.max())
         low_52w = float(close.min())
@@ -158,6 +166,7 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "low_52w": low_52w,
             "pos_52w": pos_52w,
             "grid_levels": grid,
+            "upside_grid": upside_grid,
             "next_buy": next_buy,
             "total_budget": budget,
             "grid_budget": grid_budget,
@@ -554,6 +563,9 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .buy-plan tr.next-row{{background:#e8f3ff}}
 .buy-plan tr.next-row td{{color:#3182f6;font-weight:700}}
 .buy-plan .more{{text-align:center;color:#8b95a1;font-size:12px;padding:6px 0}}
+.buy-plan.upside{{background:#f0f7ff;margin-top:8px}}
+.buy-plan.upside .bp-title{{color:#3182f6}}
+.buy-plan.upside tr.next-row{{background:#e8f3ff}}
 .budget-bar{{display:flex;gap:4px;margin-top:8px;border-radius:8px;overflow:hidden;height:28px;font-size:11px;font-weight:500}}
 .budget-bar .seg{{display:flex;align-items:center;justify-content:center}}
 .budget-bar .seg.active{{background:#3182f6;color:#fff}}
@@ -756,6 +768,21 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 </div>
 </div>"""
 
+        # 상승 그리드 테이블
+        upside_table = ""
+        if r["upside_grid"]:
+            up_rows = ""
+            for ugl in r["upside_grid"]:
+                up_rows += f'<tr><td>U{ugl.level_number}</td><td>${ugl.target_price:.2f}</td><td>+{ugl.drop_pct:.1f}%</td><td>{ugl.quantity}주</td><td>${ugl.budget_allocation:,.0f}</td></tr>'
+            upside_table = f"""<div class="buy-plan upside">
+<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>
+<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>
+<table>
+<tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>
+{up_rows}
+</table>
+</div>"""
+
         # 52주 위치 바
         bar_color = "#00c073" if r["pos_52w"] < 30 else ("#ff9500" if r["pos_52w"] < 70 else "#f04452")
         pos_bar = f"""<div class="range-bar">
@@ -769,7 +796,12 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
             grid_json_levels.append(f'{{"l":{gl.level_number},"p":{gl.target_price:.2f},"q":{gl.quantity}}}')
         grid_data_attr = "[" + ",".join(grid_json_levels) + "]"
 
-        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}">
+        upgrid_json = []
+        for ugl in (r["upside_grid"] or []):
+            upgrid_json.append(f'{{"l":{ugl.level_number},"p":{ugl.target_price:.2f},"q":{ugl.quantity}}}')
+        upgrid_data_attr = "[" + ",".join(upgrid_json) + "]"
+
+        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}">
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['ticker']}</div>
@@ -807,6 +839,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 </div>
 
 {buy_table}
+{upside_table}
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
@@ -822,13 +855,14 @@ ATH ${r['ath']:.2f} · SMA20 ${r['sma20']:.2f} · SMA50 ${r['sma50']:.2f} · SMA
     html += f"""
 <div class="strategy-box">
 <h3>무한매수법 전략 v3</h3>
-<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>강한 상승장</b> (투자 75%): 시드매수 30% 진입 → 풀백 시 그리드 추가매수 → 장기 보유</div></div>
-<div class="strat-item"><span class="emoji">📈</span><div class="desc"><b>상승장</b> (투자 70%): 시드매수 30% → 눌림목 그리드 매수 → 장기 보유</div></div>
-<div class="strat-item"><span class="emoji">➡️</span><div class="desc"><b>횡보장</b> (투자 55%): 그리드 레벨 도달 시 매수 + 유휴 현금 DCA</div></div>
+<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>강한 상승장</b> (투자 75%): 시드매수 30% + 상승 그리드(+3%마다 소량 매수) + 풀백 시 하락 그리드 + 주 1회 DCA</div></div>
+<div class="strat-item"><span class="emoji">📈</span><div class="desc"><b>상승장</b> (투자 70%): 시드매수 30% + 상승 그리드 + 눌림목 하락 그리드 + 주 1회 DCA</div></div>
+<div class="strat-item"><span class="emoji">➡️</span><div class="desc"><b>횡보장</b> (투자 55%): 하락 그리드 + 상승 그리드 + 주 1회 DCA</div></div>
 <div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>하락장</b> (투자 45%): 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유</div></div>
 <div class="strat-item"><span class="emoji">🔥</span><div class="desc"><b>위기</b> (투자 40%): 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유</div></div>
 <div class="strat-tips">
-그리드 상단 15% 이탈 시 자동 리밸런싱 · 유휴 현금 월 1회 DCA 자동 매수<br>
+상승 그리드: 가격 +3%마다 소량 매수 (예산 30%) · 하락 그리드: 레벨 도달 시 피라미딩 매수<br>
+유휴 현금 주 1회 DCA · 그리드 상단 15% 이탈 시 자동 리밸런싱<br>
 횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전
 <div class="warn">손절 기준 {STOP_LOSS_PCT:.0f}% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가</div>
 </div>
@@ -1031,28 +1065,40 @@ function checkGridAlert(ticker,price,prev){{
   if(!card||!alertEl)return;
 
   const grid=JSON.parse(card.dataset.grid||'[]');
+  const upgrid=JSON.parse(card.dataset.upgrid||'[]');
   const ath=parseFloat(card.dataset.ath)||0;
-  const high52=parseFloat(card.dataset.high52)||0;
 
-  // 그리드 레벨 도달 체크
+  // 하락 그리드 레벨 도달 체크
   let hit=null, near=null;
   for(const g of grid){{
     if(price<=g.p){{hit=g;break;}}
-    if(!near&&price<=g.p*1.02){{near=g;}} // 2% 이내 접근
+    if(!near&&price<=g.p*1.02){{near=g;}}
   }}
 
-  // ATH 대비 낙폭
+  // 상승 그리드 레벨 도달 체크
+  let upHit=null;
+  for(const u of upgrid){{
+    if(price>=u.p){{upHit=u;}}
+  }}
+
   const ddPct=ath>0?((price-ath)/ath*100):0;
 
   let msg='',cls='';
   if(hit){{
-    msg='🟢 L'+hit.l+' 매수가 $'+hit.p.toFixed(2)+' 도달! '+hit.q+'주 매수 타이밍';
+    msg='🟢 하락 L'+hit.l+' $'+hit.p.toFixed(2)+' 도달! '+hit.q+'주 매수 타이밍';
     cls='buy';
-    // 푸시 알림도 발송
     if(localStorage.getItem(NOTI_KEY)==='true'){{
-      sendNoti('🟢 '+ticker+' 매수 레벨 도달',
-        'L'+hit.l+' $'+hit.p.toFixed(2)+' 도달 — '+hit.q+'주 매수',
-        'grid-'+ticker);
+      sendNoti('🟢 '+ticker+' 하락 그리드 도달',
+        'L'+hit.l+' $'+hit.p.toFixed(2)+' — '+hit.q+'주 매수',
+        'grid-dn-'+ticker);
+    }}
+  }}else if(upHit){{
+    msg='📈 상승 U'+upHit.l+' $'+upHit.p.toFixed(2)+' 도달 — '+upHit.q+'주 소량 매수';
+    cls='near';
+    if(localStorage.getItem(NOTI_KEY)==='true'){{
+      sendNoti('📈 '+ticker+' 상승 그리드 도달',
+        'U'+upHit.l+' $'+upHit.p.toFixed(2)+' — '+upHit.q+'주 매수',
+        'grid-up-'+ticker);
     }}
   }}else if(near){{
     msg='🟡 L'+near.l+' 매수가 $'+near.p.toFixed(2)+'에 근접 중 (현재 $'+price.toFixed(2)+')';

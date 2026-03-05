@@ -109,6 +109,57 @@ class GridCalculator:
 
         return levels
 
+    def calculate_upside_grid(
+        self,
+        reference_price: float,
+        total_budget: float,
+        num_levels: int = 5,
+        spacing_pct: float = 3.0,
+    ) -> list[GridLevel]:
+        """상승 그리드: 가격이 오를 때 소량 분할매수.
+
+        하락 그리드와 달리 equal 가중치, 소량(예산의 30%)만 배분.
+        상승장에서 매수 기회를 놓치지 않기 위한 보조 전략.
+        """
+        if num_levels < 1 or total_budget <= 0 or reference_price <= 0:
+            return []
+
+        # 상승 그리드는 전체 예산의 30%만 사용
+        upside_budget = total_budget * 0.3
+        raw_weights = [1.0] * num_levels
+        total_weight = sum(raw_weights)
+        norm_weights = [w / total_weight for w in raw_weights]
+
+        levels = []
+        cum_budget = 0.0
+        cum_shares = 0
+
+        for i in range(1, num_levels + 1):
+            rise = spacing_pct * i
+            price = reference_price * (1 + rise / 100)
+            budget = upside_budget * norm_weights[i - 1]
+            qty = math.floor(budget / price)
+            if qty <= 0:
+                continue
+            actual_cost = qty * price
+            cum_budget += actual_cost
+            cum_shares += qty
+            avg_cost = cum_budget / cum_shares if cum_shares > 0 else 0
+
+            levels.append(GridLevel(
+                level_number=i,
+                drop_pct=rise,  # 양수: 상승폭
+                target_price=round(price, 2),
+                budget_allocation=round(budget, 2),
+                budget_pct=round(norm_weights[i - 1] * 100, 2),
+                quantity=qty,
+                cumulative_budget=round(cum_budget, 2),
+                cumulative_shares=cum_shares,
+                avg_cost_basis=round(avg_cost, 2),
+            ))
+
+        return levels
+
     def calculate_grid_from_drawdown(
         self,
         current_price: float,

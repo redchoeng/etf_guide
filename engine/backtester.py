@@ -64,6 +64,7 @@ class BacktestResult:
     regime_changes: int = 0
     leverage_decay_pct: float = 0.0
     idle_dca_buys: int = 0
+    upside_buys: int = 0
 
 
 # ── 레짐별 투자비율 ──────────────────────────────────────
@@ -183,6 +184,16 @@ class GridBacktester:
         seed_buy_count = 0
         rebalance_count = 0
         idle_dca_count = 0
+        upside_buy_count = 0
+
+        # 상승 그리드 초기화 (예산의 30%로 소량 분할매수)
+        upside_grid = GridCalculator().calculate_upside_grid(
+            reference_price=grid_ref_price,
+            total_budget=total_budget,
+            num_levels=5,
+            spacing_pct=3.0,
+        )
+        upside_filled: set[int] = set()
 
         close_values = close.values
         close_index = close.index
@@ -250,12 +261,12 @@ class GridBacktester:
                             regime=regime,
                         ))
 
-            # ── 3. 유휴 현금 DCA (상승장에서 현금이 2개월치 이상 쌓이면 소량 매수) ──
-            idle_threshold = total_budget * 0.1  # 총 예산의 10% 이상 현금 유휴
+            # ── 3. 유휴 현금 DCA (상승장에서 주 1회 소량 매수) ──
+            idle_threshold = total_budget * 0.05  # 총 예산의 5% 이상 현금 유휴
             if (remaining_budget > idle_threshold
                     and regime in ("BULL", "BULL_STRONG", "SIDEWAYS")
-                    and i % 22 == 0 and i > 0):  # ~월 1회
-                dca_amount = min(remaining_budget * 0.15, remaining_budget)
+                    and i % 5 == 0 and i > 0):  # 주 1회 (5거래일)
+                dca_amount = min(remaining_budget * 0.05, remaining_budget)
                 dca_qty = math.floor(dca_amount / price)
                 if dca_qty > 0:
                     cost = dca_qty * price
@@ -273,7 +284,33 @@ class GridBacktester:
                         note=f"idle cash DCA",
                     ))
 
-            # ── 4. 그리드 리밸런싱 (가격 상승 시 그리드 재설정) ──
+            # ── 4. 상승 그리드 매수 (가격 상승 시 소량 분할매수) ──
+            if (regime in ("BULL", "BULL_STRONG", "SIDEWAYS")
+                    and remaining_budget > total_budget * 0.03
+                    and upside_grid):
+                for ugl in upside_grid:
+                    if ugl.level_number in upside_filled:
+                        continue
+                    if price >= ugl.target_price:
+                        buy_qty = min(ugl.quantity, math.floor(remaining_budget / price))
+                        if buy_qty > 0:
+                            cost = buy_qty * price
+                            total_cost_before = shares_held * avg_cost
+                            shares_held += buy_qty
+                            avg_cost = (total_cost_before + cost) / shares_held if shares_held > 0 else price
+                            remaining_budget -= cost
+                            upside_filled.add(ugl.level_number)
+                            upside_buy_count += 1
+
+                            trades.append(BacktestTrade(
+                                date=date, action="BUY_UP", price=round(price, 2),
+                                quantity=buy_qty, grid_level=ugl.level_number,
+                                cost_basis=round(avg_cost, 2),
+                                regime=regime,
+                                note=f"upside grid L{ugl.level_number}",
+                            ))
+
+            # ── 5. 그리드 리밸런싱 (가격 상승 시 그리드 재설정) ──
             if i - last_rebalance_idx >= 22 and current_grid:
                 top_price = current_grid[0].target_price
                 if price > top_price * 1.15:
@@ -291,6 +328,14 @@ class GridBacktester:
                         last_rebalance_idx = i
                         rebalance_count += 1
                         seed_buy_done = False
+                        # 상승 그리드도 새 기준가로 리셋
+                        upside_grid = GridCalculator().calculate_upside_grid(
+                            reference_price=price,
+                            total_budget=max(remaining_budget, 0),
+                            num_levels=5,
+                            spacing_pct=3.0,
+                        )
+                        upside_filled = set()
 
                         trades.append(BacktestTrade(
                             date=date, action="REBALANCE",
@@ -368,6 +413,7 @@ class GridBacktester:
             regime_changes=regime_changes,
             leverage_decay_pct=round(leverage_decay, 2),
             idle_dca_buys=idle_dca_count,
+            upside_buys=upside_buy_count,
         )
 
     def _estimate_leverage_decay(self, close: pd.Series, equity_df: pd.DataFrame) -> float:

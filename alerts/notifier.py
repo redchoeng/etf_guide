@@ -263,7 +263,7 @@ def check_and_notify(config: dict):
                 total_budget=budget,
                 num_levels=preset.get("suggested_levels", 10),
                 spacing_pct=preset.get("suggested_spacing", 5.0),
-                weighting="linear",
+                weighting="equal",
             )
 
             for gl in grid:

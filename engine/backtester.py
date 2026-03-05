@@ -343,7 +343,7 @@ class GridBacktester:
                             total_budget=alloc_budget,
                             num_levels=num_levels,
                             spacing_pct=spacing_pct,
-                            weighting="linear",
+                            weighting="equal",
                         )
                         filled_levels = set()
                         grid_ref_price = price
@@ -587,7 +587,7 @@ class GridBacktester:
                     total_budget=total_budget,
                     num_levels=num_levels,
                     spacing_pct=spacing_pct,
-                    weighting="linear",
+                    weighting="equal",
                 )
 
                 result = self.run_backtest(

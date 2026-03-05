@@ -110,7 +110,7 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             total_budget=grid_budget,
             num_levels=preset.get("suggested_levels", 10),
             spacing_pct=preset.get("suggested_spacing", 5.0),
-            weighting="linear",
+            weighting="equal",
         )
 
         next_buy = None
@@ -175,6 +175,8 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "verdict": verdict,
             "verdict_detail": verdict_detail,
             "allocation": allocation,
+            "num_levels": preset.get("suggested_levels", 10),
+            "spacing_pct": preset.get("suggested_spacing", 5.0),
         }
     except Exception as e:
         print(f"  {ticker} 분석 실패: {e}")
@@ -566,6 +568,13 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .buy-plan.upside{{background:#f0f7ff;margin-top:8px}}
 .buy-plan.upside .bp-title{{color:#3182f6}}
 .buy-plan.upside tr.next-row{{background:#e8f3ff}}
+.budget-input-area{{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:10px 12px;background:#f0f7ff;border-radius:10px}}
+.budget-input-area label{{font-size:13px;font-weight:600;color:#333}}
+.budget-input-area .bi-desc{{font-size:11px;color:#8b95a1;margin-top:2px}}
+.input-wrap{{display:flex;align-items:center;gap:4px;background:#fff;border:1.5px solid #3182f6;border-radius:8px;padding:6px 10px}}
+.input-wrap .currency{{color:#3182f6;font-weight:700;font-size:15px}}
+.input-wrap input[type=number]{{border:none;outline:none;font-size:16px;font-weight:600;width:90px;text-align:right;background:transparent;color:#191f28;-moz-appearance:textfield}}
+.input-wrap input[type=number]::-webkit-inner-spin-button,.input-wrap input[type=number]::-webkit-outer-spin-button{{-webkit-appearance:none;margin:0}}
 .budget-bar{{display:flex;gap:4px;margin-top:8px;border-radius:8px;overflow:hidden;height:28px;font-size:11px;font-weight:500}}
 .budget-bar .seg{{display:flex;align-items:center;justify-content:center}}
 .budget-bar .seg.active{{background:#3182f6;color:#fff}}
@@ -801,7 +810,8 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
             upgrid_json.append(f'{{"l":{ugl.level_number},"p":{ugl.target_price:.2f},"q":{ugl.quantity}}}')
         upgrid_data_attr = "[" + ",".join(upgrid_json) + "]"
 
-        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}">
+        config_json = f'{{"levels":{r["num_levels"]},"spacing":{r["spacing_pct"]}}}'
+        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}">
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['ticker']}</div>
@@ -838,8 +848,17 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="metric {sma_cls}" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">{'정배열' if r['trend_aligned'] else '역배열'}</div></div>
 </div>
 
+<div class="budget-input-area">
+<div><label>내 투자금</label><div class="bi-desc">금액 입력 시 매수 플랜이 자동 계산돼요</div></div>
+<div class="input-wrap">
+<span class="currency">$</span>
+<input type="number" id="bi-{r['ticker']}" value="{r['total_budget']:.0f}" min="100" step="100" oninput="recalcGrid('{r['ticker']}')">
+</div>
+</div>
+<div id="grid-wrap-{r['ticker']}">
 {buy_table}
 {upside_table}
+</div>
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
@@ -1057,6 +1076,8 @@ function updateCard(ticker,data){{
 
   // 실시간 그리드 매수 알림
   checkGridAlert(ticker,newPrice,data.prev);
+  // 가격 변경 시 그리드 재계산
+  if(document.getElementById('bi-'+ticker))recalcGrid(ticker);
 }}
 
 function checkGridAlert(ticker,price,prev){{
@@ -1166,6 +1187,104 @@ document.addEventListener('visibilitychange',()=>{{
     clearTimeout(liveTimer);
     refreshAll();
   }}
+}});
+
+// ── 예산 입력 → 그리드 재계산 ──
+function calcDownGrid(refPrice,budget,numLevels,spacingPct){{
+  const perLevel=Math.round(budget/numLevels);
+  return Array.from({{length:numLevels}},(_,i)=>{{
+    const drop=spacingPct*(i+1);
+    const p=+(refPrice*(1-drop/100)).toFixed(2);
+    const q=p>0?Math.floor(perLevel/p):0;
+    return {{l:i+1,p:p,q:q,budget:perLevel,drop:drop}};
+  }}).filter(g=>g.p>0&&g.q>0);
+}}
+
+function calcUpGrid(refPrice,budget,numLevels,spacingPct){{
+  const per=Math.round(budget/numLevels);
+  return Array.from({{length:numLevels}},(_,i)=>{{
+    const rise=spacingPct*(i+1);
+    const p=+(refPrice*(1+rise/100)).toFixed(2);
+    const q=Math.floor(per/p);
+    return {{l:i+1,p:p,q:q,budget:per,rise:rise}};
+  }}).filter(g=>g.q>0);
+}}
+
+function recalcGrid(ticker){{
+  const input=document.getElementById('bi-'+ticker);
+  if(!input)return;
+  const budget=parseInt(input.value)||0;
+  if(budget<100)return;
+  const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
+  if(!card)return;
+  const config=JSON.parse(card.dataset.config||'{{"levels":10,"spacing":5}}');
+
+  const prEl=document.getElementById('pr-'+ticker);
+  const price=parseFloat(prEl.textContent.replace('$',''));
+  if(!price||price<=0)return;
+
+  const alloc=0.7;
+  const gridBudget=Math.round(budget*alloc);
+  const reserveBudget=budget-gridBudget;
+
+  const down=calcDownGrid(price,gridBudget,config.levels,config.spacing);
+  const up=calcUpGrid(price,Math.round(gridBudget*0.3),5,3.0);
+
+  // data 속성 업데이트 (실시간 알림용)
+  card.dataset.grid=JSON.stringify(down.map(g=>({{l:g.l,p:g.p,q:g.q}})));
+  card.dataset.upgrid=JSON.stringify(up.map(g=>({{l:g.l,p:g.p,q:g.q}})));
+
+  // DOM 업데이트
+  const wrap=document.getElementById('grid-wrap-'+ticker);
+  if(!wrap)return;
+
+  // 하락 그리드 테이블
+  let dRows='';
+  const showMax=6;
+  down.slice(0,showMax).forEach(g=>{{
+    dRows+='<tr><td>L'+g.l+'</td><td>$'+g.p.toFixed(2)+'</td><td>-'+g.drop.toFixed(1)+'%</td><td>'+g.q+'주</td><td>$'+g.budget.toLocaleString()+'</td></tr>';
+  }});
+  const remaining=down.length-showMax;
+  const moreHtml=remaining>0?'<div class="more">+'+remaining+'개 레벨</div>':'';
+
+  let dHtml='<div class="buy-plan">';
+  dHtml+='<div class="bp-title">무한매수 계획표</div>';
+  dHtml+='<div class="bp-sub">투자 $'+gridBudget.toLocaleString()+' + 예비금 $'+reserveBudget.toLocaleString()+' · 레벨 도달 시 매수 → 장기 보유</div>';
+  dHtml+='<table><tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>';
+  dHtml+=dRows+'</table>'+moreHtml;
+  dHtml+='<div class="budget-bar">';
+  dHtml+='<div class="seg active" style="flex:'+alloc+'">투자 '+(alloc*100).toFixed(0)+'%</div>';
+  dHtml+='<div class="seg reserve" style="flex:'+(1-alloc)+'">예비금 '+((1-alloc)*100).toFixed(0)+'%</div>';
+  dHtml+='</div></div>';
+
+  // 상승 그리드 테이블
+  let uHtml='';
+  if(up.length>0){{
+    let uRows='';
+    up.forEach(g=>{{
+      uRows+='<tr><td>U'+g.l+'</td><td>$'+g.p.toFixed(2)+'</td><td>+'+g.rise.toFixed(1)+'%</td><td>'+g.q+'주</td><td>$'+g.budget.toLocaleString()+'</td></tr>';
+    }});
+    uHtml='<div class="buy-plan upside">';
+    uHtml+='<div class="bp-title">📈 상승 그리드 (올라도 산다)</div>';
+    uHtml+='<div class="bp-sub">투자금의 30% · 가격 상승 시 소량 분할매수 → 기회를 놓치지 않기</div>';
+    uHtml+='<table><tr><th>레벨</th><th>매수가</th><th>상승폭</th><th>수량</th><th>금액</th></tr>';
+    uHtml+=uRows+'</table></div>';
+  }}
+
+  wrap.innerHTML=dHtml+uHtml;
+  localStorage.setItem('budget_'+ticker,budget);
+}}
+
+// 페이지 로드 시 저장된 예산 복원
+document.addEventListener('DOMContentLoaded',()=>{{
+  document.querySelectorAll('.card[data-ticker]').forEach(card=>{{
+    const t=card.dataset.ticker;
+    const saved=localStorage.getItem('budget_'+t);
+    if(saved){{
+      const input=document.getElementById('bi-'+t);
+      if(input){{input.value=saved;recalcGrid(t);}}
+    }}
+  }});
 }});
 </script>
 </body></html>"""

@@ -1,163 +1,222 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>레버리지 ETF 분할매수 가이드 - 2026-03-05</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<title>우당탕탕 딩쵱 하우스 마련 대작전 - 2026-03-05</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#3182f6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="딩쵱 대작전">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#87CEEB 0%,#98D8C8 30%,#F7DC6F 70%,#FADBD8 100%);background-attachment:fixed;padding:15px;color:#5D4E37;min-height:100vh}
-.cloud{position:fixed;background:#fff;border-radius:50px;opacity:0.6;animation:float 35s infinite linear;z-index:0;pointer-events:none}
-.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%}
-.c1{width:80px;height:32px;top:6%;left:-80px}.c1::before{width:40px;height:40px;top:-20px;left:12px}.c1::after{width:28px;height:28px;top:-12px;left:44px}
-.c2{width:100px;height:40px;top:18%;left:-100px;animation-delay:-12s}.c2::before{width:50px;height:50px;top:-25px;left:18px}.c2::after{width:35px;height:35px;top:-15px;left:58px}
-.c3{width:70px;height:28px;top:32%;left:-70px;animation-delay:-22s}.c3::before{width:35px;height:35px;top:-18px;left:10px}.c3::after{width:24px;height:24px;top:-10px;left:38px}
-@keyframes float{0%{transform:translateX(0)}100%{transform:translateX(calc(100vw + 150px))}}
-.container{max-width:1200px;margin:0 auto;position:relative;z-index:10}
-.header{background:#fff;border-radius:25px;padding:30px;margin-bottom:20px;box-shadow:0 6px 0 #2196F3;border:3px solid #5D4E37;text-align:center}
-.header h1{font-size:1.6em;margin-bottom:5px;text-shadow:2px 2px 0 #E3F2FD}
-.header .sub{color:#7B6B4F;font-size:0.9em}
-.header .date{color:#2196F3;font-weight:700;margin-top:8px}
-.macro-bar{background:#fff;border-radius:18px;padding:16px;border:3px solid #5D4E37;box-shadow:0 4px 0 #2E7D32;margin-bottom:20px}
-.macro-bar .regime{font-size:1.1em;font-weight:700;color:#2E7D32;margin-bottom:6px}
-.macro-bar .macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
-.macro-bar .mg{background:#E8F5E9;border-radius:10px;padding:8px;text-align:center;border:1px solid #2E7D3220}
-.macro-bar .mg .ml{font-size:0.65em;color:#7B6B4F}
-.macro-bar .mg .mv{font-size:0.95em;font-weight:700;color:#2E7D32}
-.macro-bar .desc{font-size:0.82em;color:#7B6B4F;line-height:1.4;background:#E8F5E9;padding:10px;border-radius:10px}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.sum-card{background:#FFF8DC;border-radius:15px;padding:14px;text-align:center;border:2px solid #5D4E37}
-.sum-card .label{font-size:0.75em;color:#7B6B4F}
-.sum-card .value{font-size:1.4em;font-weight:700;color:#FF6B35;margin-top:2px}
-.sum-card .value.buy{color:#2E7D32}
-.sum-card .value.best{color:#2196F3}
-.guide-box{background:#fff;border-radius:18px;padding:18px;border:3px solid #5D4E37;box-shadow:0 4px 0 #E8A838;margin-bottom:20px}
-.guide-box h3{color:#5D4E37;font-size:1em;margin-bottom:8px}
-.guide-box p{font-size:0.85em;color:#7B6B4F;line-height:1.5}
-.guide-box .tip{background:#FFF8DC;border-radius:10px;padding:10px;margin-top:8px;font-size:0.8em;border:1px dashed #C4A35A}
-.guide-box .warn-tip{background:#FFEBEE;border-radius:10px;padding:10px;margin-top:8px;font-size:0.8em;border:1px dashed #E53935;color:#C62828}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:15px;margin-bottom:20px}
-.card{background:#fff;border-radius:18px;padding:18px;border:3px solid #5D4E37;box-shadow:0 5px 0 #E8A838;transition:transform 0.2s}
-.card:hover{transform:translateY(-3px)}
-.card.top{box-shadow:0 5px 0 #4CAF50;border-color:#2E7D32}
-.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:2px dashed #C4A35A}
-.ticker{font-size:1.3em;font-weight:700;color:#5D4E37}
-.etf-sub{font-size:0.72em;color:#7B6B4F;margin-top:1px}
-.badge{display:inline-block;padding:2px 7px;border-radius:8px;font-size:0.68em;font-weight:700;margin-left:4px}
-.badge.lev{background:#7C4DFF;color:#fff}
-.badge.cat{background:#2196F3;color:#fff}
-.badge.trend-up{background:#4CAF50;color:#fff}
-.badge.trend-dn{background:#F44336;color:#fff}
-.score-circle{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1em;border:3px solid #5D4E37;flex-shrink:0}
-.verdict-box{border-radius:12px;padding:12px;margin-bottom:12px}
-.verdict-box .vd-title{font-weight:700;font-size:0.95em;margin-bottom:4px}
-.verdict-box .vd-detail{font-size:0.8em;line-height:1.4}
-.price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
-.price{font-size:1.2em;font-weight:700}
-.chg{padding:3px 8px;border-radius:8px;font-size:0.85em}
-.up{background:#E8F5E9;color:#2E7D32}
-.down{background:#FFEBEE;color:#C62828}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
-.metric{background:#FFF8DC;padding:8px 4px;border-radius:10px;text-align:center;border:2px solid #C4A35A;cursor:pointer;transition:all 0.2s}
-.metric:hover{transform:scale(1.05);box-shadow:0 3px 8px rgba(0,0,0,0.12)}
-.metric.hi{background:linear-gradient(135deg,#4CAF50,#45A049);border-color:#388E3C}
-.metric.hi .ml,.metric.hi .mv{color:#fff}
-.metric.warn{background:linear-gradient(135deg,#FF9800,#F57C00);border-color:#E65100}
-.metric.warn .ml,.metric.warn .mv{color:#fff}
-.ml{font-size:0.62em;color:#7B6B4F}
-.mv{font-size:0.85em;font-weight:700;color:#5D4E37}
-.buy-plan{background:#E8F5E9;border-radius:12px;padding:12px;margin-top:8px;border:2px solid #4CAF50}
-.buy-plan .bp-title{font-size:0.8em;font-weight:700;color:#2E7D32;margin-bottom:6px}
-.buy-plan table{width:100%;font-size:0.78em;border-collapse:collapse}
-.buy-plan th{text-align:left;color:#2E7D32;padding:3px 4px;border-bottom:1px solid #A5D6A7;font-weight:700}
-.buy-plan td{padding:4px;border-bottom:1px solid #C8E6C9}
-.buy-plan tr.next-row{background:#C8E6C9;font-weight:700;border-radius:6px}
-.buy-plan tr.next-row td{color:#1B5E20}
-.buy-plan .more{text-align:center;color:#7B6B4F;font-size:0.75em;padding:4px}
-.budget-bar{display:flex;gap:4px;margin-top:6px;font-size:0.72em}
-.budget-bar .seg{padding:4px 8px;border-radius:6px;text-align:center}
-.budget-bar .seg.active{background:#4CAF50;color:#fff}
-.budget-bar .seg.reserve{background:#FFE082;color:#5D4E37}
-.risk-row{display:flex;gap:8px;margin-top:6px;font-size:0.72em}
-.risk-row .risk-item{background:#FFF3E0;padding:4px 8px;border-radius:6px;border:1px solid #FFB74D}
-.risk-row .risk-item.danger{background:#FFEBEE;border-color:#EF9A9A;color:#C62828}
-.pos-bar{height:8px;background:#E0E0E0;border-radius:4px;margin:4px 0;overflow:hidden}
-.pos-bar .fill{height:100%;border-radius:4px;transition:width 0.5s}
-.details{font-size:0.7em;color:#9E9E9E;padding-top:6px;margin-top:6px;border-top:1px dashed #C4A35A}
-.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f4f6;color:#191f28;min-height:100vh;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:0 16px 40px}
+.header{padding:24px 0 20px;text-align:center}
+.header h1{font-size:22px;font-weight:700;color:#191f28;letter-spacing:-0.5px}
+.header .sub{color:#8b95a1;font-size:13px;margin-top:4px;font-weight:400}
+.header .date{color:#3182f6;font-size:12px;font-weight:500;margin-top:8px}
+.section{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.section-title{font-size:15px;font-weight:700;color:#191f28;margin-bottom:14px;letter-spacing:-0.3px}
+.macro-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.macro-chip{background:#f2f4f6;border-radius:20px;padding:6px 14px;font-size:12px;color:#4e5968;display:flex;align-items:center;gap:4px}
+.macro-chip .val{font-weight:700;color:#191f28}
+.regime-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;color:#2E7D32;background:#E8F5E9}
+.macro-desc{font-size:13px;color:#6b7684;line-height:1.6;margin-top:8px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #f2f4f6}
+.stat{text-align:center;padding:16px 8px;border-right:1px solid #f2f4f6}
+.stat:last-child{border-right:none}
+.stat .sl{font-size:11px;color:#8b95a1;font-weight:400}
+.stat .sv{font-size:20px;font-weight:700;color:#191f28;margin-top:2px}
+.stat .sv.blue{color:#3182f6}
+.stat .sv.green{color:#00c073}
+.tip-box{background:#f8f9fa;border-radius:12px;padding:14px 16px;margin-top:12px}
+.tip-box p{font-size:13px;color:#4e5968;line-height:1.6}
+.tip-box p+p{margin-top:6px}
+.tip-box .warn{color:#f04452;font-size:12px;margin-top:8px;padding:10px 12px;background:#fff5f5;border-radius:8px}
+.card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:transform 0.15s ease}
+.card:active{transform:scale(0.98)}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.card-head .left{flex:1}
+.ticker{font-size:18px;font-weight:700;color:#191f28;letter-spacing:-0.3px}
+.etf-sub{font-size:12px;color:#8b95a1;margin-top:2px}
+.tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.tag.lev{background:#f3f0ff;color:#6b4eff}
+.tag.cat{background:#e8f3ff;color:#3182f6}
+.tag.trend-up{background:#e8faf0;color:#00a661}
+.tag.trend-dn{background:#fff5f5;color:#f04452}
+.score-ring{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.score-ring .num{font-size:16px;font-weight:700}
+.score-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.verdict-bar{border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.verdict-bar .vd-title{font-weight:700;font-size:14px;margin-bottom:2px}
+.verdict-bar .vd-detail{font-size:12px;line-height:1.5;opacity:0.85}
+.price-area{margin-bottom:14px}
+.price{font-size:26px;font-weight:700;letter-spacing:-0.5px}
+.chg-pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:13px;font-weight:500;margin-left:8px}
+.chg-pill.up{background:#e8faf0;color:#00a661}
+.chg-pill.down{background:#fff5f5;color:#f04452}
+.range-bar{margin:10px 0 14px}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:#8b95a1;margin-bottom:4px}
+.range-track{height:6px;background:#f2f4f6;border-radius:3px;position:relative;overflow:hidden}
+.range-fill{height:100%;border-radius:3px;transition:width 0.5s}
+.range-dot{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #3182f6;transform:translateX(-50%);box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:12px;overflow:hidden;border:1px solid #f2f4f6;margin-bottom:14px}
+.metric{padding:10px 4px;text-align:center;border-right:1px solid #f2f4f6;cursor:pointer;transition:background 0.15s}
+.metric:last-child{border-right:none}
+.metric:active{background:#f8f9fa}
+.metric.hi{background:#e8faf0}
+.metric.warn{background:#fff5f5}
+.ml{font-size:11px;color:#8b95a1;font-weight:400}
+.mv{font-size:14px;font-weight:700;color:#191f28;margin-top:1px}
+.metric.hi .mv{color:#00a661}
+.metric.warn .mv{color:#f04452}
+.buy-plan{background:#f8f9fa;border-radius:12px;padding:14px;margin-bottom:10px}
+.buy-plan .bp-title{font-size:13px;font-weight:700;color:#191f28;margin-bottom:4px}
+.buy-plan .bp-sub{font-size:11px;color:#3182f6;margin-bottom:10px}
+.buy-plan table{width:100%;font-size:12px;border-collapse:collapse}
+.buy-plan th{text-align:left;color:#8b95a1;padding:4px;font-weight:500;font-size:11px;border-bottom:1px solid #e5e8eb}
+.buy-plan td{padding:6px 4px;border-bottom:1px solid #f2f4f6;color:#191f28}
+.buy-plan tr.next-row{background:#e8f3ff}
+.buy-plan tr.next-row td{color:#3182f6;font-weight:700}
+.buy-plan .more{text-align:center;color:#8b95a1;font-size:12px;padding:6px 0}
+.budget-bar{display:flex;gap:4px;margin-top:8px;border-radius:8px;overflow:hidden;height:28px;font-size:11px;font-weight:500}
+.budget-bar .seg{display:flex;align-items:center;justify-content:center}
+.budget-bar .seg.active{background:#3182f6;color:#fff}
+.budget-bar .seg.reserve{background:#e5e8eb;color:#4e5968}
+.info-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.info-chip{background:#f2f4f6;border-radius:6px;padding:4px 10px;font-size:11px;color:#4e5968}
+.info-chip.danger{background:#fff5f5;color:#f04452}
+.details{font-size:11px;color:#b0b8c1;padding-top:10px;margin-top:10px;border-top:1px solid #f2f4f6;letter-spacing:-0.2px}
+.strategy-box{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.strategy-box h3{font-size:15px;font-weight:700;margin-bottom:12px}
+.strat-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f2f4f6;font-size:13px}
+.strat-item:last-child{border-bottom:none}
+.strat-item .emoji{font-size:16px;flex-shrink:0;width:24px}
+.strat-item .desc{color:#4e5968;line-height:1.5}
+.strat-item .desc b{color:#191f28}
+.strat-tips{margin-top:12px;padding:12px;background:#f8f9fa;border-radius:10px;font-size:12px;color:#6b7684;line-height:1.6}
+.strat-tips .warn{color:#f04452;margin-top:6px;padding:8px 10px;background:#fff5f5;border-radius:6px;font-size:11px}
+.footer{text-align:center;padding:24px 0;font-size:12px;color:#b0b8c1}
+.footer a{color:#3182f6;text-decoration:none;font-weight:500}
+.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;backdrop-filter:blur(2px)}
 .overlay.show{display:block}
-.popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;padding:22px;max-width:420px;width:92%;max-height:80vh;overflow-y:auto;z-index:10000;border:4px solid #5D4E37;box-shadow:0 8px 0 #C4A35A}
+.popup{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 32px;max-height:70vh;overflow-y:auto;z-index:10000;box-shadow:0 -4px 20px rgba(0,0,0,0.1)}
 .popup.show{display:block}
-.popup h3{color:#5D4E37;border-bottom:3px solid #2196F3;padding-bottom:10px;margin-bottom:15px}
-.popup .close{position:absolute;top:10px;right:15px;background:#E53935;color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:1.2em}
+.popup .handle{width:36px;height:4px;background:#e5e8eb;border-radius:2px;margin:0 auto 16px}
+.popup h3{font-size:16px;font-weight:700;color:#191f28;margin-bottom:16px}
+.popup .close{position:absolute;top:16px;right:16px;background:#f2f4f6;color:#6b7684;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
 .popup ul{list-style:none}
-.popup li{padding:5px 0;border-bottom:1px dashed #C4A35A;font-size:0.88em}
-.popup .sec{font-weight:700;color:#2196F3;background:#E3F2FD;padding:8px;margin:8px -10px;border-radius:8px}
-.footer{background:#fff;border-radius:18px;padding:20px;text-align:center;border:3px solid #5D4E37;margin-top:20px}
-.footer p{font-size:0.82em;color:#7B6B4F;margin:3px 0}
-.footer a{color:#2196F3;text-decoration:none;font-weight:700}
-@media(max-width:600px){.summary{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.header h1{font-size:1.3em}.macro-bar .macro-grid{grid-template-columns:repeat(2,1fr)}}
+.popup li{padding:6px 0;font-size:13px;color:#4e5968;line-height:1.5}
+.popup .sec{font-weight:700;color:#191f28;background:#f2f4f6;padding:8px 12px;margin:10px 0 6px;border-radius:8px;font-size:13px}
+.noti-bar{background:#fff;border-radius:16px;padding:14px 20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:space-between}
+.noti-bar .noti-left{display:flex;align-items:center;gap:10px}
+.noti-bar .noti-icon{width:36px;height:36px;border-radius:10px;background:#e8f3ff;display:flex;align-items:center;justify-content:center;font-size:18px}
+.noti-bar .noti-text{font-size:13px;color:#4e5968}
+.noti-bar .noti-text b{color:#191f28}
+.noti-toggle{position:relative;width:48px;height:28px;border-radius:14px;border:none;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+.noti-toggle.on{background:#3182f6}
+.noti-toggle.off{background:#e5e8eb}
+.noti-toggle::after{content:'';position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.15);transition:left 0.2s}
+.noti-toggle.off::after{left:3px}
+.noti-toggle.on::after{left:23px}
+.noti-status{font-size:11px;color:#8b95a1;margin-top:4px}
+.noti-alert-list{margin-top:10px;display:none}
+.noti-alert-list.show{display:block}
+.noti-alert{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #f2f4f6;font-size:12px}
+.noti-alert:last-child{border-bottom:none}
+.noti-alert .na-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.noti-alert .na-dot.buy{background:#00c073}
+.noti-alert .na-dot.warn{background:#ff9500}
+.noti-alert .na-dot.info{background:#3182f6}
+.noti-alert .na-text{color:#4e5968;line-height:1.5}
+.noti-alert .na-text b{color:#191f28}
+@media(max-width:600px){.stats-row{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(2){border-right:none}.metric:nth-child(3),.metric:nth-child(4){border-top:1px solid #f2f4f6}.container{padding:0 12px 32px}.price{font-size:22px}}
 </style></head><body>
-<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
 <div class="container">
 <div class="header">
-<div style="font-size:2.2em">📊</div>
-<h1>레버리지 ETF 분할매수 가이드</h1>
-<div class="sub">그리드 전략 기반 | 언제 · 얼마에 · 몇 주 사야 하는지</div>
-<div class="date">🕐 2026-03-05 15:48 KST 업데이트</div>
+<h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
+<div class="sub">무한매수법 그리드 전략</div>
+<div class="date">2026-03-05 16:55 KST 업데이트</div>
 </div>
 
-<div class="macro-bar">
-<div class="regime">📈 현재 시장: 상승장</div>
-<div class="macro-grid">
-<div class="mg"><div class="ml">VIX (공포지수)</div><div class="mv">21.1</div></div>
-<div class="mg"><div class="ml">미국 10Y 금리</div><div class="mv">4.08%</div></div>
-<div class="mg"><div class="ml">S&P500 1개월</div><div class="mv">-1.5%</div></div>
-<div class="mg"><div class="ml">매크로 점수</div><div class="mv">60%</div></div>
-</div>
-<div class="desc">상승 추세입니다. 단기 조정 시 분할매수를 시작하기 좋은 환경입니다.</div>
-</div>
-
-<div class="summary">
-<div class="sum-card"><div class="label">분석 ETF</div><div class="value">8개</div></div>
-<div class="sum-card"><div class="label">매수 추천</div><div class="value buy">1개</div></div>
-<div class="sum-card"><div class="label">평균 점수</div><div class="value">52점</div></div>
-<div class="sum-card"><div class="label">최고 점수</div><div class="value best">SOXL 61점</div></div>
-</div>
-
-<div class="guide-box">
-<h3>💡 이 페이지 보는 법</h3>
-<p>각 ETF 카드의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍입니다.<br>
-<b>매수 계획표</b>에서 "얼마에 몇 주 사야 하는지" 구체적 금액을 확인하세요.<br>
-시장 환경(상승장/하락장)에 따라 점수 기준이 자동 조정됩니다.</p>
-<div class="tip">💰 투자비율 70% / 예비금 30% (레짐: 상승장) | 🎯 12%→22%→35% (3단계 부분익절) | 🛑 손절 -50%</div>
-<div class="tip">🌱 상승장 시드매수: 추세 진입 시 투자금의 20~30% 즉시 매수 → 눌림목에서 그리드 추가매수 → 부분익절(1/3씩)</div>
-<div class="warn-tip">⚠️ 손절 기준(-50%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요. 레버리지 디케이로 회복이 매우 어려울 수 있습니다.</div>
-</div>
-
-<div class="grid">
-<div class="card top">
-<div class="card-head">
+<div class="noti-bar" id="notiBar">
+<div class="noti-left">
+<div class="noti-icon">🔔</div>
 <div>
-<span class="ticker">SOXL</span>
-<span class="badge lev">3x</span>
-<span class="badge cat">Semiconductor</span>
-<span class="badge trend-up">정배열</span>
-<div class="etf-sub">Direxion Daily Semiconductor Bull 3X (기초: SOXX)</div>
+<div class="noti-text"><b>매수 알림</b> 1건</div>
+<div class="noti-status" id="notiStatus">알림 허용 시 시그널을 푸시로 받아요</div>
 </div>
-<div class="score-circle" style="background:#E3F2FD;color:#1565C0;border-color:#2196F3">61점</div>
+</div>
+<button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
+</div>
+<div class="noti-alert-list" id="notiList">
+<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>SOXL</b> 매수 점수 61점 — 매수 고려</div></div>
 </div>
 
-<div class="verdict-box" style="background:#E3F2FD;border:2px solid #2196F3">
+<div class="section">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+<span class="regime-badge">📈 상승장</span>
+</div>
+<div class="macro-chips">
+<div class="macro-chip">VIX <span class="val">21.1</span></div>
+<div class="macro-chip">금리 <span class="val">4.08%</span></div>
+<div class="macro-chip">S&P500 <span class="val">-1.5%</span></div>
+<div class="macro-chip">매크로 <span class="val">60%</span></div>
+</div>
+<div class="macro-desc">상승 추세입니다. 단기 조정 시 분할매수를 시작하기 좋은 환경입니다.</div>
+</div>
+
+<div class="section">
+<div class="stats-row">
+<div class="stat"><div class="sl">분석 ETF</div><div class="sv">6</div></div>
+<div class="stat"><div class="sl">매수 추천</div><div class="sv green">1</div></div>
+<div class="stat"><div class="sl">평균 점수</div><div class="sv">52</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">SOXL 61</div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">이 페이지 보는 법</div>
+<div class="tip-box">
+<p>각 ETF의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍이에요. <b>매수 계획표</b>에서 구체적인 매수 가격과 수량을 확인하세요.</p>
+<p>투자비율 <b>70%</b> / 예비금 <b>30%</b> (상승장) · 무한매수법: 매수만, 익절 없음</p>
+<div class="warn">손절 기준(-50%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-head">
+<div class="left">
+<div class="ticker">SOXL</div>
+<div class="etf-sub">Direxion Daily Semiconductor Bull 3X · 기초: SOXX</div>
+<div class="tags">
+<span class="tag lev">3x</span>
+<span class="tag cat">Semiconductor</span>
+<span class="tag trend-up">정배열</span>
+</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#2196F3" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="53.9" stroke-linecap="round"/></svg>
+<span class="num" style="color:#1565C0">61</span>
+</div>
+</div>
+
+<div class="verdict-bar" style="background:#E3F2FD">
 <div class="vd-title" style="color:#1565C0">🔵 매수 고려</div>
 <div class="vd-detail" style="color:#1565C0">[상승장] 상승장에서 -13.2% 풀백 중. SMA 지지 확인 후 매수 적기.</div>
 </div>
 
-<div class="price-row">
+<div class="price-area">
 <span class="price">$56.62</span>
-<span class="chg up">+5.99%</span>
+<span class="chg-pill up">+5.99%</span>
 </div>
 
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $8.22 ← <b>$56.62</b> → $71.86</div>
-<div class="pos-bar"><div class="fill" style="width:76%;background:#F44336"></div></div>
+<div class="range-bar">
+<div class="range-labels"><span>$8.22</span><span>52주</span><span>$71.86</span></div>
+<div class="range-track"><div class="range-fill" style="width:76%;background:#f04452"></div><div class="range-dot" style="left:76%"></div></div>
+</div>
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">37</div></div>
@@ -167,52 +226,59 @@ body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#87
 </div>
 
 <div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $56.62에 37주 ($2,100, 투자금의 30%)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$52.66 👈</td><td>--7.0%</td><td>1주</td><td>$67</td></tr><tr><td>L2</td><td>$48.69</td><td>--14.0%</td><td>2주</td><td>$133</td></tr><tr><td>L3</td><td>$44.73</td><td>--21.0%</td><td>4주</td><td>$200</td></tr><tr><td>L4</td><td>$40.77</td><td>--28.0%</td><td>6주</td><td>$267</td></tr><tr><td>L5</td><td>$36.80</td><td>--35.0%</td><td>9주</td><td>$333</td></tr><tr><td>L6</td><td>$32.84</td><td>--42.0%</td><td>12주</td><td>$400</td></tr>
+<tr class="next-row"><td>L1</td><td>$52.66 ←</td><td>--7.0%</td><td>1주</td><td>$67</td></tr><tr><td>L2</td><td>$48.69</td><td>--14.0%</td><td>2주</td><td>$133</td></tr><tr><td>L3</td><td>$44.73</td><td>--21.0%</td><td>4주</td><td>$200</td></tr><tr><td>L4</td><td>$40.77</td><td>--28.0%</td><td>6주</td><td>$267</td></tr><tr><td>L5</td><td>$36.80</td><td>--35.0%</td><td>9주</td><td>$333</td></tr><tr><td>L6</td><td>$32.84</td><td>--42.0%</td><td>12주</td><td>$400</td></tr>
 </table>
-<div class="more">+8개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
+<div class="more">+8개 레벨</div>
 <div class="budget-bar">
 <div class="seg active" style="flex:0.7">투자 70%</div>
 <div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
 </div>
 </div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $63.41 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $28.31 (-50%)</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 $28.31 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $71.86 | SMA20 $63.07 | SMA50 $58.01 | SMA200 $38.03 | 3M +44.5% | Vol 118%
+ATH $71.86 · SMA20 $63.07 · SMA50 $58.01 · SMA200 $38.03 · 3M +44.5% · Vol 118%
 </div>
 </div>
 <div class="card">
 <div class="card-head">
-<div>
-<span class="ticker">USD</span>
-<span class="badge lev">2x</span>
-<span class="badge cat">Semiconductor</span>
-<span class="badge trend-up">정배열</span>
-<div class="etf-sub">ProShares Ultra Semiconductors (기초: SOXX)</div>
+<div class="left">
+<div class="ticker">USD</div>
+<div class="etf-sub">ProShares Ultra Semiconductors · 기초: SOXX</div>
+<div class="tags">
+<span class="tag lev">2x</span>
+<span class="tag cat">Semiconductor</span>
+<span class="tag trend-up">정배열</span>
 </div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">57점</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="59.4" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">57</span>
+</div>
 </div>
 
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
+<div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
 <div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
-<div class="price-row">
+<div class="price-area">
 <span class="price">$53.30</span>
-<span class="chg up">+3.80%</span>
+<span class="chg-pill up">+3.80%</span>
 </div>
 
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $14.53 ← <b>$53.30</b> → $63.40</div>
-<div class="pos-bar"><div class="fill" style="width:79%;background:#F44336"></div></div>
+<div class="range-bar">
+<div class="range-labels"><span>$14.53</span><span>52주</span><span>$63.40</span></div>
+<div class="range-track"><div class="range-fill" style="width:79%;background:#f04452"></div><div class="range-dot" style="left:79%"></div></div>
+</div>
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">42</div></div>
@@ -222,52 +288,59 @@ ATH $71.86 | SMA20 $63.07 | SMA50 $58.01 | SMA200 $38.03 | 3M +44.5% | Vol 118%
 </div>
 
 <div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $53.30에 39주 ($2,100, 투자금의 30%)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$50.63 👈</td><td>--5.0%</td><td>2주</td><td>$127</td></tr><tr><td>L2</td><td>$47.97</td><td>--10.0%</td><td>5주</td><td>$255</td></tr><tr><td>L3</td><td>$45.30</td><td>--15.0%</td><td>8주</td><td>$382</td></tr><tr><td>L4</td><td>$42.64</td><td>--20.0%</td><td>11주</td><td>$509</td></tr><tr><td>L5</td><td>$39.97</td><td>--25.0%</td><td>15주</td><td>$636</td></tr><tr><td>L6</td><td>$37.31</td><td>--30.0%</td><td>20주</td><td>$764</td></tr>
+<tr class="next-row"><td>L1</td><td>$50.63 ←</td><td>--5.0%</td><td>2주</td><td>$127</td></tr><tr><td>L2</td><td>$47.97</td><td>--10.0%</td><td>5주</td><td>$255</td></tr><tr><td>L3</td><td>$45.30</td><td>--15.0%</td><td>8주</td><td>$382</td></tr><tr><td>L4</td><td>$42.64</td><td>--20.0%</td><td>11주</td><td>$509</td></tr><tr><td>L5</td><td>$39.97</td><td>--25.0%</td><td>15주</td><td>$636</td></tr><tr><td>L6</td><td>$37.31</td><td>--30.0%</td><td>20주</td><td>$764</td></tr>
 </table>
-<div class="more">+4개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
+<div class="more">+4개 레벨</div>
 <div class="budget-bar">
 <div class="seg active" style="flex:0.7">투자 70%</div>
 <div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
 </div>
 </div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $59.70 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $26.65 (-50%)</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 $26.65 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $63.40 | SMA20 $55.76 | SMA50 $55.61 | SMA200 $47.15 | 3M +1.3% | Vol 78%
+ATH $63.40 · SMA20 $55.76 · SMA50 $55.61 · SMA200 $47.15 · 3M +1.3% · Vol 78%
 </div>
 </div>
 <div class="card">
 <div class="card-head">
-<div>
-<span class="ticker">TQQQ</span>
-<span class="badge lev">3x</span>
-<span class="badge cat">NASDAQ</span>
+<div class="left">
+<div class="ticker">TQQQ</div>
+<div class="etf-sub">ProShares UltraPro QQQ · 기초: QQQ</div>
+<div class="tags">
+<span class="tag lev">3x</span>
+<span class="tag cat">NASDAQ</span>
 
-<div class="etf-sub">ProShares UltraPro QQQ (기초: QQQ)</div>
 </div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">51점</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="67.7" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">51</span>
+</div>
 </div>
 
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
+<div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
 <div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
-<div class="price-row">
+<div class="price-area">
 <span class="price">$50.26</span>
-<span class="chg up">+4.49%</span>
+<span class="chg-pill up">+4.49%</span>
 </div>
 
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $19.35 ← <b>$50.26</b> → $60.21</div>
-<div class="pos-bar"><div class="fill" style="width:76%;background:#F44336"></div></div>
+<div class="range-bar">
+<div class="range-labels"><span>$19.35</span><span>52주</span><span>$60.21</span></div>
+<div class="range-track"><div class="range-fill" style="width:76%;background:#f04452"></div><div class="range-dot" style="left:76%"></div></div>
+</div>
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">52</div></div>
@@ -277,162 +350,59 @@ ATH $63.40 | SMA20 $55.76 | SMA50 $55.61 | SMA200 $47.15 | 3M +1.3% | Vol 78%
 </div>
 
 <div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $50.26에 27주 ($1,400, 투자금의 20%)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$47.75 👈</td><td>--5.0%</td><td>1주</td><td>$58</td></tr><tr><td>L2</td><td>$45.23</td><td>--10.0%</td><td>2주</td><td>$117</td></tr><tr><td>L3</td><td>$42.72</td><td>--15.0%</td><td>4주</td><td>$175</td></tr><tr><td>L4</td><td>$40.21</td><td>--20.0%</td><td>5주</td><td>$233</td></tr><tr><td>L5</td><td>$37.69</td><td>--25.0%</td><td>7주</td><td>$292</td></tr><tr><td>L6</td><td>$35.18</td><td>--30.0%</td><td>9주</td><td>$350</td></tr>
+<tr class="next-row"><td>L1</td><td>$47.75 ←</td><td>--5.0%</td><td>1주</td><td>$58</td></tr><tr><td>L2</td><td>$45.23</td><td>--10.0%</td><td>2주</td><td>$117</td></tr><tr><td>L3</td><td>$42.72</td><td>--15.0%</td><td>4주</td><td>$175</td></tr><tr><td>L4</td><td>$40.21</td><td>--20.0%</td><td>5주</td><td>$233</td></tr><tr><td>L5</td><td>$37.69</td><td>--25.0%</td><td>7주</td><td>$292</td></tr><tr><td>L6</td><td>$35.18</td><td>--30.0%</td><td>9주</td><td>$350</td></tr>
 </table>
-<div class="more">+9개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
+<div class="more">+9개 레벨</div>
 <div class="budget-bar">
 <div class="seg active" style="flex:0.7">투자 70%</div>
 <div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
 </div>
 </div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $56.29 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $25.13 (-50%)</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 $25.13 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $60.21 | SMA20 $49.65 | SMA50 $52.51 | SMA200 $48.19 | 3M -5.7% | Vol 69%
+ATH $60.21 · SMA20 $49.65 · SMA50 $52.51 · SMA200 $48.19 · 3M -5.7% · Vol 69%
 </div>
 </div>
 <div class="card">
 <div class="card-head">
-<div>
-<span class="ticker">TECL</span>
-<span class="badge lev">3x</span>
-<span class="badge cat">Technology</span>
-<span class="badge trend-dn">하락추세</span>
-<div class="etf-sub">Direxion Daily Technology Bull 3X (기초: XLK)</div>
+<div class="left">
+<div class="ticker">QLD</div>
+<div class="etf-sub">ProShares Ultra QQQ · 기초: QQQ</div>
+<div class="tags">
+<span class="tag lev">2x</span>
+<span class="tag cat">NASDAQ</span>
+
 </div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">51점</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="69.1" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">50</span>
+</div>
 </div>
 
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
+<div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
 <div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
-<div class="price-row">
-<span class="price">$103.04</span>
-<span class="chg up">+4.99%</span>
-</div>
-
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $35.05 ← <b>$103.04</b> → $143.73</div>
-<div class="pos-bar"><div class="fill" style="width:63%;background:#FF9800"></div></div>
-
-<div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">47</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-28.3%</div></div>
-<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-13.1%</div></div>
-<div class="metric warn" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">역배열</div></div>
-</div>
-
-<div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $103.04에 13주 ($1,400, 투자금의 20%)</div>
-<table>
-<tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$97.89 👈</td><td>--5.0%</td><td>0주</td><td>$58</td></tr><tr><td>L2</td><td>$92.74</td><td>--10.0%</td><td>1주</td><td>$117</td></tr><tr><td>L3</td><td>$87.58</td><td>--15.0%</td><td>1주</td><td>$175</td></tr><tr><td>L4</td><td>$82.43</td><td>--20.0%</td><td>2주</td><td>$233</td></tr><tr><td>L5</td><td>$77.28</td><td>--25.0%</td><td>3주</td><td>$292</td></tr><tr><td>L6</td><td>$72.13</td><td>--30.0%</td><td>4주</td><td>$350</td></tr>
-</table>
-<div class="more">+9개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
-<div class="budget-bar">
-<div class="seg active" style="flex:0.7">투자 70%</div>
-<div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
-</div>
-</div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $115.40 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $51.52 (-50%)</div>
-</div>
-
-<div class="details">
-ATH $143.73 | SMA20 $104.70 | SMA50 $114.11 | SMA200 $105.47 | 3M -9.7% | Vol 80%
-</div>
-</div>
-<div class="card">
-<div class="card-head">
-<div>
-<span class="ticker">FAS</span>
-<span class="badge lev">3x</span>
-<span class="badge cat">Finance</span>
-<span class="badge trend-dn">하락추세</span>
-<div class="etf-sub">Direxion Daily Financial Bull 3X (기초: XLF)</div>
-</div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">51점</div>
-</div>
-
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
-<div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
-</div>
-
-<div class="price-row">
-<span class="price">$135.19</span>
-<span class="chg up">+1.72%</span>
-</div>
-
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $96.93 ← <b>$135.19</b> → $183.46</div>
-<div class="pos-bar"><div class="fill" style="width:44%;background:#FF9800"></div></div>
-
-<div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">43</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-26.3%</div></div>
-<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-14.8%</div></div>
-<div class="metric warn" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">역배열</div></div>
-</div>
-
-<div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $135.19에 10주 ($1,400, 투자금의 20%)</div>
-<table>
-<tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$128.43 👈</td><td>--5.0%</td><td>0주</td><td>$90</td></tr><tr><td>L2</td><td>$121.67</td><td>--10.0%</td><td>1주</td><td>$179</td></tr><tr><td>L3</td><td>$114.91</td><td>--15.0%</td><td>2주</td><td>$269</td></tr><tr><td>L4</td><td>$108.15</td><td>--20.0%</td><td>3주</td><td>$359</td></tr><tr><td>L5</td><td>$101.39</td><td>--25.0%</td><td>4주</td><td>$449</td></tr><tr><td>L6</td><td>$94.63</td><td>--30.0%</td><td>5주</td><td>$538</td></tr>
-</table>
-<div class="more">+6개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
-<div class="budget-bar">
-<div class="seg active" style="flex:0.7">투자 70%</div>
-<div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
-</div>
-</div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $151.41 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $67.60 (-50%)</div>
-</div>
-
-<div class="details">
-ATH $183.46 | SMA20 $142.95 | SMA50 $156.53 | SMA200 $154.52 | 3M -11.1% | Vol 58%
-</div>
-</div>
-<div class="card">
-<div class="card-head">
-<div>
-<span class="ticker">QLD</span>
-<span class="badge lev">2x</span>
-<span class="badge cat">NASDAQ</span>
-
-<div class="etf-sub">ProShares Ultra QQQ (기초: QQQ)</div>
-</div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">50점</div>
-</div>
-
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
-<div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
-</div>
-
-<div class="price-row">
+<div class="price-area">
 <span class="price">$68.65</span>
-<span class="chg up">+2.95%</span>
+<span class="chg-pill up">+2.95%</span>
 </div>
 
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $34.61 ← <b>$68.65</b> → $76.36</div>
-<div class="pos-bar"><div class="fill" style="width:82%;background:#F44336"></div></div>
+<div class="range-bar">
+<div class="range-labels"><span>$34.61</span><span>52주</span><span>$76.36</span></div>
+<div class="range-track"><div class="range-fill" style="width:82%;background:#f04452"></div><div class="range-dot" style="left:82%"></div></div>
+</div>
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">52</div></div>
@@ -442,52 +412,59 @@ ATH $183.46 | SMA20 $142.95 | SMA50 $156.53 | SMA200 $154.52 | 3M -11.1% | Vol 5
 </div>
 
 <div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $68.65에 20주 ($1,400, 투자금의 20%)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$65.22 👈</td><td>--5.0%</td><td>1주</td><td>$127</td></tr><tr><td>L2</td><td>$61.79</td><td>--10.0%</td><td>4주</td><td>$255</td></tr><tr><td>L3</td><td>$58.35</td><td>--15.0%</td><td>6주</td><td>$382</td></tr><tr><td>L4</td><td>$54.92</td><td>--20.0%</td><td>9주</td><td>$509</td></tr><tr><td>L5</td><td>$51.49</td><td>--25.0%</td><td>12주</td><td>$636</td></tr><tr><td>L6</td><td>$48.06</td><td>--30.0%</td><td>15주</td><td>$764</td></tr>
+<tr class="next-row"><td>L1</td><td>$65.22 ←</td><td>--5.0%</td><td>1주</td><td>$127</td></tr><tr><td>L2</td><td>$61.79</td><td>--10.0%</td><td>4주</td><td>$255</td></tr><tr><td>L3</td><td>$58.35</td><td>--15.0%</td><td>6주</td><td>$382</td></tr><tr><td>L4</td><td>$54.92</td><td>--20.0%</td><td>9주</td><td>$509</td></tr><tr><td>L5</td><td>$51.49</td><td>--25.0%</td><td>12주</td><td>$636</td></tr><tr><td>L6</td><td>$48.06</td><td>--30.0%</td><td>15주</td><td>$764</td></tr>
 </table>
-<div class="more">+4개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
+<div class="more">+4개 레벨</div>
 <div class="budget-bar">
 <div class="seg active" style="flex:0.7">투자 70%</div>
 <div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
 </div>
 </div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $76.89 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $34.33 (-50%)</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 $34.33 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $76.36 | SMA20 $68.00 | SMA50 $70.39 | SMA200 $65.62 | 3M -2.9% | Vol 46%
+ATH $76.36 · SMA20 $68.00 · SMA50 $70.39 · SMA200 $65.62 · 3M -2.9% · Vol 46%
 </div>
 </div>
 <div class="card">
 <div class="card-head">
-<div>
-<span class="ticker">SSO</span>
-<span class="badge lev">2x</span>
-<span class="badge cat">S&P 500</span>
+<div class="left">
+<div class="ticker">SSO</div>
+<div class="etf-sub">ProShares Ultra S&P 500 · 기초: SPY</div>
+<div class="tags">
+<span class="tag lev">2x</span>
+<span class="tag cat">S&P 500</span>
 
-<div class="etf-sub">ProShares Ultra S&P 500 (기초: SPY)</div>
 </div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">47점</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="73.3" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">47</span>
+</div>
 </div>
 
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
+<div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
 <div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
-<div class="price-row">
+<div class="price-area">
 <span class="price">$57.81</span>
-<span class="chg up">+1.42%</span>
+<span class="chg-pill up">+1.42%</span>
 </div>
 
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $32.21 ← <b>$57.81</b> → $60.08</div>
-<div class="pos-bar"><div class="fill" style="width:92%;background:#F44336"></div></div>
+<div class="range-bar">
+<div class="range-labels"><span>$32.21</span><span>52주</span><span>$60.08</span></div>
+<div class="range-track"><div class="range-fill" style="width:92%;background:#f04452"></div><div class="range-dot" style="left:92%"></div></div>
+</div>
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">47</div></div>
@@ -497,52 +474,59 @@ ATH $76.36 | SMA20 $68.00 | SMA50 $70.39 | SMA200 $65.62 | 3M -2.9% | Vol 46%
 </div>
 
 <div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $57.81에 24주 ($1,400, 투자금의 20%)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$55.50 👈</td><td>--4.0%</td><td>2주</td><td>$127</td></tr><tr><td>L2</td><td>$53.19</td><td>--8.0%</td><td>4주</td><td>$255</td></tr><tr><td>L3</td><td>$50.87</td><td>--12.0%</td><td>7주</td><td>$382</td></tr><tr><td>L4</td><td>$48.56</td><td>--16.0%</td><td>10주</td><td>$509</td></tr><tr><td>L5</td><td>$46.25</td><td>--20.0%</td><td>13주</td><td>$636</td></tr><tr><td>L6</td><td>$43.94</td><td>--24.0%</td><td>17주</td><td>$764</td></tr>
+<tr class="next-row"><td>L1</td><td>$55.50 ←</td><td>--4.0%</td><td>2주</td><td>$127</td></tr><tr><td>L2</td><td>$53.19</td><td>--8.0%</td><td>4주</td><td>$255</td></tr><tr><td>L3</td><td>$50.87</td><td>--12.0%</td><td>7주</td><td>$382</td></tr><tr><td>L4</td><td>$48.56</td><td>--16.0%</td><td>10주</td><td>$509</td></tr><tr><td>L5</td><td>$46.25</td><td>--20.0%</td><td>13주</td><td>$636</td></tr><tr><td>L6</td><td>$43.94</td><td>--24.0%</td><td>17주</td><td>$764</td></tr>
 </table>
-<div class="more">+4개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
+<div class="more">+4개 레벨</div>
 <div class="budget-bar">
 <div class="seg active" style="flex:0.7">투자 70%</div>
 <div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
 </div>
 </div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $64.75 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $28.91 (-50%)</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 $28.91 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $60.08 | SMA20 $58.16 | SMA50 $58.72 | SMA200 $54.07 | 3M +0.5% | Vol 37%
+ATH $60.08 · SMA20 $58.16 · SMA50 $58.72 · SMA200 $54.07 · 3M +0.5% · Vol 37%
 </div>
 </div>
 <div class="card">
 <div class="card-head">
-<div>
-<span class="ticker">UPRO</span>
-<span class="badge lev">3x</span>
-<span class="badge cat">S&P 500</span>
+<div class="left">
+<div class="ticker">UPRO</div>
+<div class="etf-sub">ProShares UltraPro S&P 500 · 기초: SPY</div>
+<div class="tags">
+<span class="tag lev">3x</span>
+<span class="tag cat">S&P 500</span>
 
-<div class="etf-sub">ProShares UltraPro S&P 500 (기초: SPY)</div>
 </div>
-<div class="score-circle" style="background:#FFF3E0;color:#E65100;border-color:#FF9800">45점</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="76.0" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">45</span>
+</div>
 </div>
 
-<div class="verdict-box" style="background:#FFF3E0;border:2px solid #FF9800">
+<div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
 <div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
-<div class="price-row">
+<div class="price-area">
 <span class="price">$114.61</span>
-<span class="chg up">+2.11%</span>
+<span class="chg-pill up">+2.11%</span>
 </div>
 
-<div style="font-size:0.7em;color:#7B6B4F;margin-bottom:6px">52주: $50.27 ← <b>$114.61</b> → $122.23</div>
-<div class="pos-bar"><div class="fill" style="width:89%;background:#F44336"></div></div>
+<div class="range-bar">
+<div class="range-labels"><span>$50.27</span><span>52주</span><span>$122.23</span></div>
+<div class="range-track"><div class="range-fill" style="width:89%;background:#f04452"></div><div class="range-dot" style="left:89%"></div></div>
+</div>
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">46</div></div>
@@ -552,59 +536,57 @@ ATH $60.08 | SMA20 $58.16 | SMA50 $58.72 | SMA200 $54.07 | 3M +0.5% | Vol 37%
 </div>
 
 <div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 $7,000 + 예비금 $3,000)</div>
-<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 $114.61에 12주 ($1,400, 투자금의 20%)</div>
+<div class="bp-title">무한매수 계획표</div>
+<div class="bp-sub">투자 $7,000 + 예비금 $3,000 · 레벨 도달 시 매수 → 장기 보유</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
-<tr class="next-row"><td>L1</td><td>$110.03 👈</td><td>--4.0%</td><td>0주</td><td>$58</td></tr><tr><td>L2</td><td>$105.44</td><td>--8.0%</td><td>1주</td><td>$117</td></tr><tr><td>L3</td><td>$100.86</td><td>--12.0%</td><td>1주</td><td>$175</td></tr><tr><td>L4</td><td>$96.27</td><td>--16.0%</td><td>2주</td><td>$233</td></tr><tr><td>L5</td><td>$91.69</td><td>--20.0%</td><td>3주</td><td>$292</td></tr><tr><td>L6</td><td>$87.10</td><td>--24.0%</td><td>4주</td><td>$350</td></tr>
+<tr class="next-row"><td>L1</td><td>$110.03 ←</td><td>--4.0%</td><td>0주</td><td>$58</td></tr><tr><td>L2</td><td>$105.44</td><td>--8.0%</td><td>1주</td><td>$117</td></tr><tr><td>L3</td><td>$100.86</td><td>--12.0%</td><td>1주</td><td>$175</td></tr><tr><td>L4</td><td>$96.27</td><td>--16.0%</td><td>2주</td><td>$233</td></tr><tr><td>L5</td><td>$91.69</td><td>--20.0%</td><td>3주</td><td>$292</td></tr><tr><td>L6</td><td>$87.10</td><td>--24.0%</td><td>4주</td><td>$350</td></tr>
 </table>
-<div class="more">+9개 레벨 더 있음</div>
-<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: 12%→22%→35% (3단계 부분익절)</div>
+<div class="more">+9개 레벨</div>
 <div class="budget-bar">
 <div class="seg active" style="flex:0.7">투자 70%</div>
 <div class="seg reserve" style="flex:0.30000000000000004">예비금 30%</div>
 </div>
 </div>
-<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: $128.36 (+12%)</div>
-<div class="risk-item danger">🛑 손절가: $57.31 (-50%)</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 $57.31 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $122.23 | SMA20 $115.87 | SMA50 $117.86 | SMA200 $105.59 | 3M -0.3% | Vol 55%
-</div>
+ATH $122.23 · SMA20 $115.87 · SMA50 $117.86 · SMA200 $105.59 · 3M -0.3% · Vol 55%
 </div>
 </div>
 
-<div class="guide-box">
-<h3>📖 적응형 전략 v2</h3>
-<p>
-<b>🚀 강한 상승장 (투자 75%)</b>: 시드매수 30% → 풀백 시 그리드 추가매수 → 15%/25%/40% 3단계 부분익절 → 고점 -7% 트레일링 스탑<br>
-<b>📈 상승장 (투자 70%)</b>: 시드매수 20~30% → 눌림목 그리드 매수 → 12%/22%/35% 부분익절 → 트레일링 스탑<br>
-<b>➡️ 횡보장 (투자 55%)</b>: 그리드 레벨 도달 시만 매수 → 8%/15% 2단계 익절<br>
-<b>📉 하락장 (투자 45%)</b>: 예비금 55% 유지 + 하위 레벨 위주 매수 → 10% 전량 익절<br>
-<b>🔥 위기 (투자 40%)</b>: 예비금 60% 유지, 극단적 저점 소량 매수 → 8% 전량 익절
-</p>
-<div class="tip">💰 익절 후 새 그리드로 재시작 (수익 재투자) | 그리드 상단 15% 이탈 시 자동 리밸런싱</div>
-<div class="tip">⚡ 횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전</div>
-<div class="warn-tip">🛑 손절 기준 -50% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가 (레버리지 디케이로 회복 매우 어려움)</div>
+<div class="strategy-box">
+<h3>무한매수법 전략 v3</h3>
+<div class="strat-item"><span class="emoji">🚀</span><div class="desc"><b>강한 상승장</b> (투자 75%): 시드매수 30% 진입 → 풀백 시 그리드 추가매수 → 장기 보유</div></div>
+<div class="strat-item"><span class="emoji">📈</span><div class="desc"><b>상승장</b> (투자 70%): 시드매수 30% → 눌림목 그리드 매수 → 장기 보유</div></div>
+<div class="strat-item"><span class="emoji">➡️</span><div class="desc"><b>횡보장</b> (투자 55%): 그리드 레벨 도달 시 매수 + 유휴 현금 DCA</div></div>
+<div class="strat-item"><span class="emoji">📉</span><div class="desc"><b>하락장</b> (투자 45%): 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유</div></div>
+<div class="strat-item"><span class="emoji">🔥</span><div class="desc"><b>위기</b> (투자 40%): 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유</div></div>
+<div class="strat-tips">
+그리드 상단 15% 이탈 시 자동 리밸런싱 · 유휴 현금 월 1회 DCA 자동 매수<br>
+횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전
+<div class="warn">손절 기준 -50% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가</div>
+</div>
 </div>
 
 <div class="footer">
-<p>⚠️ 본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p>레버리지 ETF는 높은 위험을 수반합니다. 투자 결정은 본인 책임입니다.</p>
-<p style="margin-top:8px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> | 자동 생성 (2026-03-05 15:48 KST)</p>
+<p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 16:55 KST</p>
 </div>
 </div>
 
 <div class="overlay" id="ov" onclick="hideInfo()"></div>
-<div class="popup" id="pop"><button class="close" onclick="hideInfo()">&times;</button><h3 id="popT"></h3><ul id="popC"></ul></div>
+<div class="popup" id="pop"><div class="handle"></div><button class="close" onclick="hideInfo()">✕</button><h3 id="popT"></h3><ul id="popC"></ul></div>
 <script>
 const info={
 rsi:{t:'RSI (상대강도지수)',c:[
 {s:'RSI란?',i:['주가의 과매수/과매도를 0~100으로 표시','14일간 상승폭 vs 하락폭 비율']},
 {s:'해석 기준',i:['🟢 30 미만: 과매도 (매수 기회!)','🟡 30~70: 중립','🟠 70 이상: 과매수 (조심!)']},
-{s:'활용법',i:['RSI 30 이하에서 분할매수 시작','RSI 70 이상에서 수익 확정 고려']}
+{s:'활용법',i:['RSI 30 이하에서 분할매수 시작','RSI 70 이상에서 추가 매수 보류 (보유분 장기 보유)']}
 ]},
 dd:{t:'ATH 대비 낙폭',c:[
 {s:'ATH 낙폭이란?',i:['역대 최고가(ATH) 대비 현재가의 하락률','낙폭이 클수록 싸게 살 수 있는 기회']},
@@ -625,5 +607,91 @@ sma:{t:'추세 (이동평균선 배열)',c:[
 function showInfo(k){const d=info[k];document.getElementById('popT').textContent=d.t;let h='';d.c.forEach(s=>{h+='<li class="sec">'+s.s+'</li>';s.i.forEach(i=>{h+='<li>'+i+'</li>'});});document.getElementById('popC').innerHTML=h;document.getElementById('ov').classList.add('show');document.getElementById('pop').classList.add('show');}
 function hideInfo(){document.getElementById('ov').classList.remove('show');document.getElementById('pop').classList.remove('show');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideInfo();});
+
+// === 알림 시스템 ===
+const NOTI_KEY='ding_noti_enabled';
+const NOTI_SENT_KEY='ding_noti_sent';
+const alerts=[{"type":"buy","ticker":"SOXL","msg":"SOXL 61점 — 매수 고려"}];
+let swReg=null;
+
+// SW 등록
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});
+}
+
+// 알림 토글 UI 초기화
+function initNoti(){
+  const enabled=localStorage.getItem(NOTI_KEY)==='true';
+  const toggle=document.getElementById('notiToggle');
+  const status=document.getElementById('notiStatus');
+  const list=document.getElementById('notiList');
+  if(enabled && Notification.permission==='granted'){
+    toggle.className='noti-toggle on';
+    status.textContent='알림이 켜져 있어요';
+    list.classList.add('show');
+    fireAlerts();
+  }else{
+    toggle.className='noti-toggle off';
+    status.textContent='알림 허용 시 시그널을 푸시로 받아요';
+    list.classList.remove('show');
+  }
+}
+
+// 알림 토글
+function toggleNoti(){
+  const toggle=document.getElementById('notiToggle');
+  const isOn=toggle.classList.contains('on');
+  if(isOn){
+    localStorage.setItem(NOTI_KEY,'false');
+    initNoti();
+  }else{
+    if(!('Notification' in window)){
+      document.getElementById('notiStatus').textContent='이 브라우저는 알림을 지원하지 않아요';
+      return;
+    }
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){
+        localStorage.setItem(NOTI_KEY,'true');
+        initNoti();
+      }else{
+        document.getElementById('notiStatus').textContent='알림이 차단되었어요. 브라우저 설정에서 허용해주세요';
+      }
+    });
+  }
+}
+
+// 시그널 알림 발송
+function fireAlerts(){
+  const today=new Date().toDateString();
+  const sent=localStorage.getItem(NOTI_SENT_KEY);
+  if(sent===today)return; // 하루 1회만
+
+  if(alerts.length===0)return;
+  localStorage.setItem(NOTI_SENT_KEY,today);
+
+  // 가장 중요한 알림 1개는 즉시
+  sendNoti('🔔 딩쵱 매수 시그널',alerts[0].msg,'ding-main');
+
+  // 나머지는 30초 간격으로
+  alerts.slice(1,4).forEach((a,i)=>{
+    setTimeout(()=>{sendNoti('📊 '+a.ticker,a.msg,'ding-'+a.ticker);}, (i+1)*30000);
+  });
+}
+
+function sendNoti(title,body,tag){
+  if(swReg){
+    swReg.active?.postMessage({type:'SHOW_NOTIFICATION',title,body,tag});
+  }else{
+    new Notification(title,{body,icon:'./icons/icon-192.png',tag});
+  }
+}
+
+// 알림바 클릭 시 목록 토글
+document.getElementById('notiBar').addEventListener('click',e=>{
+  if(e.target.id==='notiToggle')return;
+  document.getElementById('notiList').classList.toggle('show');
+});
+
+initNoti();
 </script>
 </body></html>

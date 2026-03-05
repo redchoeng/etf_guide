@@ -19,7 +19,7 @@ def _fetch_data(ticker: str, period: str = "max"):
 
 
 def render():
-    st.title("🧪 전략 백테스트")
+    st.title("🧪 무한매수 백테스트")
 
     config = st.session_state.get("config", {})
     presets = st.session_state.get("presets", {})
@@ -62,18 +62,9 @@ def render():
             format_func=lambda w: weighting_kr.get(w, w),
         )
 
-    c6, c7, c8 = st.columns(3)
-    with c6:
-        profit_target = st.number_input(
-            "목표 수익률 %", min_value=1.0, max_value=50.0,
-            value=bt_config.get("profit_target_pct", 10.0), step=1.0,
-        )
-    with c7:
-        reinvest = st.checkbox("수익 재투자", value=bt_config.get("enable_reinvest", True))
-    with c8:
-        period_years = st.selectbox("백테스트 기간",
-                                    [1, 2, 3, 5, 10, 15], index=3,
-                                    format_func=lambda y: f"{y}년")
+    period_years = st.selectbox("백테스트 기간",
+                                [1, 2, 3, 5, 10, 15], index=3,
+                                format_func=lambda y: f"{y}년")
 
     end_date = datetime.now()
     start_date = end_date - timedelta(days=period_years * 365)
@@ -111,8 +102,6 @@ def render():
                     df, grid_levels, ticker,
                     start_date=start_date.strftime("%Y-%m-%d"),
                     end_date=end_date.strftime("%Y-%m-%d"),
-                    profit_target_pct=profit_target,
-                    reinvest_profits=reinvest,
                     total_budget=total_budget,
                 )
             except Exception as e:
@@ -130,12 +119,9 @@ def render():
         m4, m5, m6 = st.columns(3)
         m4.metric("최대 낙폭", fmt_pct(result.max_drawdown_pct))
         m5.metric("최대 미실현 손실", fmt_pct(result.max_unrealized_loss_pct))
-        m6.metric("실현 손익", fmt_currency(result.total_realized_pnl))
+        m6.metric("매수 횟수", result.num_buys)
 
-        m7, m8, m9 = st.columns(3)
-        m7.metric("매수 횟수", result.num_buys)
-        m8.metric("매도 횟수 (라운드)", result.num_sells)
-        m9.metric("승률", fmt_pct(result.win_rate) if result.win_rate else "-")
+        st.caption("♾️ 무한매수법: 익절 없이 장기 보유, 매도 없음")
 
         # 자산 곡선
         st.markdown("---")
@@ -153,14 +139,13 @@ def render():
                     df, grid_levels, ticker,
                     start_date=start_date.strftime("%Y-%m-%d"),
                     end_date=end_date.strftime("%Y-%m-%d"),
-                    profit_target_pct=profit_target,
                 )
 
                 fig_comp = create_comparison_chart(comparison)
                 st.plotly_chart(fig_comp, use_container_width=True)
 
                 comp_rows = []
-                for strategy, label in [("grid", "그리드 전략"), ("lump_sum", "일시 매수"), ("dca", "월 적립식")]:
+                for strategy, label in [("grid", "무한매수"), ("lump_sum", "일시 매수"), ("dca", "월 적립식")]:
                     data = comparison.get(strategy, {})
                     comp_rows.append({
                         "전략": label,
@@ -190,7 +175,6 @@ def render():
                 scenarios = backtester.run_crash_scenario(
                     df, grid_levels, ticker,
                     crash_periods=crash_periods,
-                    profit_target_pct=profit_target,
                 )
 
             tabs = st.tabs([s["period_name"] for s in scenarios])
@@ -201,7 +185,7 @@ def render():
                         sc1, sc2, sc3 = st.columns(3)
                         sc1.metric("수익률", fmt_pct(r.total_return_pct))
                         sc2.metric("최대 낙폭", fmt_pct(r.max_drawdown_pct))
-                        sc3.metric("매수/매도", f"{r.num_buys}회 / {r.num_sells}회")
+                        sc3.metric("매수 횟수", f"{r.num_buys}회")
 
                         fig = create_equity_curve_chart(
                             r.equity_curve, f"{ticker} ({scenario['period_name']})")
@@ -214,15 +198,19 @@ def render():
         with st.expander("📋 전체 거래 내역"):
             if result.trades:
                 trade_data = []
+                action_kr = {
+                    "BUY": "그리드 매수",
+                    "SEED_BUY": "시드 매수",
+                    "DCA_IDLE": "유휴 DCA",
+                    "REBALANCE": "그리드 리밸런싱",
+                }
                 for t in result.trades:
                     trade_data.append({
                         "날짜": str(t.date.date()) if hasattr(t.date, 'date') else str(t.date),
-                        "종류": "매수" if t.action == "BUY" else "매도",
+                        "종류": action_kr.get(t.action, "매수"),
                         "가격": f"${t.price:.2f}",
                         "수량": t.quantity,
                         "그리드 레벨": t.grid_level if t.grid_level > 0 else "-",
                         "평균 단가": f"${t.cost_basis:.2f}",
-                        "손익": f"${t.pnl:.2f}" if t.pnl else "-",
-                        "라운드": t.round_number,
                     })
                 st.dataframe(pd.DataFrame(trade_data), use_container_width=True, hide_index=True)

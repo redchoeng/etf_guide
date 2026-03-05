@@ -23,7 +23,7 @@ def _fetch_data(ticker: str, period: str = "1y"):
 
 
 def render():
-    st.title("💼 포트폴리오")
+    st.title("💼 무한매수 포트폴리오")
 
     try:
         db = Database()
@@ -38,7 +38,7 @@ def render():
     config_map = {c["ticker"]: c for c in etf_configs}
 
     if not etf_configs:
-        st.info("아직 설정된 ETF가 없습니다. '그리드 설정'에서 ETF를 먼저 설정하세요.")
+        st.info("♾️ 아직 설정된 ETF가 없습니다. '무한매수 그리드 설정'에서 ETF를 먼저 설정하세요.")
         st.markdown("---")
         st.subheader("빠른 입력 (설정 없이)")
         with st.form("manual_purchase"):
@@ -64,7 +64,7 @@ def render():
                     "spacing_pct": 5.0,
                     "weighting_method": "linear",
                     "reference_price": m_price,
-                    "profit_target_pct": 10.0,
+                    "profit_target_pct": 0,  # 무한매수법: 익절 없음
                 })
                 db.save_purchase({
                     "etf_config_id": config_id,
@@ -231,7 +231,7 @@ def render():
                 fig = create_price_with_grid_chart(df_chart, grid_levels, grid_ticker, filled)
                 st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info(f"{grid_ticker}의 그리드가 아직 설정되지 않았습니다. '그리드 설정'에서 설정하세요.")
+            st.info(f"♾️ {grid_ticker}의 그리드가 아직 설정되지 않았습니다. '무한매수 그리드 설정'에서 설정하세요.")
 
     st.markdown("---")
 

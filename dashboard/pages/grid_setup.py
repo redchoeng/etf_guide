@@ -23,7 +23,7 @@ def _get_current_price(ticker: str):
 
 
 def render():
-    st.title("⚙️ 그리드 설정")
+    st.title("⚙️ 무한매수 그리드 설정")
 
     config = st.session_state.get("config", {})
     presets = st.session_state.get("presets", {})
@@ -94,20 +94,11 @@ def render():
             index=1,
         )
 
-    c4, c5 = st.columns(2)
-    with c4:
-        ref_option = st.radio(
-            "기준 가격",
-            ["현재가", "역대 최고가 (ATH)", "52주 최고가", "직접 입력"],
-        )
-    with c5:
-        profit_target = st.number_input(
-            "목표 수익률 (%)",
-            min_value=1.0,
-            max_value=100.0,
-            value=grid_config.get("default_profit_target_pct", 10.0),
-            step=1.0,
-        )
+    ref_option = st.radio(
+        "기준 가격",
+        ["현재가", "역대 최고가 (ATH)", "52주 최고가", "직접 입력"],
+        horizontal=True,
+    )
 
     reference_price = current_price
     if ref_option == "직접 입력":
@@ -201,9 +192,11 @@ def render():
 
     st.markdown("---")
 
-    # 회복 목표가
-    st.subheader("🎯 회복 목표가")
-    recovery = calc.calculate_recovery_targets(grid_levels, profit_target)
+    # 레벨별 평단가 (참고용)
+    st.subheader("📊 레벨별 평균 단가")
+    st.caption("♾️ 무한매수법: 각 레벨까지 체결되었을 때의 평균 단가를 참고하세요. 익절 없이 장기 보유합니다.")
+
+    recovery = calc.calculate_recovery_targets(grid_levels, 10.0)
 
     recovery_data = []
     for r in recovery:
@@ -212,8 +205,6 @@ def render():
             "총 투자금": r["total_invested"],
             "총 주식수": r["total_shares"],
             "평균 단가": r["avg_cost"],
-            f"+{profit_target:.0f}% 목표가": r["target_sell_price"],
-            "예상 수익": r["projected_profit"],
         })
 
     recovery_df = pd.DataFrame(recovery_data)
@@ -221,8 +212,6 @@ def render():
         recovery_df.style.format({
             "총 투자금": "${:,.2f}",
             "평균 단가": "${:.2f}",
-            f"+{profit_target:.0f}% 목표가": "${:.2f}",
-            "예상 수익": "${:,.2f}",
         }),
         use_container_width=True,
         hide_index=True,
@@ -253,9 +242,9 @@ def render():
     with col_exp2:
         rec_csv = recovery_df.to_csv(index=False)
         st.download_button(
-            "📥 회복 목표가 CSV",
+            "📥 평균 단가 CSV",
             rec_csv,
-            file_name=f"{ticker}_recovery.csv",
+            file_name=f"{ticker}_avg_cost.csv",
             mime="text/csv",
         )
 
@@ -277,7 +266,7 @@ def render():
                 "spacing_pct": spacing_pct,
                 "weighting_method": weighting,
                 "reference_price": reference_price,
-                "profit_target_pct": profit_target,
+                "profit_target_pct": 0,  # 무한매수법: 익절 없음
             }
 
             if existing:

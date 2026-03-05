@@ -95,7 +95,7 @@ def create_equity_curve_chart(
     ticker: str = "",
     trades: list = None,
 ) -> go.Figure:
-    """Portfolio equity curve with buy/sell markers."""
+    """Portfolio equity curve with buy markers (무한매수법: 매수만)."""
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
@@ -117,9 +117,7 @@ def create_equity_curve_chart(
             ))
 
     if trades:
-        buys = [t for t in trades if t.action == "BUY"]
-        sells = [t for t in trades if t.action == "SELL"]
-
+        buys = [t for t in trades if t.action in ("BUY", "SEED_BUY", "DCA_IDLE", "REBALANCE")]
         if buys:
             fig.add_trace(go.Scatter(
                 x=[t.date for t in buys],
@@ -127,14 +125,6 @@ def create_equity_curve_chart(
                    else t.price * t.quantity for t in buys],
                 mode="markers", name="Buy",
                 marker=dict(symbol="triangle-up", size=10, color="#00c853"),
-            ))
-        if sells:
-            fig.add_trace(go.Scatter(
-                x=[t.date for t in sells],
-                y=[equity_df.loc[t.date, "equity"] if t.date in equity_df.index
-                   else t.price * t.quantity for t in sells],
-                mode="markers", name="Sell",
-                marker=dict(symbol="triangle-down", size=10, color="#f44336"),
             ))
 
     fig.update_layout(
@@ -152,7 +142,7 @@ def create_comparison_chart(comparison_data: dict) -> go.Figure:
     fig = go.Figure()
 
     colors = {"grid": "#2196f3", "lump_sum": "#00c853", "dca": "#ffc107"}
-    names = {"grid": "Grid Strategy", "lump_sum": "Lump Sum", "dca": "Monthly DCA"}
+    names = {"grid": "무한매수", "lump_sum": "일시 매수", "dca": "월 적립식"}
 
     budget = comparison_data.get("total_budget", 10000)
 

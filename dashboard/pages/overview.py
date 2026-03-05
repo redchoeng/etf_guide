@@ -24,7 +24,7 @@ def _get_current_price(ticker: str):
 
 
 def render():
-    st.title("🏠 개요")
+    st.title("🏠 무한매수 현황판")
 
     config = st.session_state.get("config", {})
     presets = st.session_state.get("presets", {})
@@ -59,7 +59,7 @@ def render():
         c3.metric("수익/손실", fmt_currency(pnl), fmt_pct(pnl_pct))
         c4.metric("보유 ETF 수", len(portfolio))
     else:
-        st.info("아직 매수 기록이 없습니다. '그리드 설정'에서 ETF를 설정하고, '포트폴리오'에서 매수를 기록하세요.")
+        st.info("♾️ 아직 매수 기록이 없습니다. '무한매수 그리드 설정'에서 ETF를 설정하고, '포트폴리오'에서 매수를 기록하세요.")
 
     st.markdown("---")
 

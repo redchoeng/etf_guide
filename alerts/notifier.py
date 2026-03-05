@@ -10,6 +10,7 @@ DB 없이 프리셋(etf_presets.yaml) 기반으로 동작합니다.
   4. 매시간 요약 (전체 ETF 현황)
 """
 
+import json
 import logging
 import os
 import time
@@ -23,7 +24,25 @@ logger = logging.getLogger(__name__)
 
 # 중복 알림 방지 캐시: key -> timestamp
 _alert_cache: dict[str, float] = {}
-ALERT_COOLDOWN = 3600  # 1시간
+ALERT_COOLDOWN = 14400  # 4시간
+
+# 방향 필터용 상태 파일
+STATE_FILE = Path(__file__).parent / "state.json"
+
+
+def _load_state() -> dict:
+    """이전 실행의 가격 상태 로드."""
+    if STATE_FILE.exists():
+        try:
+            return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def _save_state(state: dict):
+    """현재 가격 상태 저장."""
+    STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
 def _should_alert(key: str) -> bool:
@@ -73,20 +92,31 @@ class TelegramNotifier:
             return False
 
     def send_grid_alert(self, ticker: str, level: int, target_price: float,
-                        current_price: float, quantity: int, budget: float) -> bool:
-        """그리드 레벨 도달 알림."""
-        if not _should_alert(f"grid_{ticker}_{level}"):
+                        current_price: float, quantity: int, budget: float,
+                        direction: str = "down") -> bool:
+        """그리드 레벨 도달 알림 (방향 필터 적용)."""
+        prefix = "U" if direction == "up" else "L"
+        if not _should_alert(f"grid_{ticker}_{prefix}{level}"):
             return False
 
+        if direction == "up":
+            emoji = "📈"
+            title = "상승 그리드 매수 시그널"
+            desc = "가격이 상승 그리드를 관통했습니다!"
+        else:
+            emoji = "📉"
+            title = "하락 그리드 매수 시그널"
+            desc = "가격이 하락 그리드를 관통했습니다!"
+
         msg = (
-            f"📊 <b>그리드 매수 시그널</b>\n\n"
+            f"{emoji} <b>{title}</b>\n\n"
             f"종목: <b>{ticker}</b>\n"
-            f"레벨: L{level}\n"
+            f"레벨: {prefix}{level}\n"
             f"목표가: ${target_price:.2f}\n"
             f"현재가: ${current_price:.2f}\n"
             f"매수 수량: {quantity}주\n"
             f"매수 금액: ${budget:,.0f}\n\n"
-            f"⚠️ 그리드 레벨에 도달했습니다!"
+            f"⚠️ {desc}"
         )
         return self.send_message(msg)
 
@@ -193,6 +223,7 @@ def check_and_notify(config: dict):
     gc = GridCalculator(config.get("grid", {}))
 
     summaries = []
+    price_state = _load_state()
     alerts_sent = 0
 
     for ticker, preset in presets.get("presets", {}).items():
@@ -255,7 +286,8 @@ def check_and_notify(config: dict):
                     alerts_sent += 1
                     logger.info(f"    🔔 매수 추천 알림 발송 ({score}점)")
 
-            # 2) 그리드 레벨 도달 체크
+            # 2) 그리드 레벨 도달 체크 (방향 필터)
+            prev_px = price_state.get(ticker, current_price)
             alloc_rate = {"BULL_STRONG": 0.75, "BULL": 0.70, "SIDEWAYS": 0.55, "CORRECTION": 0.50, "BEAR": 0.45, "CRISIS": 0.40}.get(regime, 0.55)
             budget = preset.get("suggested_budget", 10000) * alloc_rate
             grid = gc.calculate_grid(
@@ -266,16 +298,40 @@ def check_and_notify(config: dict):
                 weighting="equal",
             )
 
+            # 하락 그리드: 위→아래 관통 시에만 알림
             for gl in grid:
-                if current_price <= gl.target_price:
+                tp = gl.target_price
+                if prev_px > tp >= current_price:
                     sent = notifier.send_grid_alert(
-                        ticker, gl.level_number, gl.target_price,
+                        ticker, gl.level_number, tp,
                         current_price, gl.quantity, gl.budget_allocation,
                     )
                     if sent:
                         alerts_sent += 1
-                        logger.info(f"    🔔 그리드 L{gl.level_number} 도달 알림")
+                        logger.info(f"    🔔 하락 L{gl.level_number} 관통 알림")
                     break  # 가장 가까운 레벨만
+
+            # 상승 그리드: 아래→위 관통 시에만 알림
+            upside_grid = gc.calculate_upside_grid(
+                reference_price=current_price,
+                total_budget=budget,
+                num_levels=5,
+                spacing_pct=3.0,
+            )
+            for ugl in upside_grid:
+                tp = ugl.target_price
+                if prev_px < tp <= current_price:
+                    sent = notifier.send_grid_alert(
+                        ticker, ugl.level_number, tp,
+                        current_price, ugl.quantity, ugl.budget_allocation,
+                        direction="up",
+                    )
+                    if sent:
+                        alerts_sent += 1
+                        logger.info(f"    🔔 상승 U{ugl.level_number} 관통 알림")
+                    break
+
+            price_state[ticker] = current_price
 
             # 3) 급락 알림 (1일 -5% 이상)
             if change_pct <= -5:
@@ -302,6 +358,7 @@ def check_and_notify(config: dict):
     if summaries:
         notifier.send_summary(summaries, macro)
 
+    _save_state(price_state)
     logger.info(f"체크 완료: {len(summaries)}종목, {alerts_sent}건 알림")
 
 

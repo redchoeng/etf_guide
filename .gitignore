@@ -21,6 +21,9 @@ venv/
 *.swp
 *.swo
 
+# Alerts state
+alerts/state.json
+
 # OS
 .DS_Store
 Thumbs.db

@@ -60,26 +60,6 @@ presets:
     suggested_levels: 10
     suggested_spacing: 5.0
 
-  # --- Technology ---
-  TECL:
-    name: "Direxion Daily Technology Bull 3X"
-    underlying: "XLK"
-    leverage: 3
-    category: "Technology"
-    suggested_budget: 10000
-    suggested_levels: 15
-    suggested_spacing: 5.0
-
-  # --- Finance ---
-  FAS:
-    name: "Direxion Daily Financial Bull 3X"
-    underlying: "XLF"
-    leverage: 3
-    category: "Finance"
-    suggested_budget: 10000
-    suggested_levels: 12
-    suggested_spacing: 5.0
-
 # ETF underlying pairs (for decay analysis)
 underlying_pairs:
   QLD: "QQQ"
@@ -87,5 +67,3 @@ underlying_pairs:
   SSO: "SPY"
   UPRO: "SPY"
   SOXL: "SOXX"
-  TECL: "XLK"
-  FAS: "XLF"

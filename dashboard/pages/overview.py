@@ -66,7 +66,7 @@ def render():
     # ETF 현황 카드
     st.subheader("ETF 실시간 현황")
 
-    default_tickers = ["QLD", "SSO", "TQQQ", "UPRO"]
+    default_tickers = ["QLD", "TQQQ", "SSO", "UPRO", "SOXL"]
     selected_tickers = st.multiselect(
         "모니터링할 ETF 선택",
         options=list(preset_list.keys()),

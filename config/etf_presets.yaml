@@ -1,9 +1,9 @@
 # ================================================
-# ETF Presets - Pre-configured leveraged ETF profiles
+# ETF Presets - 주 종목 3개
 # ================================================
 
 presets:
-  # --- NASDAQ ---
+  # --- NASDAQ 2x ---
   QLD:
     name: "ProShares Ultra QQQ"
     underlying: "QQQ"
@@ -13,16 +13,7 @@ presets:
     suggested_levels: 10
     suggested_spacing: 5.0
 
-  TQQQ:
-    name: "ProShares UltraPro QQQ"
-    underlying: "QQQ"
-    leverage: 3
-    category: "NASDAQ"
-    suggested_budget: 10000
-    suggested_levels: 15
-    suggested_spacing: 5.0
-
-  # --- S&P 500 ---
+  # --- S&P 500 2x ---
   SSO:
     name: "ProShares Ultra S&P 500"
     underlying: "SPY"
@@ -32,16 +23,7 @@ presets:
     suggested_levels: 10
     suggested_spacing: 4.0
 
-  UPRO:
-    name: "ProShares UltraPro S&P 500"
-    underlying: "SPY"
-    leverage: 3
-    category: "S&P 500"
-    suggested_budget: 10000
-    suggested_levels: 15
-    suggested_spacing: 4.0
-
-  # --- Semiconductor ---
+  # --- Semiconductor 3x ---
   SOXL:
     name: "Direxion Daily Semiconductor Bull 3X"
     underlying: "SOXX"
@@ -51,19 +33,8 @@ presets:
     suggested_levels: 15
     suggested_spacing: 7.0
 
-  USD:
-    name: "ProShares Ultra Semiconductors"
-    underlying: "SOXX"
-    leverage: 2
-    category: "Semiconductor"
-    suggested_budget: 10000
-    suggested_levels: 10
-    suggested_spacing: 5.0
-
 # ETF underlying pairs (for decay analysis)
 underlying_pairs:
   QLD: "QQQ"
-  TQQQ: "QQQ"
   SSO: "SPY"
-  UPRO: "SPY"
   SOXL: "SOXX"

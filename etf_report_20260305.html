@@ -192,10 +192,10 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-03-05 18:29 KST</div>
+<div class="date">2026-03-05 18:32 KST</div>
 <div class="market-pulse">
 <div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
-<div class="pulse-item">VIX 20.8</div>
+<div class="pulse-item">VIX 20.9</div>
 <div class="pulse-item">1종목 매수 추천</div>
 </div>
 </div>
@@ -219,7 +219,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <span class="regime-badge">📈 상승장</span>
 </div>
 <div class="macro-chips">
-<div class="macro-chip">VIX <span class="val">20.8</span></div>
+<div class="macro-chip">VIX <span class="val">20.9</span></div>
 <div class="macro-chip">금리 <span class="val">4.08%</span></div>
 <div class="macro-chip">S&P500 <span class="val">-1.5%</span></div>
 <div class="macro-chip">매크로 <span class="val">60%</span></div>
@@ -634,7 +634,7 @@ ATH $122.23 · SMA20 $115.87 · SMA50 $117.86 · SMA200 $105.59 · 3M -0.3% · V
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 18:29 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 18:32 KST</p>
 </div>
 </div>
 
@@ -769,18 +769,28 @@ function isMarketOpen(){
 }
 
 async function fetchPrice(ticker){
-  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1d&range=1d');
+  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=5m&range=1d&includePrePost=true');
   for(let i=0;i<PROXY.length;i++){
     const px=PROXY[(proxyIdx+i)%PROXY.length];
     try{
       const r=await fetch(px+url,{signal:AbortSignal.timeout(8000)});
       if(!r.ok)continue;
       const j=await r.json();
-      const meta=j.chart?.result?.[0]?.meta;
-      if(!meta||!meta.regularMarketPrice)continue;
-      const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketDayHigh;
+      const res=j.chart?.result?.[0];
+      if(!res)continue;
+      const meta=res.meta;
+      const prev=meta.chartPreviousClose||meta.previousClose;
       if(!prev)continue;
-      return{price:meta.regularMarketPrice,prev:prev};
+      // 장중: 마지막 캔들의 close가 실시간 가격
+      const closes=res.indicators?.quote?.[0]?.close;
+      let price=meta.regularMarketPrice;
+      if(closes&&closes.length>0){
+        for(let k=closes.length-1;k>=0;k--){
+          if(closes[k]!=null){price=closes[k];break;}
+        }
+      }
+      if(!price)continue;
+      return{price,prev};
     }catch(e){continue;}
   }
   return null;

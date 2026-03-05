@@ -959,18 +959,28 @@ function isMarketOpen(){{
 }}
 
 async function fetchPrice(ticker){{
-  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1d&range=1d');
+  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=5m&range=1d&includePrePost=true');
   for(let i=0;i<PROXY.length;i++){{
     const px=PROXY[(proxyIdx+i)%PROXY.length];
     try{{
       const r=await fetch(px+url,{{signal:AbortSignal.timeout(8000)}});
       if(!r.ok)continue;
       const j=await r.json();
-      const meta=j.chart?.result?.[0]?.meta;
-      if(!meta||!meta.regularMarketPrice)continue;
-      const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketDayHigh;
+      const res=j.chart?.result?.[0];
+      if(!res)continue;
+      const meta=res.meta;
+      const prev=meta.chartPreviousClose||meta.previousClose;
       if(!prev)continue;
-      return{{price:meta.regularMarketPrice,prev:prev}};
+      // 장중: 마지막 캔들의 close가 실시간 가격
+      const closes=res.indicators?.quote?.[0]?.close;
+      let price=meta.regularMarketPrice;
+      if(closes&&closes.length>0){{
+        for(let k=closes.length-1;k>=0;k--){{
+          if(closes[k]!=null){{price=closes[k];break;}}
+        }}
+      }}
+      if(!price)continue;
+      return{{price,prev}};
     }}catch(e){{continue;}}
   }}
   return null;

@@ -522,6 +522,11 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .price-spinner{{display:inline-block;width:12px;height:12px;border:2px solid #e5e8eb;border-top-color:#3182f6;border-radius:50%;animation:spin 0.8s linear infinite;margin-left:6px;vertical-align:middle}}
 @keyframes spin{{to{{transform:rotate(360deg)}}}}
 .live-time{{font-size:10px;color:#8b95a1;margin-top:2px}}
+.live-alert{{border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;animation:alertSlide 0.4s ease}}
+.live-alert.buy{{background:#e8faf0;color:#00a661}}
+.live-alert.near{{background:#fff8e8;color:#b86e00}}
+.live-alert.drop{{background:#fff5f5;color:#f04452}}
+@keyframes alertSlide{{from{{opacity:0;transform:translateY(-8px)}}to{{opacity:1;transform:translateY(0)}}}}
 .chg-pill{{display:inline-block;padding:3px 8px;border-radius:6px;font-size:13px;font-weight:500;margin-left:8px}}
 .chg-pill.up{{background:#e8faf0;color:#00a661}}
 .chg-pill.down{{background:#fff5f5;color:#f04452}}
@@ -758,7 +763,13 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="range-track"><div class="range-fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div><div class="range-dot" style="left:{r['pos_52w']:.0f}%"></div></div>
 </div>"""
 
-        html += f"""<div class="card" data-ticker="{r['ticker']}">
+        # 그리드 레벨 JSON (JS에서 실시간 매수 알림용)
+        grid_json_levels = []
+        for gl in (r["grid_levels"] or []):
+            grid_json_levels.append(f'{{"l":{gl.level_number},"p":{gl.target_price:.2f},"q":{gl.quantity}}}')
+        grid_data_attr = "[" + ",".join(grid_json_levels) + "]"
+
+        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}">
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['ticker']}</div>
@@ -784,6 +795,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <span class="price" id="pr-{r['ticker']}">${r['price']:.2f}</span>
 <span class="chg-pill {chg_cls}" id="chg-{r['ticker']}">{sign}{r['change_pct']:.2f}%</span>
 </div>
+<div class="live-alert" id="la-{r['ticker']}" style="display:none"></div>
 
 {pos_bar}
 
@@ -1007,6 +1019,55 @@ function updateCard(ticker,data){{
     prEl.classList.remove('price-flash');
     void prEl.offsetWidth;
     prEl.classList.add('price-flash');
+  }}
+
+  // 실시간 그리드 매수 알림
+  checkGridAlert(ticker,newPrice,data.prev);
+}}
+
+function checkGridAlert(ticker,price,prev){{
+  const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
+  const alertEl=document.getElementById('la-'+ticker);
+  if(!card||!alertEl)return;
+
+  const grid=JSON.parse(card.dataset.grid||'[]');
+  const ath=parseFloat(card.dataset.ath)||0;
+  const high52=parseFloat(card.dataset.high52)||0;
+
+  // 그리드 레벨 도달 체크
+  let hit=null, near=null;
+  for(const g of grid){{
+    if(price<=g.p){{hit=g;break;}}
+    if(!near&&price<=g.p*1.02){{near=g;}} // 2% 이내 접근
+  }}
+
+  // ATH 대비 낙폭
+  const ddPct=ath>0?((price-ath)/ath*100):0;
+
+  let msg='',cls='';
+  if(hit){{
+    msg='🟢 L'+hit.l+' 매수가 $'+hit.p.toFixed(2)+' 도달! '+hit.q+'주 매수 타이밍';
+    cls='buy';
+    // 푸시 알림도 발송
+    if(localStorage.getItem(NOTI_KEY)==='true'){{
+      sendNoti('🟢 '+ticker+' 매수 레벨 도달',
+        'L'+hit.l+' $'+hit.p.toFixed(2)+' 도달 — '+hit.q+'주 매수',
+        'grid-'+ticker);
+    }}
+  }}else if(near){{
+    msg='🟡 L'+near.l+' 매수가 $'+near.p.toFixed(2)+'에 근접 중 (현재 $'+price.toFixed(2)+')';
+    cls='near';
+  }}else if(ddPct<=-20){{
+    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% 하락 — 하위 그리드 매수 구간';
+    cls='drop';
+  }}
+
+  if(msg){{
+    alertEl.innerHTML=msg;
+    alertEl.className='live-alert '+cls;
+    alertEl.style.display='';
+  }}else{{
+    alertEl.style.display='none';
   }}
 }}
 

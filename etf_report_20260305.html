@@ -73,6 +73,11 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 .price-spinner{display:inline-block;width:12px;height:12px;border:2px solid #e5e8eb;border-top-color:#3182f6;border-radius:50%;animation:spin 0.8s linear infinite;margin-left:6px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 .live-time{font-size:10px;color:#8b95a1;margin-top:2px}
+.live-alert{border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;animation:alertSlide 0.4s ease}
+.live-alert.buy{background:#e8faf0;color:#00a661}
+.live-alert.near{background:#fff8e8;color:#b86e00}
+.live-alert.drop{background:#fff5f5;color:#f04452}
+@keyframes alertSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .chg-pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:13px;font-weight:500;margin-left:8px}
 .chg-pill.up{background:#e8faf0;color:#00a661}
 .chg-pill.down{background:#fff5f5;color:#f04452}
@@ -192,10 +197,10 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-03-05 18:32 KST</div>
+<div class="date">2026-03-05 18:36 KST</div>
 <div class="market-pulse">
 <div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
-<div class="pulse-item">VIX 20.9</div>
+<div class="pulse-item">VIX 21.0</div>
 <div class="pulse-item">1종목 매수 추천</div>
 </div>
 </div>
@@ -219,7 +224,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <span class="regime-badge">📈 상승장</span>
 </div>
 <div class="macro-chips">
-<div class="macro-chip">VIX <span class="val">20.9</span></div>
+<div class="macro-chip">VIX <span class="val">21.0</span></div>
 <div class="macro-chip">금리 <span class="val">4.08%</span></div>
 <div class="macro-chip">S&P500 <span class="val">-1.5%</span></div>
 <div class="macro-chip">매크로 <span class="val">60%</span></div>
@@ -245,7 +250,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 </div>
 </div>
 
-<div class="card" data-ticker="SOXL">
+<div class="card" data-ticker="SOXL" data-grid='[{"l":1,"p":52.66,"q":1},{"l":2,"p":48.69,"q":2},{"l":3,"p":44.73,"q":4},{"l":4,"p":40.77,"q":6},{"l":5,"p":36.80,"q":9},{"l":6,"p":32.84,"q":12},{"l":7,"p":28.88,"q":16},{"l":8,"p":24.91,"q":21},{"l":9,"p":20.95,"q":28},{"l":10,"p":16.99,"q":39},{"l":11,"p":13.02,"q":56},{"l":12,"p":9.06,"q":88},{"l":13,"p":5.10,"q":170},{"l":14,"p":1.13,"q":824}]' data-ath="71.86" data-low52="8.22" data-high52="71.86">
 <div class="card-head">
 <div class="left">
 <div class="ticker">SOXL</div>
@@ -271,6 +276,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <span class="price" id="pr-SOXL">$56.62</span>
 <span class="chg-pill up" id="chg-SOXL">+5.99%</span>
 </div>
+<div class="live-alert" id="la-SOXL" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$8.22</span><span>52주</span><span>$71.86</span></div>
@@ -307,7 +313,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 ATH $71.86 · SMA20 $63.07 · SMA50 $58.01 · SMA200 $38.03 · 3M +44.5% · Vol 118%
 </div>
 </div>
-<div class="card" data-ticker="USD">
+<div class="card" data-ticker="USD" data-grid='[{"l":1,"p":50.63,"q":2},{"l":2,"p":47.97,"q":5},{"l":3,"p":45.30,"q":8},{"l":4,"p":42.64,"q":11},{"l":5,"p":39.97,"q":15},{"l":6,"p":37.31,"q":20},{"l":7,"p":34.64,"q":25},{"l":8,"p":31.98,"q":31},{"l":9,"p":29.31,"q":39},{"l":10,"p":26.65,"q":47}]' data-ath="63.40" data-low52="14.53" data-high52="63.40">
 <div class="card-head">
 <div class="left">
 <div class="ticker">USD</div>
@@ -333,6 +339,7 @@ ATH $71.86 · SMA20 $63.07 · SMA50 $58.01 · SMA200 $38.03 · 3M +44.5% · Vol 
 <span class="price" id="pr-USD">$53.30</span>
 <span class="chg-pill up" id="chg-USD">+3.80%</span>
 </div>
+<div class="live-alert" id="la-USD" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$14.53</span><span>52주</span><span>$63.40</span></div>
@@ -369,7 +376,7 @@ ATH $71.86 · SMA20 $63.07 · SMA50 $58.01 · SMA200 $38.03 · 3M +44.5% · Vol 
 ATH $63.40 · SMA20 $55.76 · SMA50 $55.61 · SMA200 $47.15 · 3M +1.3% · Vol 78%
 </div>
 </div>
-<div class="card" data-ticker="TQQQ">
+<div class="card" data-ticker="TQQQ" data-grid='[{"l":1,"p":47.75,"q":1},{"l":2,"p":45.23,"q":2},{"l":3,"p":42.72,"q":4},{"l":4,"p":40.21,"q":5},{"l":5,"p":37.69,"q":7},{"l":6,"p":35.18,"q":9},{"l":7,"p":32.67,"q":12},{"l":8,"p":30.16,"q":15},{"l":9,"p":27.64,"q":18},{"l":10,"p":25.13,"q":23},{"l":11,"p":22.62,"q":28},{"l":12,"p":20.10,"q":34},{"l":13,"p":17.59,"q":43},{"l":14,"p":15.08,"q":54},{"l":15,"p":12.56,"q":69}]' data-ath="60.21" data-low52="19.35" data-high52="60.21">
 <div class="card-head">
 <div class="left">
 <div class="ticker">TQQQ</div>
@@ -395,6 +402,7 @@ ATH $63.40 · SMA20 $55.76 · SMA50 $55.61 · SMA200 $47.15 · 3M +1.3% · Vol 7
 <span class="price" id="pr-TQQQ">$50.26</span>
 <span class="chg-pill up" id="chg-TQQQ">+4.49%</span>
 </div>
+<div class="live-alert" id="la-TQQQ" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$19.35</span><span>52주</span><span>$60.21</span></div>
@@ -431,7 +439,7 @@ ATH $63.40 · SMA20 $55.76 · SMA50 $55.61 · SMA200 $47.15 · 3M +1.3% · Vol 7
 ATH $60.21 · SMA20 $49.65 · SMA50 $52.51 · SMA200 $48.19 · 3M -5.7% · Vol 69%
 </div>
 </div>
-<div class="card" data-ticker="QLD">
+<div class="card" data-ticker="QLD" data-grid='[{"l":1,"p":65.22,"q":1},{"l":2,"p":61.79,"q":4},{"l":3,"p":58.35,"q":6},{"l":4,"p":54.92,"q":9},{"l":5,"p":51.49,"q":12},{"l":6,"p":48.06,"q":15},{"l":7,"p":44.62,"q":19},{"l":8,"p":41.19,"q":24},{"l":9,"p":37.76,"q":30},{"l":10,"p":34.33,"q":37}]' data-ath="76.36" data-low52="34.61" data-high52="76.36">
 <div class="card-head">
 <div class="left">
 <div class="ticker">QLD</div>
@@ -457,6 +465,7 @@ ATH $60.21 · SMA20 $49.65 · SMA50 $52.51 · SMA200 $48.19 · 3M -5.7% · Vol 6
 <span class="price" id="pr-QLD">$68.65</span>
 <span class="chg-pill up" id="chg-QLD">+2.95%</span>
 </div>
+<div class="live-alert" id="la-QLD" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$34.61</span><span>52주</span><span>$76.36</span></div>
@@ -493,7 +502,7 @@ ATH $60.21 · SMA20 $49.65 · SMA50 $52.51 · SMA200 $48.19 · 3M -5.7% · Vol 6
 ATH $76.36 · SMA20 $68.00 · SMA50 $70.39 · SMA200 $65.62 · 3M -2.9% · Vol 46%
 </div>
 </div>
-<div class="card" data-ticker="SSO">
+<div class="card" data-ticker="SSO" data-grid='[{"l":1,"p":55.50,"q":2},{"l":2,"p":53.19,"q":4},{"l":3,"p":50.87,"q":7},{"l":4,"p":48.56,"q":10},{"l":5,"p":46.25,"q":13},{"l":6,"p":43.94,"q":17},{"l":7,"p":41.62,"q":21},{"l":8,"p":39.31,"q":25},{"l":9,"p":37.00,"q":30},{"l":10,"p":34.69,"q":36}]' data-ath="60.08" data-low52="32.21" data-high52="60.08">
 <div class="card-head">
 <div class="left">
 <div class="ticker">SSO</div>
@@ -519,6 +528,7 @@ ATH $76.36 · SMA20 $68.00 · SMA50 $70.39 · SMA200 $65.62 · 3M -2.9% · Vol 4
 <span class="price" id="pr-SSO">$57.81</span>
 <span class="chg-pill up" id="chg-SSO">+1.42%</span>
 </div>
+<div class="live-alert" id="la-SSO" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$32.21</span><span>52주</span><span>$60.08</span></div>
@@ -555,7 +565,7 @@ ATH $76.36 · SMA20 $68.00 · SMA50 $70.39 · SMA200 $65.62 · 3M -2.9% · Vol 4
 ATH $60.08 · SMA20 $58.16 · SMA50 $58.72 · SMA200 $54.07 · 3M +0.5% · Vol 37%
 </div>
 </div>
-<div class="card" data-ticker="UPRO">
+<div class="card" data-ticker="UPRO" data-grid='[{"l":1,"p":110.03,"q":0},{"l":2,"p":105.44,"q":1},{"l":3,"p":100.86,"q":1},{"l":4,"p":96.27,"q":2},{"l":5,"p":91.69,"q":3},{"l":6,"p":87.10,"q":4},{"l":7,"p":82.52,"q":4},{"l":8,"p":77.93,"q":5},{"l":9,"p":73.35,"q":7},{"l":10,"p":68.77,"q":8},{"l":11,"p":64.18,"q":9},{"l":12,"p":59.60,"q":11},{"l":13,"p":55.01,"q":13},{"l":14,"p":50.43,"q":16},{"l":15,"p":45.84,"q":19}]' data-ath="122.23" data-low52="50.27" data-high52="122.23">
 <div class="card-head">
 <div class="left">
 <div class="ticker">UPRO</div>
@@ -581,6 +591,7 @@ ATH $60.08 · SMA20 $58.16 · SMA50 $58.72 · SMA200 $54.07 · 3M +0.5% · Vol 3
 <span class="price" id="pr-UPRO">$114.61</span>
 <span class="chg-pill up" id="chg-UPRO">+2.11%</span>
 </div>
+<div class="live-alert" id="la-UPRO" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$50.27</span><span>52주</span><span>$122.23</span></div>
@@ -634,7 +645,7 @@ ATH $122.23 · SMA20 $115.87 · SMA50 $117.86 · SMA200 $105.59 · 3M -0.3% · V
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 18:32 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-05 18:36 KST</p>
 </div>
 </div>
 
@@ -817,6 +828,55 @@ function updateCard(ticker,data){
     prEl.classList.remove('price-flash');
     void prEl.offsetWidth;
     prEl.classList.add('price-flash');
+  }
+
+  // 실시간 그리드 매수 알림
+  checkGridAlert(ticker,newPrice,data.prev);
+}
+
+function checkGridAlert(ticker,price,prev){
+  const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
+  const alertEl=document.getElementById('la-'+ticker);
+  if(!card||!alertEl)return;
+
+  const grid=JSON.parse(card.dataset.grid||'[]');
+  const ath=parseFloat(card.dataset.ath)||0;
+  const high52=parseFloat(card.dataset.high52)||0;
+
+  // 그리드 레벨 도달 체크
+  let hit=null, near=null;
+  for(const g of grid){
+    if(price<=g.p){hit=g;break;}
+    if(!near&&price<=g.p*1.02){near=g;} // 2% 이내 접근
+  }
+
+  // ATH 대비 낙폭
+  const ddPct=ath>0?((price-ath)/ath*100):0;
+
+  let msg='',cls='';
+  if(hit){
+    msg='🟢 L'+hit.l+' 매수가 $'+hit.p.toFixed(2)+' 도달! '+hit.q+'주 매수 타이밍';
+    cls='buy';
+    // 푸시 알림도 발송
+    if(localStorage.getItem(NOTI_KEY)==='true'){
+      sendNoti('🟢 '+ticker+' 매수 레벨 도달',
+        'L'+hit.l+' $'+hit.p.toFixed(2)+' 도달 — '+hit.q+'주 매수',
+        'grid-'+ticker);
+    }
+  }else if(near){
+    msg='🟡 L'+near.l+' 매수가 $'+near.p.toFixed(2)+'에 근접 중 (현재 $'+price.toFixed(2)+')';
+    cls='near';
+  }else if(ddPct<=-20){
+    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% 하락 — 하위 그리드 매수 구간';
+    cls='drop';
+  }
+
+  if(msg){
+    alertEl.innerHTML=msg;
+    alertEl.className='live-alert '+cls;
+    alertEl.style.display='';
+  }else{
+    alertEl.style.display='none';
   }
 }
 

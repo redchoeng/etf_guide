@@ -245,6 +245,27 @@ def check_and_notify(config: dict):
 
             # === 알림 조건 ===
 
+            # 0) 시드매수 추천 (상승장 진입)
+            if regime in ("BULL", "BULL_STRONG") and trend_aligned and score >= 50:
+                alloc = {"BULL_STRONG": 0.75, "BULL": 0.70}.get(regime, 0.70)
+                seed_pct = 30 if trend_aligned else 20
+                seed_amount = preset.get("suggested_budget", 10000) * alloc * (seed_pct / 100)
+                seed_qty = int(seed_amount / current_price)
+                if seed_qty > 0 and _should_alert(f"seed_{ticker}"):
+                    profit_label = {"BULL_STRONG": "15%→25%→40%", "BULL": "12%→22%→35%"}.get(regime, "10%")
+                    msg = (
+                        f"🌱 <b>시드매수 추천</b>\n\n"
+                        f"종목: <b>{ticker}</b>\n"
+                        f"현재가: ${current_price:.2f}\n"
+                        f"시드매수: {seed_qty}주 (${seed_amount:,.0f}, {seed_pct}%)\n"
+                        f"시장: {regime_kr} | 추세: 정배열\n"
+                        f"익절 계획: {profit_label} (부분익절)\n\n"
+                        f"💡 추세 진입 시 소량 매수 후 풀백에서 추가매수"
+                    )
+                    if notifier.send_message(msg):
+                        alerts_sent += 1
+                        logger.info(f"    🌱 시드매수 추천 알림")
+
             # 1) 매수 점수 60점 이상
             if score >= 60:
                 sent = notifier.send_score_alert(
@@ -256,7 +277,8 @@ def check_and_notify(config: dict):
                     logger.info(f"    🔔 매수 추천 알림 발송 ({score}점)")
 
             # 2) 그리드 레벨 도달 체크
-            budget = preset.get("suggested_budget", 10000) * 0.5  # 예비금 50%
+            alloc_rate = {"BULL_STRONG": 0.75, "BULL": 0.70, "SIDEWAYS": 0.55, "CORRECTION": 0.50, "BEAR": 0.45, "CRISIS": 0.40}.get(regime, 0.55)
+            budget = preset.get("suggested_budget", 10000) * alloc_rate
             grid = gc.calculate_grid(
                 reference_price=current_price * 1.05,  # 현재가 +5%에서 그리드 시작
                 total_budget=budget,

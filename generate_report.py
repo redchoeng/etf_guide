@@ -24,10 +24,26 @@ from engine.macro_analyzer import MacroAnalyzer
 
 KST = timezone(timedelta(hours=9))
 
-# 전략 파라미터
-RESERVE_RATIO = 0.5        # 예비금 비율 (50%)
+# 레짐별 전략 파라미터
+REGIME_ALLOCATION = {
+    "BULL_STRONG": 0.75,  # 투자비율 75%, 예비금 25%
+    "BULL":        0.70,
+    "SIDEWAYS":    0.55,
+    "CORRECTION":  0.50,
+    "BEAR":        0.45,
+    "CRISIS":      0.40,
+}
+
+REGIME_PROFIT_TARGETS = {
+    "BULL_STRONG": {"stages": [15, 25, 40], "label": "15%→25%→40% (3단계 부분익절)"},
+    "BULL":        {"stages": [12, 22, 35], "label": "12%→22%→35% (3단계 부분익절)"},
+    "SIDEWAYS":    {"stages": [8, 15],      "label": "8%→15% (2단계 익절)"},
+    "CORRECTION":  {"stages": [10],         "label": "10% (전량 익절)"},
+    "BEAR":        {"stages": [10],         "label": "10% (전량 익절)"},
+    "CRISIS":      {"stages": [8],          "label": "8% (전량 익절)"},
+}
+
 STOP_LOSS_PCT = -50.0      # 손절 기준 (-50%)
-PROFIT_TARGET_PCT = 10.0   # 목표 수익률
 
 
 def load_config():
@@ -90,10 +106,13 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             vol_annual, strength, macro, mom_1m, trend_aligned,
         )
 
-        # 그리드 계산 (예비금 반영)
+        # 그리드 계산 (레짐별 투자비율)
+        regime = macro.get("regime", "SIDEWAYS")
+        allocation = REGIME_ALLOCATION.get(regime, 0.55)
         budget = preset.get("suggested_budget", 10000)
-        grid_budget = budget * (1 - RESERVE_RATIO)
-        reserve_budget = budget * RESERVE_RATIO
+        grid_budget = budget * allocation
+        reserve_budget = budget * (1 - allocation)
+        profit_info = REGIME_PROFIT_TARGETS.get(regime, REGIME_PROFIT_TARGETS["SIDEWAYS"])
 
         gc = GridCalculator(config.get("grid", {}))
         grid = gc.calculate_grid(
@@ -114,6 +133,16 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
         high_52w = float(close.max())
         low_52w = float(close.min())
         pos_52w = (current_price - low_52w) / (high_52w - low_52w) * 100 if high_52w != low_52w else 50
+
+        # 시드 매수 추천 (상승장 진입)
+        seed_buy_pct = 0
+        seed_buy_amount = 0
+        if regime in ("BULL", "BULL_STRONG") and trend_aligned:
+            seed_buy_pct = 30  # 투자가능액의 30%
+            seed_buy_amount = grid_budget * 0.30
+        elif regime in ("BULL", "BULL_STRONG"):
+            seed_buy_pct = 20
+            seed_buy_amount = grid_budget * 0.20
 
         # 손절 가격
         stop_loss_price = current_price * (1 + STOP_LOSS_PCT / 100)
@@ -156,6 +185,10 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "stop_loss_price": stop_loss_price,
             "verdict": verdict,
             "verdict_detail": verdict_detail,
+            "allocation": allocation,
+            "profit_info": profit_info,
+            "seed_buy_pct": seed_buy_pct,
+            "seed_buy_amount": seed_buy_amount,
         }
     except Exception as e:
         print(f"  {ticker} 분석 실패: {e}")
@@ -407,6 +440,7 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
 
     sp500_1m = macro.get("sp500_trend", {}).get("change_1m", 0)
     macro_pct = macro.get("macro_score", 0.5)
+    allocation = REGIME_ALLOCATION.get(regime, 0.55)
 
     html = f"""<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -538,7 +572,8 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 <p>각 ETF 카드의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍입니다.<br>
 <b>매수 계획표</b>에서 "얼마에 몇 주 사야 하는지" 구체적 금액을 확인하세요.<br>
 시장 환경(상승장/하락장)에 따라 점수 기준이 자동 조정됩니다.</p>
-<div class="tip">💰 예산의 50%만 그리드에 배정, 50%는 예비금 | 🎯 수익률 +{PROFIT_TARGET_PCT:.0f}% 도달 시 매도 | 🛑 손절 기준 {STOP_LOSS_PCT:.0f}%</div>
+<div class="tip">💰 투자비율 {allocation*100:.0f}% / 예비금 {(1-allocation)*100:.0f}% (레짐: {regime_kr}) | 🎯 {REGIME_PROFIT_TARGETS.get(regime, REGIME_PROFIT_TARGETS["SIDEWAYS"])["label"]} | 🛑 손절 {STOP_LOSS_PCT:.0f}%</div>
+<div class="tip">🌱 상승장 시드매수: 추세 진입 시 투자금의 20~30% 즉시 매수 → 눌림목에서 그리드 추가매수 → 부분익절(1/3씩)</div>
 <div class="warn-tip">⚠️ 손절 기준({STOP_LOSS_PCT:.0f}%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요. 레버리지 디케이로 회복이 매우 어려울 수 있습니다.</div>
 </div>
 
@@ -582,16 +617,27 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
             remaining = len(r["grid_levels"]) - shown
             more = f'<div class="more">+{remaining}개 레벨 더 있음</div>' if remaining > 0 else ""
 
+            seed_html = ""
+            if r.get("seed_buy_pct", 0) > 0:
+                seed_qty = int(r["seed_buy_amount"] / r["price"])
+                seed_html = f'<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 ${r["price"]:.2f}에 {seed_qty}주 (${r["seed_buy_amount"]:,.0f}, 투자금의 {r["seed_buy_pct"]}%)</div>'
+
+            pinfo = r.get("profit_info", {})
+            tp_html = f'<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: {pinfo.get("label", "10%")}</div>'
+
+            alloc = r.get("allocation", 0.55)
             buy_table = f"""<div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (그리드 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f})</div>
+<div class="bp-title">📋 매수 계획표 (투자 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f})</div>
+{seed_html}
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
 {rows}
 </table>
 {more}
+{tp_html}
 <div class="budget-bar">
-<div class="seg active" style="flex:{1-RESERVE_RATIO}">그리드 {(1-RESERVE_RATIO)*100:.0f}%</div>
-<div class="seg reserve" style="flex:{RESERVE_RATIO}">예비금 {RESERVE_RATIO*100:.0f}%</div>
+<div class="seg active" style="flex:{alloc}">투자 {alloc*100:.0f}%</div>
+<div class="seg reserve" style="flex:{1-alloc}">예비금 {(1-alloc)*100:.0f}%</div>
 </div>
 </div>"""
 
@@ -601,8 +647,9 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 <div class="pos-bar"><div class="fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div></div>"""
 
         # 리스크 표시
+        first_tp = r.get("profit_info", {}).get("stages", [10])[0]
         risk_html = f"""<div class="risk-row">
-<div class="risk-item">🎯 목표 매도가: ${r['price'] * (1 + PROFIT_TARGET_PCT/100):.2f} (+{PROFIT_TARGET_PCT:.0f}%)</div>
+<div class="risk-item">🎯 1차 익절: ${r['price'] * (1 + first_tp/100):.2f} (+{first_tp}%)</div>
 <div class="risk-item danger">🛑 손절가: ${r['stop_loss_price']:.2f} ({STOP_LOSS_PCT:.0f}%)</div>
 </div>"""
 
@@ -649,14 +696,16 @@ ATH ${r['ath']:.2f} | SMA20 ${r['sma20']:.2f} | SMA50 ${r['sma50']:.2f} | SMA200
     html += f"""</div>
 
 <div class="guide-box">
-<h3>📖 전략 요약</h3>
+<h3>📖 적응형 전략 v2</h3>
 <p>
-<b>상승장</b>: 정배열 확인 + SMA20 지지에서 소량 매수 → 풀백 시 추가 매수<br>
-<b>횡보장</b>: 그리드 레벨에 도달할 때만 매수 → 인내심이 핵심<br>
-<b>하락장</b>: 예비금 50% 꼭 남기고 하위 레벨 위주 매수 → 손절선 반드시 준수<br>
-<b>위기</b>: 예비금 70% 유지, 극단적 저점에서만 소량 매수
+<b>🚀 강한 상승장 (투자 75%)</b>: 시드매수 30% → 풀백 시 그리드 추가매수 → 15%/25%/40% 3단계 부분익절 → 고점 -7% 트레일링 스탑<br>
+<b>📈 상승장 (투자 70%)</b>: 시드매수 20~30% → 눌림목 그리드 매수 → 12%/22%/35% 부분익절 → 트레일링 스탑<br>
+<b>➡️ 횡보장 (투자 55%)</b>: 그리드 레벨 도달 시만 매수 → 8%/15% 2단계 익절<br>
+<b>📉 하락장 (투자 45%)</b>: 예비금 55% 유지 + 하위 레벨 위주 매수 → 10% 전량 익절<br>
+<b>🔥 위기 (투자 40%)</b>: 예비금 60% 유지, 극단적 저점 소량 매수 → 8% 전량 익절
 </p>
-<div class="tip">💰 수익률 +{PROFIT_TARGET_PCT:.0f}% 도달 → 전량 매도 → 새 그리드로 재시작 (수익 재투자)</div>
+<div class="tip">💰 익절 후 새 그리드로 재시작 (수익 재투자) | 그리드 상단 15% 이탈 시 자동 리밸런싱</div>
+<div class="tip">⚡ 횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전</div>
 <div class="warn-tip">🛑 손절 기준 {STOP_LOSS_PCT:.0f}% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가 (레버리지 디케이로 회복 매우 어려움)</div>
 </div>
 

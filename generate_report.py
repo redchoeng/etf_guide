@@ -445,6 +445,7 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
     for ntype, text in noti_items[:6]:
         noti_html += f'<div class="noti-alert"><div class="na-dot {ntype}"></div><div class="na-text">{text}</div></div>'
     noti_js_data = "[" + ",".join(noti_js_arr) + "]"
+    tickers_js = "[" + ",".join(f'"{r["ticker"]}"' for r in results) + "]"
 
     html = f"""<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -511,8 +512,16 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .verdict-bar{{border-radius:10px;padding:12px 14px;margin-bottom:14px}}
 .verdict-bar .vd-title{{font-weight:700;font-size:14px;margin-bottom:2px}}
 .verdict-bar .vd-detail{{font-size:12px;line-height:1.5;opacity:0.85}}
-.price-area{{margin-bottom:14px}}
-.price{{font-size:26px;font-weight:700;letter-spacing:-0.5px}}
+.price-area{{margin-bottom:14px;position:relative}}
+.price{{font-size:26px;font-weight:700;letter-spacing:-0.5px;transition:color 0.3s}}
+.price-flash{{animation:priceFlash 0.6s ease}}
+@keyframes priceFlash{{0%{{opacity:0.4;transform:scale(0.97)}}100%{{opacity:1;transform:scale(1)}}}}
+.live-badge{{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.2);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:10px;margin-top:6px;position:relative;z-index:1;backdrop-filter:blur(4px)}}
+.live-badge .live-dot{{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse 1.5s infinite}}
+.live-badge.live-err{{background:rgba(240,68,82,0.3);color:#fecaca}}
+.price-spinner{{display:inline-block;width:12px;height:12px;border:2px solid #e5e8eb;border-top-color:#3182f6;border-radius:50%;animation:spin 0.8s linear infinite;margin-left:6px;vertical-align:middle}}
+@keyframes spin{{to{{transform:rotate(360deg)}}}}
+.live-time{{font-size:10px;color:#8b95a1;margin-top:2px}}
 .chg-pill{{display:inline-block;padding:3px 8px;border-radius:6px;font-size:13px;font-weight:500;margin-left:8px}}
 .chg-pill.up{{background:#e8faf0;color:#00a661}}
 .chg-pill.down{{background:#fff5f5;color:#f04452}}
@@ -749,7 +758,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="range-track"><div class="range-fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div><div class="range-dot" style="left:{r['pos_52w']:.0f}%"></div></div>
 </div>"""
 
-        html += f"""<div class="card">
+        html += f"""<div class="card" data-ticker="{r['ticker']}">
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['ticker']}</div>
@@ -771,9 +780,9 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="vd-detail" style="color:{vc}">{r['verdict_detail']}</div>
 </div>
 
-<div class="price-area">
-<span class="price">${r['price']:.2f}</span>
-<span class="chg-pill {chg_cls}">{sign}{r['change_pct']:.2f}%</span>
+<div class="price-area" id="pa-{r['ticker']}">
+<span class="price" id="pr-{r['ticker']}">${r['price']:.2f}</span>
+<span class="chg-pill {chg_cls}" id="chg-{r['ticker']}">{sign}{r['change_pct']:.2f}%</span>
 </div>
 
 {pos_bar}
@@ -933,6 +942,110 @@ document.getElementById('notiBar').addEventListener('click',e=>{{
 }});
 
 initNoti();
+
+// === 실시간 가격 업데이트 ===
+const TICKERS={tickers_js};
+const PROXY=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+let proxyIdx=0;
+let liveTimer=null;
+
+function isMarketOpen(){{
+  const now=new Date();
+  const et=new Date(now.toLocaleString('en-US',{{timeZone:'America/New_York'}}));
+  const d=et.getDay(),h=et.getHours(),m=et.getMinutes();
+  if(d===0||d===6)return false;
+  const t=h*60+m;
+  return t>=570&&t<=960; // 09:30~16:00 ET
+}}
+
+async function fetchPrice(ticker){{
+  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1d&range=1d');
+  for(let i=0;i<PROXY.length;i++){{
+    const px=PROXY[(proxyIdx+i)%PROXY.length];
+    try{{
+      const r=await fetch(px+url,{{signal:AbortSignal.timeout(8000)}});
+      if(!r.ok)continue;
+      const j=await r.json();
+      const meta=j.chart?.result?.[0]?.meta;
+      if(!meta)continue;
+      return{{price:meta.regularMarketPrice,prev:meta.previousClose}};
+    }}catch(e){{continue;}}
+  }}
+  return null;
+}}
+
+function updateCard(ticker,data){{
+  const prEl=document.getElementById('pr-'+ticker);
+  const chEl=document.getElementById('chg-'+ticker);
+  if(!prEl||!chEl||!data)return;
+
+  const oldPrice=parseFloat(prEl.textContent.replace('$',''));
+  const newPrice=data.price;
+  const chgPct=((newPrice-data.prev)/data.prev*100);
+  const sign=chgPct>=0?'+':'';
+  const cls=chgPct>=0?'up':'down';
+
+  prEl.textContent='$'+newPrice.toFixed(2);
+  chEl.textContent=sign+chgPct.toFixed(2)+'%';
+  chEl.className='chg-pill '+cls;
+
+  if(Math.abs(newPrice-oldPrice)>0.005){{
+    prEl.classList.remove('price-flash');
+    void prEl.offsetWidth;
+    prEl.classList.add('price-flash');
+  }}
+}}
+
+async function refreshAll(){{
+  // 로딩 표시
+  const badge=document.getElementById('liveBadge');
+  if(badge)badge.innerHTML='<span class="price-spinner"></span> 갱신 중';
+
+  let ok=0;
+  const promises=TICKERS.map(async t=>{{
+    const data=await fetchPrice(t);
+    if(data){{updateCard(t,data);ok++;}}
+  }});
+  await Promise.all(promises);
+
+  if(badge){{
+    if(ok>0){{
+      const now=new Date();
+      const hh=String(now.getHours()).padStart(2,'0');
+      const mm=String(now.getMinutes()).padStart(2,'0');
+      badge.innerHTML='<span class="live-dot"></span>LIVE '+hh+':'+mm;
+      badge.className='live-badge';
+    }}else{{
+      badge.textContent='갱신 실패';
+      badge.className='live-badge live-err';
+    }}
+  }}
+
+  // 다음 갱신 예약
+  const interval=isMarketOpen()?60000:300000;
+  liveTimer=setTimeout(refreshAll,interval);
+}}
+
+// 헤더 date 옆에 LIVE 뱃지 삽입
+const dateEl=document.querySelector('.header .date');
+if(dateEl){{
+  const lb=document.createElement('span');
+  lb.id='liveBadge';
+  lb.className='live-badge';
+  lb.innerHTML='<span class="price-spinner"></span> 연결 중';
+  dateEl.after(lb);
+}}
+
+// 페이지 로드 후 1초 뒤 첫 갱신
+setTimeout(refreshAll,1000);
+
+// 페이지 포커스 시 즉시 갱신
+document.addEventListener('visibilitychange',()=>{{
+  if(!document.hidden){{
+    clearTimeout(liveTimer);
+    refreshAll();
+  }}
+}});
 </script>
 </body></html>"""
 

@@ -235,11 +235,24 @@ class GridBacktester:
                         note=f"seed 30% entry",
                     ))
 
-            # ── 2. 그리드 매수 ──
+            # ── 2. 그리드 매수 (RSI 필터: 횡보장에선 RSI<35일 때만) ──
+            # RSI 계산 (14일)
+            if i >= 15:
+                delta = close.iloc[max(0, i - 14):i + 1].diff().dropna()
+                gain = delta.where(delta > 0, 0.0).mean()
+                loss = (-delta.where(delta < 0, 0.0)).mean()
+                rsi = 100 - (100 / (1 + gain / loss)) if loss != 0 else 100
+            else:
+                rsi = 50.0
+
             for gl in current_grid:
                 if gl.level_number in filled_levels:
                     continue
                 if price <= gl.target_price:
+                    # 횡보장: RSI<40 과매도일 때만 매수 (진짜 저점 필터)
+                    if regime == "SIDEWAYS" and rsi >= 40:
+                        continue
+
                     buy_qty = gl.quantity
                     cost = buy_qty * price
 
@@ -261,12 +274,20 @@ class GridBacktester:
                             regime=regime,
                         ))
 
-            # ── 3. 유휴 현금 DCA (상승장에서 주 1회 소량 매수) ──
-            idle_threshold = total_budget * 0.05  # 총 예산의 5% 이상 현금 유휴
-            if (remaining_budget > idle_threshold
-                    and regime in ("BULL", "BULL_STRONG", "SIDEWAYS")
-                    and i % 5 == 0 and i > 0):  # 주 1회 (5거래일)
-                dca_amount = min(remaining_budget * 0.05, remaining_budget)
+            # ── 3. 유휴 현금 DCA (레짐별 차등) ──
+            # BULL/BULL_STRONG: 주 1회 5% | SIDEWAYS: 2주 1회 2% | CORRECTION/BEAR: 중단
+            idle_threshold = total_budget * 0.05
+            if regime in ("BULL", "BULL_STRONG"):
+                dca_interval, dca_rate = 5, 0.05    # 주 1회, 5%
+            elif regime == "SIDEWAYS":
+                dca_interval, dca_rate = 10, 0.02   # 2주 1회, 2%
+            else:
+                dca_interval, dca_rate = 0, 0       # 중단
+
+            if (dca_interval > 0
+                    and remaining_budget > idle_threshold
+                    and i % dca_interval == 0 and i > 0):
+                dca_amount = min(remaining_budget * dca_rate, remaining_budget)
                 dca_qty = math.floor(dca_amount / price)
                 if dca_qty > 0:
                     cost = dca_qty * price
@@ -284,8 +305,8 @@ class GridBacktester:
                         note=f"idle cash DCA",
                     ))
 
-            # ── 4. 상승 그리드 매수 (가격 상승 시 소량 분할매수) ──
-            if (regime in ("BULL", "BULL_STRONG", "SIDEWAYS")
+            # ── 4. 상승 그리드 매수 (BULL/BULL_STRONG에서만, 횡보장 제외) ──
+            if (regime in ("BULL", "BULL_STRONG")
                     and remaining_budget > total_budget * 0.03
                     and upside_grid):
                 for ugl in upside_grid:
@@ -310,8 +331,9 @@ class GridBacktester:
                                 note=f"upside grid L{ugl.level_number}",
                             ))
 
-            # ── 5. 그리드 리밸런싱 (가격 상승 시 그리드 재설정) ──
-            if i - last_rebalance_idx >= 22 and current_grid:
+            # ── 5. 그리드 리밸런싱 (BULL/BULL_STRONG에서만 허용) ──
+            if (i - last_rebalance_idx >= 22 and current_grid
+                    and regime in ("BULL", "BULL_STRONG")):
                 top_price = current_grid[0].target_price
                 if price > top_price * 1.15:
                     alloc_budget = max(remaining_budget, 0) * allocation
@@ -332,7 +354,7 @@ class GridBacktester:
                         upside_grid = GridCalculator().calculate_upside_grid(
                             reference_price=price,
                             total_budget=max(remaining_budget, 0),
-                            num_levels=5,
+                            num_levels=8,
                             spacing_pct=3.0,
                         )
                         upside_filled = set()

@@ -447,23 +447,34 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
     noti_js_data = "[" + ",".join(noti_js_arr) + "]"
 
     html = f"""<!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우당탕탕 딩쵱 하우스 마련 대작전 - {now.strftime('%Y-%m-%d')}</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#3182f6">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="딩쵱 대작전">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f4f6;color:#191f28;min-height:100vh;-webkit-font-smoothing:antialiased}}
+body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f4f6;color:#191f28;min-height:100vh;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}}
 .container{{max-width:680px;margin:0 auto;padding:0 16px 40px}}
-.header{{padding:24px 0 20px;text-align:center}}
-.header h1{{font-size:22px;font-weight:700;color:#191f28;letter-spacing:-0.5px}}
-.header .sub{{color:#8b95a1;font-size:13px;margin-top:4px;font-weight:400}}
-.header .date{{color:#3182f6;font-size:12px;font-weight:500;margin-top:8px}}
+.header{{padding:28px 20px 24px;text-align:center;background:linear-gradient(135deg,#3182f6 0%,#1b64da 100%);border-radius:0 0 24px 24px;margin:0 -16px 16px;position:relative;overflow:hidden}}
+.header::before{{content:'';position:absolute;top:-40px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,0.08);border-radius:50%}}
+.header::after{{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;background:rgba(255,255,255,0.05);border-radius:50%}}
+.header-icon{{width:56px;height:56px;border-radius:16px;margin:0 auto 12px;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;z-index:1}}
+.header-icon img{{width:100%;height:100%;object-fit:cover;border-radius:14px}}
+.header h1{{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.5px;position:relative;z-index:1}}
+.header .sub{{color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;font-weight:400;position:relative;z-index:1}}
+.header .date{{display:inline-block;background:rgba(255,255,255,0.15);color:#fff;font-size:11px;font-weight:500;margin-top:10px;padding:4px 12px;border-radius:20px;backdrop-filter:blur(4px);position:relative;z-index:1}}
+.header .market-pulse{{display:flex;justify-content:center;gap:12px;margin-top:12px;position:relative;z-index:1}}
+.header .pulse-item{{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(255,255,255,0.9)}}
+.header .pulse-dot{{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite}}
+.pulse-dot.green{{background:#4ade80}}
+.pulse-dot.yellow{{background:#fbbf24}}
+.pulse-dot.red{{background:#f87171}}
+@keyframes pulse{{0%,100%{{opacity:1}}50%{{opacity:0.4}}}}
 .section{{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
 .section-title{{font-size:15px;font-weight:700;color:#191f28;margin-bottom:14px;letter-spacing:-0.3px}}
 .macro-chips{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}}
@@ -580,13 +591,53 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .noti-alert .na-dot.info{{background:#3182f6}}
 .noti-alert .na-text{{color:#4e5968;line-height:1.5}}
 .noti-alert .na-text b{{color:#191f28}}
-@media(max-width:600px){{.stats-row{{grid-template-columns:repeat(2,1fr)}}.stat:nth-child(2){{border-right:none}}.metrics{{grid-template-columns:repeat(2,1fr)}}.metric:nth-child(2){{border-right:none}}.metric:nth-child(3),.metric:nth-child(4){{border-top:1px solid #f2f4f6}}.container{{padding:0 12px 32px}}.price{{font-size:22px}}}}
+@media(max-width:600px){{
+.header{{margin:0 -12px 14px;padding:24px 16px 20px}}
+.header h1{{font-size:17px}}
+.header-icon{{width:48px;height:48px;border-radius:14px;margin-bottom:10px}}
+.header .market-pulse{{gap:8px;flex-wrap:wrap}}
+.header .pulse-item{{font-size:10px}}
+.noti-bar{{padding:12px 14px;border-radius:14px}}
+.noti-bar .noti-icon{{width:32px;height:32px;border-radius:8px;font-size:16px}}
+.noti-bar .noti-text{{font-size:12px}}
+.noti-toggle{{width:44px;height:26px}}
+.noti-toggle::after{{width:20px;height:20px}}
+.noti-toggle.on::after{{left:21px}}
+.stats-row{{grid-template-columns:repeat(2,1fr)}}
+.stat:nth-child(2){{border-right:none}}
+.stat{{padding:12px 6px}}
+.stat .sv{{font-size:17px}}
+.metrics{{grid-template-columns:repeat(2,1fr)}}
+.metric:nth-child(2){{border-right:none}}
+.metric:nth-child(3),.metric:nth-child(4){{border-top:1px solid #f2f4f6}}
+.container{{padding:0 12px 32px}}
+.price{{font-size:22px}}
+.card{{padding:16px;border-radius:14px}}
+.card-head .left .ticker{{font-size:16px}}
+.score-ring{{width:46px;height:46px}}
+.score-ring .num{{font-size:14px}}
+.buy-plan table{{font-size:11px}}
+.buy-plan th{{font-size:10px}}
+.buy-plan td{{padding:5px 3px}}
+.range-labels{{font-size:10px}}
+.macro-chips{{gap:6px}}
+.macro-chip{{padding:5px 10px;font-size:11px}}
+.strategy-box{{padding:16px}}
+.strat-item{{font-size:12px}}
+.popup{{padding:20px 16px 28px;max-height:75vh}}
+}}
 </style></head><body>
 <div class="container">
 <div class="header">
+<div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">{now.strftime('%Y-%m-%d %H:%M')} KST 업데이트</div>
+<div class="date">{now.strftime('%Y-%m-%d %H:%M')} KST</div>
+<div class="market-pulse">
+<div class="pulse-item"><div class="pulse-dot {"green" if regime in ("BULL_STRONG","BULL") else "yellow" if regime=="SIDEWAYS" else "red"}"></div>{regime_kr}</div>
+<div class="pulse-item">VIX {vix:.1f}</div>
+<div class="pulse-item">{buy_count}종목 매수 추천</div>
+</div>
 </div>
 
 <div class="noti-bar" id="notiBar">

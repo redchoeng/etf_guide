@@ -967,8 +967,10 @@ async function fetchPrice(ticker){{
       if(!r.ok)continue;
       const j=await r.json();
       const meta=j.chart?.result?.[0]?.meta;
-      if(!meta)continue;
-      return{{price:meta.regularMarketPrice,prev:meta.previousClose}};
+      if(!meta||!meta.regularMarketPrice)continue;
+      const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketDayHigh;
+      if(!prev)continue;
+      return{{price:meta.regularMarketPrice,prev:prev}};
     }}catch(e){{continue;}}
   }}
   return null;
@@ -981,7 +983,9 @@ function updateCard(ticker,data){{
 
   const oldPrice=parseFloat(prEl.textContent.replace('$',''));
   const newPrice=data.price;
+  if(!newPrice||!data.prev||data.prev===0)return;
   const chgPct=((newPrice-data.prev)/data.prev*100);
+  if(!isFinite(chgPct))return;
   const sign=chgPct>=0?'+':'';
   const cls=chgPct>=0?'up':'down';
 

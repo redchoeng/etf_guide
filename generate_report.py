@@ -579,6 +579,28 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .budget-bar .seg{{display:flex;align-items:center;justify-content:center}}
 .budget-bar .seg.active{{background:#3182f6;color:#fff}}
 .budget-bar .seg.reserve{{background:#e5e8eb;color:#4e5968}}
+.sell-ref{{margin:10px 0;padding:12px;background:#fafbfc;border-radius:12px;border:1px solid #f2f4f6}}
+.sell-ref .sr-title{{font-size:12px;font-weight:700;color:#6b7684;margin-bottom:8px;letter-spacing:0.5px}}
+.sell-ref .sr-grid{{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}}
+.sell-ref .sr-item{{padding:10px;background:#fff;border-radius:10px;text-align:center}}
+.sell-ref .sr-label{{font-size:11px;color:#8b95a1;margin-bottom:4px}}
+.sell-ref .sr-val{{font-size:16px;font-weight:700;color:#191f28}}
+.sell-ref .sr-val.bull{{color:#00c073}}
+.sell-ref .sr-val.bear{{color:#f04452}}
+.sell-ref .sr-val.side{{color:#ff9500}}
+.sell-ref .sr-val.profit{{color:#00c073}}
+.sell-ref .sr-val.loss{{color:#f04452}}
+.sell-ref .sr-sub{{font-size:10px;color:#b0b8c1;margin-top:2px}}
+.sell-ref .sr-change{{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-top:4px;font-weight:600}}
+.sell-ref .sr-change.warn{{background:#fff5f5;color:#f04452}}
+.sell-ref .sr-change.ok{{background:#e8f8ef;color:#00c073}}
+.sell-ref .sr-change.neutral{{background:#f2f4f6;color:#6b7684}}
+.sell-ref .pnl-input{{display:flex;align-items:center;gap:4px;justify-content:center;margin-top:6px}}
+.sell-ref .pnl-input input{{border:1px solid #e5e8eb;border-radius:6px;padding:3px 6px;width:70px;font-size:12px;text-align:right;outline:none}}
+.sell-ref .pnl-input input:focus{{border-color:#3182f6}}
+.sell-ref .pnl-input .sym{{font-size:12px;color:#8b95a1;font-weight:600}}
+.ath-bar{{height:4px;background:#f2f4f6;border-radius:2px;margin-top:6px;overflow:hidden}}
+.ath-bar .ath-fill{{height:100%;border-radius:2px;transition:width 0.3s}}
 .info-row{{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}}
 .info-chip{{background:#f2f4f6;border-radius:6px;padding:4px 10px;font-size:11px;color:#4e5968}}
 .info-chip.danger{{background:#fff5f5;color:#f04452}}
@@ -727,6 +749,10 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         sign = "+" if r["change_pct"] >= 0 else ""
         vc, vbg, vborder = verdict_color(r["score"])
 
+        # 레짐 CSS 클래스
+        regime = macro.get("regime", "SIDEWAYS")
+        regime_cls = "bull" if regime in ("BULL", "BULL_STRONG") else ("bear" if regime in ("BEAR", "CRISIS", "CORRECTION") else "side")
+
         # 추세 태그
         trend_tag = ""
         if r["trend_aligned"]:
@@ -811,7 +837,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         upgrid_data_attr = "[" + ",".join(upgrid_json) + "]"
 
         config_json = f'{{"levels":{r["num_levels"]},"spacing":{r["spacing_pct"]}}}'
-        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}">
+        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}">
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['ticker']}</div>
@@ -858,6 +884,32 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div id="grid-wrap-{r['ticker']}">
 {buy_table}
 {upside_table}
+</div>
+
+<div class="sell-ref">
+<div class="sr-title">매도 참고 지표</div>
+<div class="sr-grid">
+<div class="sr-item">
+<div class="sr-label">시장 레짐</div>
+<div class="sr-val {regime_cls}" id="regime-{r['ticker']}">{macro['regime_kr']}</div>
+<div class="sr-sub" id="regime-sub-{r['ticker']}">{macro['regime']}</div>
+<div class="sr-change neutral" id="regime-chg-{r['ticker']}">—</div>
+</div>
+<div class="sr-item">
+<div class="sr-label">내 수익률</div>
+<div class="sr-val" id="pnl-{r['ticker']}">—</div>
+<div class="pnl-input">
+<span class="sym">$</span>
+<input type="number" id="avgcost-{r['ticker']}" placeholder="평단가" step="0.01" oninput="calcPnL('{r['ticker']}')">
+</div>
+</div>
+<div class="sr-item">
+<div class="sr-label">ATH 대비</div>
+<div class="sr-val {'loss' if r['drawdown_pct'] <= -15 else ('bear' if r['drawdown_pct'] <= -5 else 'bull')}" id="ath-dd-{r['ticker']}">{r['drawdown_pct']:.1f}%</div>
+<div class="sr-sub">ATH ${r['ath']:.2f}</div>
+<div class="ath-bar"><div class="ath-fill" style="width:{max(0, 100 + r['drawdown_pct']):.0f}%;background:{'#f04452' if r['drawdown_pct'] <= -15 else ('#ff9500' if r['drawdown_pct'] <= -5 else '#00c073')}"></div></div>
+</div>
+</div>
 </div>
 
 <div class="info-row">
@@ -1078,6 +1130,9 @@ function updateCard(ticker,data){{
   checkGridAlert(ticker,newPrice,data.prev);
   // 가격 변경 시 그리드 재계산
   if(document.getElementById('bi-'+ticker))recalcGrid(ticker);
+  // 매도 참고 지표 갱신
+  if(typeof calcPnL==='function')calcPnL(ticker);
+  if(typeof updateAthDD==='function')updateAthDD(ticker,newPrice);
 }}
 
 function checkGridAlert(ticker,price,prev){{
@@ -1275,8 +1330,78 @@ function recalcGrid(ticker){{
   localStorage.setItem('budget_'+ticker,budget);
 }}
 
-// 페이지 로드 시 저장된 예산 복원
+// ── 매도 참고 지표 ──
+
+// 수익률 계산
+function calcPnL(ticker){{
+  const input=document.getElementById('avgcost-'+ticker);
+  const pnlEl=document.getElementById('pnl-'+ticker);
+  if(!input||!pnlEl)return;
+  const avgCost=parseFloat(input.value);
+  if(!avgCost||avgCost<=0){{pnlEl.textContent='—';pnlEl.className='sr-val';return;}}
+  const prEl=document.getElementById('pr-'+ticker);
+  const price=parseFloat(prEl.textContent.replace('$',''));
+  if(!price)return;
+  const pnlPct=((price-avgCost)/avgCost*100);
+  const sign=pnlPct>=0?'+':'';
+  pnlEl.textContent=sign+pnlPct.toFixed(1)+'%';
+  pnlEl.className='sr-val '+(pnlPct>=0?'profit':'loss');
+  localStorage.setItem('avgcost_'+ticker,avgCost);
+}}
+
+// ATH 대비 낙폭 실시간 업데이트
+function updateAthDD(ticker,price){{
+  const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
+  if(!card)return;
+  const ath=parseFloat(card.dataset.ath)||0;
+  if(!ath)return;
+  const ddPct=((price-ath)/ath*100);
+  const el=document.getElementById('ath-dd-'+ticker);
+  if(el){{
+    el.textContent=ddPct.toFixed(1)+'%';
+    el.className='sr-val '+(ddPct<=-15?'loss':(ddPct<=-5?'bear':'bull'));
+  }}
+  const bar=card.querySelector('.ath-fill');
+  if(bar){{
+    const w=Math.max(0,100+ddPct);
+    bar.style.width=w.toFixed(0)+'%';
+    bar.style.background=ddPct<=-15?'#f04452':(ddPct<=-5?'#ff9500':'#00c073');
+  }}
+}}
+
+// 레짐 변경 감지
+const REGIME_ORDER=['CRISIS','BEAR','CORRECTION','SIDEWAYS','BULL','BULL_STRONG'];
+const REGIME_KR={{'CRISIS':'위기','BEAR':'하락장','CORRECTION':'조정','SIDEWAYS':'횡보장','BULL':'상승장','BULL_STRONG':'강한 상승장'}};
+
+function checkRegimeChange(){{
+  document.querySelectorAll('.card[data-ticker]').forEach(card=>{{
+    const ticker=card.dataset.ticker;
+    const curRegime=card.dataset.regime;
+    const prevKey='regime_'+ticker;
+    const prev=localStorage.getItem(prevKey);
+    const chgEl=document.getElementById('regime-chg-'+ticker);
+    if(!chgEl)return;
+    if(prev&&prev!==curRegime){{
+      const pi=REGIME_ORDER.indexOf(prev);
+      const ci=REGIME_ORDER.indexOf(curRegime);
+      if(ci<pi){{
+        chgEl.textContent='⚠ '+(REGIME_KR[prev]||prev)+' → '+(REGIME_KR[curRegime]||curRegime);
+        chgEl.className='sr-change warn';
+      }}else{{
+        chgEl.textContent='▲ '+(REGIME_KR[prev]||prev)+' → '+(REGIME_KR[curRegime]||curRegime);
+        chgEl.className='sr-change ok';
+      }}
+    }}else if(!prev){{
+      chgEl.textContent='변동 없음';
+      chgEl.className='sr-change neutral';
+    }}
+    localStorage.setItem(prevKey,curRegime);
+  }});
+}}
+
+// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded',()=>{{
+  // 저장된 예산 복원
   document.querySelectorAll('.card[data-ticker]').forEach(card=>{{
     const t=card.dataset.ticker;
     const saved=localStorage.getItem('budget_'+t);
@@ -1284,7 +1409,15 @@ document.addEventListener('DOMContentLoaded',()=>{{
       const input=document.getElementById('bi-'+t);
       if(input){{input.value=saved;recalcGrid(t);}}
     }}
+    // 저장된 평균단가 복원
+    const avgSaved=localStorage.getItem('avgcost_'+t);
+    if(avgSaved){{
+      const avgInput=document.getElementById('avgcost-'+t);
+      if(avgInput){{avgInput.value=avgSaved;calcPnL(t);}}
+    }}
   }});
+  // 레짐 변경 체크
+  checkRegimeChange();
 }});
 </script>
 </body></html>"""

@@ -259,7 +259,7 @@ def check_and_notify(config: dict):
             alloc_rate = {"BULL_STRONG": 0.75, "BULL": 0.70, "SIDEWAYS": 0.55, "CORRECTION": 0.50, "BEAR": 0.45, "CRISIS": 0.40}.get(regime, 0.55)
             budget = preset.get("suggested_budget", 10000) * alloc_rate
             grid = gc.calculate_grid(
-                reference_price=current_price * 1.05,  # 현재가 +5%에서 그리드 시작
+                reference_price=current_price,  # 리포트와 동일 기준
                 total_budget=budget,
                 num_levels=preset.get("suggested_levels", 10),
                 spacing_pct=preset.get("suggested_spacing", 5.0),

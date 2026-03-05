@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """
-ETF 분할매수 가이드 HTML 리포트 생성기.
+우당탕탕 딩쵱 하우스 마련 대작전 HTML 리포트 생성기.
 
 GitHub Actions에서 자동 실행되어 사용자용 HTML 리포트를 생성합니다.
 stock-recommendations 2.0 스타일 디자인.
 
-v2: 매크로(VIX/금리) 연동, 상승장 모멘텀 매수, 예비금/손절 반영
+v3: 무한매수법 — 매수만, 익절 없음. 매크로(VIX/금리) 연동, 그리드 분할매수 + 장기 보유
 """
 
 import sys
@@ -32,15 +32,6 @@ REGIME_ALLOCATION = {
     "CORRECTION":  0.50,
     "BEAR":        0.45,
     "CRISIS":      0.40,
-}
-
-REGIME_PROFIT_TARGETS = {
-    "BULL_STRONG": {"stages": [15, 25, 40], "label": "15%→25%→40% (3단계 부분익절)"},
-    "BULL":        {"stages": [12, 22, 35], "label": "12%→22%→35% (3단계 부분익절)"},
-    "SIDEWAYS":    {"stages": [8, 15],      "label": "8%→15% (2단계 익절)"},
-    "CORRECTION":  {"stages": [10],         "label": "10% (전량 익절)"},
-    "BEAR":        {"stages": [10],         "label": "10% (전량 익절)"},
-    "CRISIS":      {"stages": [8],          "label": "8% (전량 익절)"},
 }
 
 STOP_LOSS_PCT = -50.0      # 손절 기준 (-50%)
@@ -112,7 +103,6 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
         budget = preset.get("suggested_budget", 10000)
         grid_budget = budget * allocation
         reserve_budget = budget * (1 - allocation)
-        profit_info = REGIME_PROFIT_TARGETS.get(regime, REGIME_PROFIT_TARGETS["SIDEWAYS"])
 
         gc = GridCalculator(config.get("grid", {}))
         grid = gc.calculate_grid(
@@ -133,16 +123,6 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
         high_52w = float(close.max())
         low_52w = float(close.min())
         pos_52w = (current_price - low_52w) / (high_52w - low_52w) * 100 if high_52w != low_52w else 50
-
-        # 시드 매수 추천 (상승장 진입)
-        seed_buy_pct = 0
-        seed_buy_amount = 0
-        if regime in ("BULL", "BULL_STRONG") and trend_aligned:
-            seed_buy_pct = 30  # 투자가능액의 30%
-            seed_buy_amount = grid_budget * 0.30
-        elif regime in ("BULL", "BULL_STRONG"):
-            seed_buy_pct = 20
-            seed_buy_amount = grid_budget * 0.20
 
         # 손절 가격
         stop_loss_price = current_price * (1 + STOP_LOSS_PCT / 100)
@@ -186,9 +166,6 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "verdict": verdict,
             "verdict_detail": verdict_detail,
             "allocation": allocation,
-            "profit_info": profit_info,
-            "seed_buy_pct": seed_buy_pct,
-            "seed_buy_amount": seed_buy_amount,
         }
     except Exception as e:
         print(f"  {ticker} 분석 실패: {e}")
@@ -444,7 +421,7 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
 
     html = f"""<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>레버리지 ETF 분할매수 가이드 - {now.strftime('%Y-%m-%d')}</title>
+<title>우당탕탕 딩쵱 하우스 마련 대작전 - {now.strftime('%Y-%m-%d')}</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
@@ -543,9 +520,9 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
 <div class="container">
 <div class="header">
-<div style="font-size:2.2em">📊</div>
-<h1>레버리지 ETF 분할매수 가이드</h1>
-<div class="sub">그리드 전략 기반 | 언제 · 얼마에 · 몇 주 사야 하는지</div>
+<div style="font-size:2.2em">🏠</div>
+<h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
+<div class="sub">무한매수법 그리드 전략 | 언제 · 얼마에 · 몇 주 사야 하는지</div>
 <div class="date">🕐 {now.strftime('%Y-%m-%d %H:%M')} KST 업데이트</div>
 </div>
 
@@ -572,8 +549,8 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 <p>각 ETF 카드의 <b>점수</b>가 높을수록 지금 매수하기 좋은 타이밍입니다.<br>
 <b>매수 계획표</b>에서 "얼마에 몇 주 사야 하는지" 구체적 금액을 확인하세요.<br>
 시장 환경(상승장/하락장)에 따라 점수 기준이 자동 조정됩니다.</p>
-<div class="tip">💰 투자비율 {allocation*100:.0f}% / 예비금 {(1-allocation)*100:.0f}% (레짐: {regime_kr}) | 🎯 {REGIME_PROFIT_TARGETS.get(regime, REGIME_PROFIT_TARGETS["SIDEWAYS"])["label"]} | 🛑 손절 {STOP_LOSS_PCT:.0f}%</div>
-<div class="tip">🌱 상승장 시드매수: 추세 진입 시 투자금의 20~30% 즉시 매수 → 눌림목에서 그리드 추가매수 → 부분익절(1/3씩)</div>
+<div class="tip">💰 투자비율 {allocation*100:.0f}% / 예비금 {(1-allocation)*100:.0f}% (레짐: {regime_kr}) | ♾️ 무한매수법: 매수만, 익절 없음 | 🛑 손절 {STOP_LOSS_PCT:.0f}%</div>
+<div class="tip">📌 전략: 하락 시 그리드 레벨마다 자동 매수 → 상승 시 그리드 리밸런싱 → 장기 보유 (복리 효과 극대화)</div>
 <div class="warn-tip">⚠️ 손절 기준({STOP_LOSS_PCT:.0f}%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요. 레버리지 디케이로 회복이 매우 어려울 수 있습니다.</div>
 </div>
 
@@ -617,24 +594,15 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
             remaining = len(r["grid_levels"]) - shown
             more = f'<div class="more">+{remaining}개 레벨 더 있음</div>' if remaining > 0 else ""
 
-            seed_html = ""
-            if r.get("seed_buy_pct", 0) > 0:
-                seed_qty = int(r["seed_buy_amount"] / r["price"])
-                seed_html = f'<div style="background:#E3F2FD;padding:8px;border-radius:8px;margin-bottom:6px;font-size:0.78em;border:1px solid #90CAF9">🌱 <b>시드매수</b>: 현재가 ${r["price"]:.2f}에 {seed_qty}주 (${r["seed_buy_amount"]:,.0f}, 투자금의 {r["seed_buy_pct"]}%)</div>'
-
-            pinfo = r.get("profit_info", {})
-            tp_html = f'<div style="font-size:0.72em;color:#7B6B4F;margin-top:4px">🎯 익절: {pinfo.get("label", "10%")}</div>'
-
             alloc = r.get("allocation", 0.55)
             buy_table = f"""<div class="buy-plan">
-<div class="bp-title">📋 매수 계획표 (투자 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f})</div>
-{seed_html}
+<div class="bp-title">📋 무한매수 계획표 (투자 ${r['grid_budget']:,.0f} + 예비금 ${r['reserve_budget']:,.0f})</div>
+<div style="background:#E8F5E9;padding:6px;border-radius:6px;margin-bottom:6px;font-size:0.72em;color:#2E7D32">♾️ 무한매수법: 레벨 도달 시 매수 → 장기 보유 (익절 없음)</div>
 <table>
 <tr><th>레벨</th><th>매수가</th><th>하락폭</th><th>수량</th><th>금액</th></tr>
 {rows}
 </table>
 {more}
-{tp_html}
 <div class="budget-bar">
 <div class="seg active" style="flex:{alloc}">투자 {alloc*100:.0f}%</div>
 <div class="seg reserve" style="flex:{1-alloc}">예비금 {(1-alloc)*100:.0f}%</div>
@@ -647,9 +615,8 @@ body{{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(180deg,#8
 <div class="pos-bar"><div class="fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div></div>"""
 
         # 리스크 표시
-        first_tp = r.get("profit_info", {}).get("stages", [10])[0]
         risk_html = f"""<div class="risk-row">
-<div class="risk-item">🎯 1차 익절: ${r['price'] * (1 + first_tp/100):.2f} (+{first_tp}%)</div>
+<div class="risk-item">♾️ 무한매수: 익절 없이 장기 보유</div>
 <div class="risk-item danger">🛑 손절가: ${r['stop_loss_price']:.2f} ({STOP_LOSS_PCT:.0f}%)</div>
 </div>"""
 
@@ -696,15 +663,16 @@ ATH ${r['ath']:.2f} | SMA20 ${r['sma20']:.2f} | SMA50 ${r['sma50']:.2f} | SMA200
     html += f"""</div>
 
 <div class="guide-box">
-<h3>📖 적응형 전략 v2</h3>
+<h3>📖 무한매수법 전략 v3</h3>
 <p>
-<b>🚀 강한 상승장 (투자 75%)</b>: 시드매수 30% → 풀백 시 그리드 추가매수 → 15%/25%/40% 3단계 부분익절 → 고점 -7% 트레일링 스탑<br>
-<b>📈 상승장 (투자 70%)</b>: 시드매수 20~30% → 눌림목 그리드 매수 → 12%/22%/35% 부분익절 → 트레일링 스탑<br>
-<b>➡️ 횡보장 (투자 55%)</b>: 그리드 레벨 도달 시만 매수 → 8%/15% 2단계 익절<br>
-<b>📉 하락장 (투자 45%)</b>: 예비금 55% 유지 + 하위 레벨 위주 매수 → 10% 전량 익절<br>
-<b>🔥 위기 (투자 40%)</b>: 예비금 60% 유지, 극단적 저점 소량 매수 → 8% 전량 익절
+<b>♾️ 핵심 원리</b>: 매수만 하고 익절하지 않는다. 하락할수록 더 많이 사서 평단가를 낮추고, 장기 보유로 복리 효과를 극대화한다.<br><br>
+<b>🚀 강한 상승장 (투자 75%)</b>: 시드매수 30% 진입 → 풀백 시 그리드 추가매수 → 장기 보유<br>
+<b>📈 상승장 (투자 70%)</b>: 시드매수 30% → 눌림목 그리드 매수 → 장기 보유<br>
+<b>➡️ 횡보장 (투자 55%)</b>: 그리드 레벨 도달 시 매수 + 유휴 현금 DCA<br>
+<b>📉 하락장 (투자 45%)</b>: 예비금 55% 유지 + 하위 레벨 위주 매수 → 장기 보유<br>
+<b>🔥 위기 (투자 40%)</b>: 예비금 60% 유지, 극단적 저점 소량 매수 → 장기 보유
 </p>
-<div class="tip">💰 익절 후 새 그리드로 재시작 (수익 재투자) | 그리드 상단 15% 이탈 시 자동 리밸런싱</div>
+<div class="tip">📌 그리드 상단 15% 이탈 시 자동 리밸런싱 (새 기준가로 그리드 재설정) | 유휴 현금 월 1회 DCA 자동 매수</div>
 <div class="tip">⚡ 횡보장에서 3x ETF(TQQQ/SOXL)는 디케이 주의 → 2x(QLD/SSO)가 안전</div>
 <div class="warn-tip">🛑 손절 기준 {STOP_LOSS_PCT:.0f}% 초과 손실 시 → 추가 매수 중단 → 포지션 재평가 (레버리지 디케이로 회복 매우 어려움)</div>
 </div>
@@ -751,7 +719,7 @@ document.addEventListener('keydown',e=>{{if(e.key==='Escape')hideInfo();}});
 
 
 def main():
-    print("📊 ETF 분할매수 가이드 리포트 생성 시작...")
+    print("🏠 우당탕탕 딩쵱 하우스 마련 대작전 리포트 생성 시작...")
     now = datetime.now(KST)
     config = load_config()
     presets = load_presets()
@@ -785,7 +753,7 @@ def main():
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="0; url=./{output_file}">
-    <title>ETF 분할매수 가이드</title>
+    <title>우당탕탕 딩쵱 하우스 마련 대작전</title>
 </head>
 <body>
     <p>최신 리포트로 이동 중... <a href="./{output_file}">클릭</a></p>

@@ -1,15 +1,13 @@
-"""적응형 그리드 백테스터.
+"""무한매수법 그리드 백테스터.
 
-레짐(상승/하락/횡보) 감지 → 동적 투자비율, 시드매수, 부분익절, 트레일링 스탑,
-그리드 리밸런싱, 레버리지 디케이 경고를 반영한 백테스트 엔진.
+레짐(상승/하락/횡보) 감지 → 동적 투자비율, 시드매수, 그리드 리밸런싱.
+매수만 하고 익절하지 않는 '무한매수법' 전략.
 
-v2 개선사항:
-  1. 상승장 시드매수: 추세 진입 시 즉시 30% 초기 매수
-  2. 레짐별 투자비율: BULL 75% → BEAR 45%
-  3. 부분익절: 상승장에서 1/3씩 3단계 익절
-  4. 트레일링 스탑: 고점 대비 -7% 하락 시 잔여 전량 청산
-  5. 그리드 리밸런싱: 가격이 그리드 상단 15% 이상 벗어나면 재설정
-  6. 레버리지 디케이 추적: 횡보장 3x ETF 손실 추적
+핵심 원리:
+  - 하락 시 그리드 레벨마다 더 많이 매수 (피라미딩)
+  - 상승장 진입 시 시드매수로 참여
+  - 가격 상승 시 그리드 리밸런싱 (새 기준가로 재설정)
+  - 장기 보유, 익절 없음 → 복리 효과 극대화
 """
 
 import logging
@@ -29,7 +27,7 @@ logger = logging.getLogger(__name__)
 class BacktestTrade:
     """Single trade in backtest."""
     date: datetime
-    action: str  # BUY, SEED_BUY, SELL, SELL_PARTIAL, SELL_TRAILING, REBALANCE
+    action: str  # BUY, SEED_BUY, REBALANCE, DCA_IDLE
     price: float
     quantity: int
     grid_level: int
@@ -61,16 +59,14 @@ class BacktestResult:
     trades: list[BacktestTrade]
     equity_curve: pd.DataFrame
     grid_config: dict
-    # v2 추가 필드
     seed_buys: int = 0
-    partial_sells: int = 0
-    trailing_stops: int = 0
     rebalances: int = 0
     regime_changes: int = 0
     leverage_decay_pct: float = 0.0
+    idle_dca_buys: int = 0
 
 
-# ── 레짐별 설정 ──────────────────────────────────────────
+# ── 레짐별 투자비율 ──────────────────────────────────────
 
 REGIME_ALLOCATION = {
     "BULL_STRONG": 0.75,
@@ -79,26 +75,6 @@ REGIME_ALLOCATION = {
     "CORRECTION":  0.50,
     "BEAR":        0.45,
     "CRISIS":      0.40,
-}
-
-# 부분익절 목표 (단계별 %)
-REGIME_PROFIT_TARGETS = {
-    "BULL_STRONG": [15, 25, 40],   # 1/3 @ 15%, 1/3 @ 25%, 나머지 트레일링
-    "BULL":        [12, 22, 35],
-    "SIDEWAYS":    [8, 15],        # 1/2 @ 8%, 나머지 @ 15%
-    "CORRECTION":  [10],           # 전량 @ 10%
-    "BEAR":        [10],
-    "CRISIS":      [8],
-}
-
-# 트레일링 스탑 (고점 대비 하락 %)
-REGIME_TRAILING_STOP = {
-    "BULL_STRONG": 7.0,
-    "BULL":        7.0,
-    "SIDEWAYS":    5.0,
-    "CORRECTION":  5.0,
-    "BEAR":        5.0,
-    "CRISIS":      4.0,
 }
 
 
@@ -150,15 +126,15 @@ def detect_regime(close: pd.Series, idx: int) -> str:
 
 
 class GridBacktester:
-    """적응형 그리드 백테스터.
+    """무한매수법 그리드 백테스터.
 
-    상승장: 시드매수 → 눌림목 그리드 추가매수 → 부분익절 → 트레일링 스탑
-    하락장: 그리드 분할매수 → 목표가 전량 익절 → 재투자
+    상승장: 시드매수 → 눌림목 그리드 추가매수 → 장기 보유
+    하락장: 그리드 분할매수 → 장기 보유
+    현금 유휴 시: DCA 소량 매수로 현금 효율화
     """
 
     def __init__(self, config: dict = None):
         config = config or {}
-        self.profit_target_pct = config.get("profit_target_pct", 10.0)
 
     def run_backtest(
         self,
@@ -171,7 +147,7 @@ class GridBacktester:
         reinvest_profits: bool = True,
         total_budget: float = None,
     ) -> BacktestResult:
-        """적응형 그리드 백테스트 실행."""
+        """무한매수법 그리드 백테스트 실행 (매수만, 익절 없음)."""
         close = df["Close"].dropna()
 
         if start_date:
@@ -195,26 +171,18 @@ class GridBacktester:
         filled_levels: set[int] = set()
         trades: list[BacktestTrade] = []
         equity_data: list[dict] = []
-        round_number = 1
-        total_realized_pnl = 0.0
-        sell_wins = 0
-        sell_count = 0
         max_unrealized_loss_pct = 0.0
 
         current_grid = list(grid_levels)
         grid_ref_price = grid_levels[0].target_price / (1 - abs(grid_levels[0].drop_pct) / 100) if grid_levels else float(close.iloc[0])
 
-        # v2 상태
         seed_buy_done = False
-        partial_sells_done = 0  # 현재 라운드에서 부분 익절 횟수
-        peak_price = 0.0        # 매수 후 고점 (트레일링 스탑용)
         last_rebalance_idx = -999
         prev_regime = ""
         regime_changes = 0
         seed_buy_count = 0
-        partial_sell_count = 0
-        trailing_stop_count = 0
         rebalance_count = 0
+        idle_dca_count = 0
 
         close_values = close.values
         close_index = close.index
@@ -229,14 +197,14 @@ class GridBacktester:
             prev_regime = regime
 
             allocation = REGIME_ALLOCATION.get(regime, 0.55)
-            investable_limit = total_budget * allocation
 
             # ── 1. 시드 매수 (상승장 진입) ──
             if (regime in ("BULL", "BULL_STRONG")
                     and shares_held == 0
-                    and not seed_buy_done):
+                    and not seed_buy_done
+                    and remaining_budget > 0):
                 seed_amount = min(
-                    investable_limit * 0.30,  # 투자가능액의 30%
+                    remaining_budget * 0.30,
                     remaining_budget,
                 )
                 seed_qty = math.floor(seed_amount / price)
@@ -246,33 +214,23 @@ class GridBacktester:
                     avg_cost = price
                     remaining_budget -= cost
                     seed_buy_done = True
-                    peak_price = price
                     seed_buy_count += 1
 
                     trades.append(BacktestTrade(
                         date=date, action="SEED_BUY", price=round(price, 2),
                         quantity=seed_qty, grid_level=0,
                         cost_basis=round(price, 2),
-                        round_number=round_number, regime=regime,
-                        note=f"seed {allocation:.0%} alloc",
+                        regime=regime,
+                        note=f"seed 30% entry",
                     ))
 
             # ── 2. 그리드 매수 ──
-            invested_amount = total_budget - remaining_budget
             for gl in current_grid:
                 if gl.level_number in filled_levels:
                     continue
                 if price <= gl.target_price:
                     buy_qty = gl.quantity
                     cost = buy_qty * price
-
-                    # 투자 한도 체크
-                    if invested_amount + cost > investable_limit:
-                        allowed = investable_limit - invested_amount
-                        if allowed <= 0:
-                            break
-                        buy_qty = math.floor(allowed / price)
-                        cost = buy_qty * price
 
                     if cost > remaining_budget:
                         buy_qty = math.floor(remaining_budget / price)
@@ -283,176 +241,69 @@ class GridBacktester:
                         shares_held += buy_qty
                         avg_cost = (total_cost_before + cost) / shares_held
                         remaining_budget -= cost
-                        invested_amount += cost
                         filled_levels.add(gl.level_number)
-                        if peak_price == 0:
-                            peak_price = price
 
                         trades.append(BacktestTrade(
                             date=date, action="BUY", price=round(price, 2),
                             quantity=buy_qty, grid_level=gl.level_number,
                             cost_basis=round(avg_cost, 2),
-                            round_number=round_number, regime=regime,
+                            regime=regime,
                         ))
 
-            # ── 3. 익절 / 트레일링 스탑 ──
-            if shares_held > 0:
-                profit_pct = (price - avg_cost) / avg_cost * 100
-                unrealized_loss = min(0, profit_pct)
-                max_unrealized_loss_pct = min(max_unrealized_loss_pct, unrealized_loss)
-                peak_price = max(peak_price, price)
+            # ── 3. 유휴 현금 DCA (상승장에서 현금이 2개월치 이상 쌓이면 소량 매수) ──
+            idle_threshold = total_budget * 0.1  # 총 예산의 10% 이상 현금 유휴
+            if (remaining_budget > idle_threshold
+                    and regime in ("BULL", "BULL_STRONG", "SIDEWAYS")
+                    and i % 22 == 0 and i > 0):  # ~월 1회
+                dca_amount = min(remaining_budget * 0.15, remaining_budget)
+                dca_qty = math.floor(dca_amount / price)
+                if dca_qty > 0:
+                    cost = dca_qty * price
+                    total_cost_before = shares_held * avg_cost
+                    shares_held += dca_qty
+                    avg_cost = (total_cost_before + cost) / shares_held if shares_held > 0 else price
+                    remaining_budget -= cost
+                    idle_dca_count += 1
 
-                targets = REGIME_PROFIT_TARGETS.get(regime, [10])
-                trailing_stop_pct = REGIME_TRAILING_STOP.get(regime, 5.0)
+                    trades.append(BacktestTrade(
+                        date=date, action="DCA_IDLE", price=round(price, 2),
+                        quantity=dca_qty, grid_level=0,
+                        cost_basis=round(avg_cost, 2),
+                        regime=regime,
+                        note=f"idle cash DCA",
+                    ))
 
-                sold_this_bar = False
-
-                # 부분 익절 (상승장: 3단계, 횡보장: 2단계)
-                if len(targets) >= 2 and partial_sells_done < len(targets) - 1:
-                    target = targets[partial_sells_done]
-                    if profit_pct >= target:
-                        sell_portion = len(targets) - partial_sells_done
-                        sell_qty = max(1, shares_held // sell_portion)
-
-                        if sell_qty > 0 and sell_qty < shares_held:
-                            sell_value = sell_qty * price
-                            realized = sell_qty * (price - avg_cost)
-                            total_realized_pnl += realized
-                            shares_held -= sell_qty
-                            remaining_budget += sell_value
-                            partial_sells_done += 1
-                            partial_sell_count += 1
-                            sell_count += 1
-                            if realized > 0:
-                                sell_wins += 1
-
-                            trades.append(BacktestTrade(
-                                date=date, action="SELL_PARTIAL",
-                                price=round(price, 2), quantity=sell_qty,
-                                grid_level=0, cost_basis=round(avg_cost, 2),
-                                pnl=round(realized, 2),
-                                round_number=round_number, regime=regime,
-                                note=f"stage {partial_sells_done}/{len(targets)-1} @ {target}%",
-                            ))
-                            sold_this_bar = True
-
-                # 트레일링 스탑 (수익 상태에서만 발동)
-                if not sold_this_bar and shares_held > 0 and profit_pct > 0:
-                    trail_dd = (price - peak_price) / peak_price * 100
-                    # 최소 수익 확보 후 트레일링 발동
-                    min_profit_for_trail = targets[-1] * 0.4 if targets else 4.0
-                    if profit_pct >= min_profit_for_trail and trail_dd <= -trailing_stop_pct:
-                        sell_value = shares_held * price
-                        realized = sell_value - (shares_held * avg_cost)
-                        total_realized_pnl += realized
-                        sell_count += 1
-                        trailing_stop_count += 1
-                        if realized > 0:
-                            sell_wins += 1
+            # ── 4. 그리드 리밸런싱 (가격 상승 시 그리드 재설정) ──
+            if i - last_rebalance_idx >= 22 and current_grid:
+                top_price = current_grid[0].target_price
+                if price > top_price * 1.15:
+                    alloc_budget = max(remaining_budget, 0) * allocation
+                    if alloc_budget > 0:
+                        current_grid = GridCalculator().calculate_grid(
+                            reference_price=price,
+                            total_budget=alloc_budget,
+                            num_levels=num_levels,
+                            spacing_pct=spacing_pct,
+                            weighting="linear",
+                        )
+                        filled_levels = set()
+                        grid_ref_price = price
+                        last_rebalance_idx = i
+                        rebalance_count += 1
+                        seed_buy_done = False
 
                         trades.append(BacktestTrade(
-                            date=date, action="SELL_TRAILING",
-                            price=round(price, 2), quantity=shares_held,
-                            grid_level=0, cost_basis=round(avg_cost, 2),
-                            pnl=round(realized, 2),
-                            round_number=round_number, regime=regime,
-                            note=f"trail {trail_dd:.1f}% from peak ${peak_price:.2f}",
+                            date=date, action="REBALANCE",
+                            price=round(price, 2), quantity=0,
+                            grid_level=0, cost_basis=0,
+                            regime=regime,
+                            note=f"grid reset from ${top_price:.2f}",
                         ))
 
-                        if reinvest_profits:
-                            remaining_budget += sell_value
-                            shares_held = 0
-                            avg_cost = 0.0
-                            filled_levels = set()
-                            partial_sells_done = 0
-                            peak_price = 0.0
-                            seed_buy_done = False
-                            round_number += 1
-
-                            current_grid = GridCalculator().calculate_grid(
-                                reference_price=price,
-                                total_budget=remaining_budget * allocation,
-                                num_levels=num_levels,
-                                spacing_pct=spacing_pct,
-                                weighting="linear",
-                            )
-                            grid_ref_price = price
-                        else:
-                            remaining_budget += sell_value
-                            shares_held = 0
-                            avg_cost = 0.0
-                        sold_this_bar = True
-
-                # 고정 목표 익절 (하락장/위기 - 전량)
-                if not sold_this_bar and shares_held > 0 and len(targets) == 1:
-                    if profit_pct >= targets[0]:
-                        sell_value = shares_held * price
-                        realized = sell_value - (shares_held * avg_cost)
-                        total_realized_pnl += realized
-                        sell_count += 1
-                        if realized > 0:
-                            sell_wins += 1
-
-                        trades.append(BacktestTrade(
-                            date=date, action="SELL",
-                            price=round(price, 2), quantity=shares_held,
-                            grid_level=0, cost_basis=round(avg_cost, 2),
-                            pnl=round(realized, 2),
-                            round_number=round_number, regime=regime,
-                        ))
-
-                        if reinvest_profits:
-                            remaining_budget += sell_value
-                            shares_held = 0
-                            avg_cost = 0.0
-                            filled_levels = set()
-                            partial_sells_done = 0
-                            peak_price = 0.0
-                            seed_buy_done = False
-                            round_number += 1
-
-                            current_grid = GridCalculator().calculate_grid(
-                                reference_price=price,
-                                total_budget=remaining_budget * allocation,
-                                num_levels=num_levels,
-                                spacing_pct=spacing_pct,
-                                weighting="linear",
-                            )
-                            grid_ref_price = price
-                        else:
-                            remaining_budget += sell_value
-                            shares_held = 0
-                            avg_cost = 0.0
-                        sold_this_bar = True
-
-            # ── 4. 그리드 리밸런싱 ──
-            if (not sold_this_bar if shares_held > 0 else True):
-                if i - last_rebalance_idx >= 22 and current_grid:  # ~1개월
-                    top_price = current_grid[0].target_price
-                    if price > top_price * 1.15:
-                        # 가격이 그리드 상단 15% 이상 벗어남 → 재설정
-                        alloc_budget = (total_budget - (shares_held * avg_cost if shares_held else 0))
-                        alloc_budget = max(alloc_budget, remaining_budget) * allocation
-                        if alloc_budget > 0:
-                            current_grid = GridCalculator().calculate_grid(
-                                reference_price=price,
-                                total_budget=alloc_budget,
-                                num_levels=num_levels,
-                                spacing_pct=spacing_pct,
-                                weighting="linear",
-                            )
-                            filled_levels = set()
-                            grid_ref_price = price
-                            last_rebalance_idx = i
-                            rebalance_count += 1
-
-                            trades.append(BacktestTrade(
-                                date=date, action="REBALANCE",
-                                price=round(price, 2), quantity=0,
-                                grid_level=0, cost_basis=0,
-                                round_number=round_number, regime=regime,
-                                note=f"grid reset from ${top_price:.2f}",
-                            ))
+            # ── MDD 추적 ──
+            if shares_held > 0 and avg_cost > 0:
+                unrealized_pct = (price - avg_cost) / avg_cost * 100
+                max_unrealized_loss_pct = min(max_unrealized_loss_pct, unrealized_pct)
 
             # ── 기록 ──
             equity = remaining_budget + (shares_held * price)
@@ -486,10 +337,8 @@ class GridBacktester:
         eq_dd = ((eq_series - eq_cummax) / eq_cummax * 100)
         max_dd = float(eq_dd.min())
 
-        num_buys = sum(1 for t in trades if t.action in ("BUY", "SEED_BUY"))
-        win_rate = (sell_wins / sell_count * 100) if sell_count > 0 else 0
+        num_buys = sum(1 for t in trades if t.action in ("BUY", "SEED_BUY", "DCA_IDLE"))
 
-        # 레버리지 디케이 추적 (3x ETF 횡보 구간)
         leverage_decay = self._estimate_leverage_decay(close, equity_df)
 
         return BacktestResult(
@@ -503,10 +352,10 @@ class GridBacktester:
             max_drawdown_pct=round(max_dd, 2),
             max_unrealized_loss_pct=round(max_unrealized_loss_pct, 2),
             num_buys=num_buys,
-            num_sells=sell_count,
-            num_rounds=round_number,
-            total_realized_pnl=round(total_realized_pnl, 2),
-            win_rate=round(win_rate, 2),
+            num_sells=0,
+            num_rounds=1,
+            total_realized_pnl=0.0,
+            win_rate=0.0,
             avg_cost_basis=round(avg_cost, 2),
             trades=trades,
             equity_curve=equity_df,
@@ -515,11 +364,10 @@ class GridBacktester:
                 "spacing_pct": spacing_pct,
             },
             seed_buys=seed_buy_count,
-            partial_sells=partial_sell_count,
-            trailing_stops=trailing_stop_count,
             rebalances=rebalance_count,
             regime_changes=regime_changes,
             leverage_decay_pct=round(leverage_decay, 2),
+            idle_dca_buys=idle_dca_count,
         )
 
     def _estimate_leverage_decay(self, close: pd.Series, equity_df: pd.DataFrame) -> float:
@@ -614,12 +462,11 @@ class GridBacktester:
                 "final_value": grid_result.final_value,
                 "total_return_pct": grid_result.total_return_pct,
                 "max_drawdown_pct": grid_result.max_drawdown_pct,
-                "num_trades": grid_result.num_buys + grid_result.num_sells,
+                "num_trades": grid_result.num_buys,
                 "equity_curve": grid_result.equity_curve,
                 "seed_buys": grid_result.seed_buys,
-                "partial_sells": grid_result.partial_sells,
-                "trailing_stops": grid_result.trailing_stops,
                 "rebalances": grid_result.rebalances,
+                "idle_dca_buys": grid_result.idle_dca_buys,
             },
             "lump_sum": {
                 "final_value": round(lump_final, 2),

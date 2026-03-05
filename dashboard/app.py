@@ -23,8 +23,8 @@ def load_presets():
 
 def main():
     st.set_page_config(
-        page_title="레버리지 ETF 분할매수 가이드",
-        page_icon="📊",
+        page_title="우당탕탕 딩쵱 하우스 마련 대작전",
+        page_icon="🏠",
         layout="wide",
         initial_sidebar_state="expanded",
     )
@@ -34,7 +34,7 @@ def main():
     if "presets" not in st.session_state:
         st.session_state.presets = load_presets()
 
-    st.sidebar.title("📊 ETF 분할매수 가이드")
+    st.sidebar.title("🏠 딩쵱 하우스 대작전")
     st.sidebar.markdown("---")
 
     pages = {
@@ -60,7 +60,7 @@ def main():
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.caption("레버리지 ETF 분할매수 가이드 v1.0")
+    st.sidebar.caption("우당탕탕 딩쵱 하우스 마련 대작전 v3.0")
 
     if selected == "개요":
         from dashboard.pages.overview import render

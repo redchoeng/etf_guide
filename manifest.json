@@ -1,0 +1,24 @@
+{
+  "name": "우당탕탕 딩쵱 하우스 마련 대작전",
+  "short_name": "딩쵱 대작전",
+  "description": "레버리지 ETF 무한매수법 그리드 전략 가이드",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#87CEEB",
+  "theme_color": "#2196F3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

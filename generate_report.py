@@ -422,6 +422,12 @@ def generate_html(results: list[dict], macro: dict, now: datetime) -> str:
     html = f"""<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>우당탕탕 딩쵱 하우스 마련 대작전 - {now.strftime('%Y-%m-%d')}</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#2196F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="딩쵱 대작전">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
@@ -712,6 +718,7 @@ sma:{{t:'추세 (이동평균선 배열)',c:[
 function showInfo(k){{const d=info[k];document.getElementById('popT').textContent=d.t;let h='';d.c.forEach(s=>{{h+='<li class="sec">'+s.s+'</li>';s.i.forEach(i=>{{h+='<li>'+i+'</li>'}});}});document.getElementById('popC').innerHTML=h;document.getElementById('ov').classList.add('show');document.getElementById('pop').classList.add('show');}}
 function hideInfo(){{document.getElementById('ov').classList.remove('show');document.getElementById('pop').classList.remove('show');}}
 document.addEventListener('keydown',e=>{{if(e.key==='Escape')hideInfo();}});
+if('serviceWorker' in navigator){{navigator.serviceWorker.register('./sw.js').catch(()=>{{}});}}
 </script>
 </body></html>"""
 

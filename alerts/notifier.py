@@ -294,16 +294,20 @@ def check_and_notify(config: dict):
             ]
 
             prev_dd = price_state.get(f"{ticker}_dd", 0)
-            # 현재 낙폭이 이전보다 깊어졌을 때 새 구간 진입 알림
+            # 현재 해당하는 가장 깊은 구간만 알림 (이전보다 깊어졌을 때)
+            current_zone = None
             for threshold, zone_name, mult in DD_ZONES:
-                if drawdown_pct <= threshold and prev_dd > threshold:
-                    sent = notifier.send_drawdown_alert(
-                        ticker, current_price, drawdown_pct,
-                        ath, zone_name, mult,
-                    )
-                    if sent:
-                        alerts_sent += 1
-                        logger.info(f"    🔔 낙폭 {zone_name} 구간 진입 알림")
+                if drawdown_pct <= threshold:
+                    current_zone = (threshold, zone_name, mult)
+            if current_zone and prev_dd > current_zone[0]:
+                threshold, zone_name, mult = current_zone
+                sent = notifier.send_drawdown_alert(
+                    ticker, current_price, drawdown_pct,
+                    ath, zone_name, mult,
+                )
+                if sent:
+                    alerts_sent += 1
+                    logger.info(f"    🔔 낙폭 {zone_name} 구간 진입 알림")
 
             price_state[ticker] = current_price
             price_state[f"{ticker}_dd"] = drawdown_pct

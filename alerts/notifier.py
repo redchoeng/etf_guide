@@ -115,6 +115,29 @@ class TelegramNotifier:
         )
         return self.send_message(msg)
 
+    def send_drawdown_batch(self, dd_alerts: list[dict]) -> bool:
+        """낙폭 구간 진입 종목 통합 알림 (1건)."""
+        if not dd_alerts:
+            return False
+        if not _should_alert("dd_batch"):
+            return False
+
+        emoji_map = {
+            "-5%": "🟡", "-10%": "🟠", "-20%": "🔴",
+            "-30%": "🔴", "-40%": "💥", "-50%": "💥",
+        }
+
+        lines = ["📉 <b>낙폭 구간 진입 알림</b>\n"]
+        for a in dd_alerts:
+            e = emoji_map.get(a["zone"], "📉")
+            lines.append(
+                f"{e} <b>{a['ticker']}</b> {a['zone']} "
+                f"(${a['price']:.2f}, ATH 대비 {a['drawdown']:.1f}%) "
+                f"→ <b>x{a['mult']:.1f}</b> 매수"
+            )
+        lines.append("\n⚠️ 낙폭 배수만큼 매수 금액을 늘리세요!")
+        return self.send_message("\n".join(lines))
+
     def send_score_alert(self, ticker: str, score: int, verdict: str,
                          price: float, rsi: float, drawdown: float,
                          regime_kr: str, mom_1m: float) -> bool:
@@ -216,6 +239,7 @@ def check_and_notify(config: dict):
     signal_gen = SignalGenerator(config.get("signals", {}))
 
     summaries = []
+    dd_alerts = []
     price_state = _load_state()
     alerts_sent = 0
 
@@ -294,20 +318,21 @@ def check_and_notify(config: dict):
             ]
 
             prev_dd = price_state.get(f"{ticker}_dd", 0)
-            # 현재 해당하는 가장 깊은 구간만 알림 (이전보다 깊어졌을 때)
+            # 현재 해당하는 가장 깊은 구간만 수집 (이전보다 깊어졌을 때)
             current_zone = None
             for threshold, zone_name, mult in DD_ZONES:
                 if drawdown_pct <= threshold:
                     current_zone = (threshold, zone_name, mult)
             if current_zone and prev_dd > current_zone[0]:
-                threshold, zone_name, mult = current_zone
-                sent = notifier.send_drawdown_alert(
-                    ticker, current_price, drawdown_pct,
-                    ath, zone_name, mult,
-                )
-                if sent:
-                    alerts_sent += 1
-                    logger.info(f"    🔔 낙폭 {zone_name} 구간 진입 알림")
+                dd_alerts.append({
+                    "ticker": ticker,
+                    "price": current_price,
+                    "drawdown": drawdown_pct,
+                    "ath": ath,
+                    "zone": current_zone[1],
+                    "mult": current_zone[2],
+                })
+                logger.info(f"    📌 낙폭 {current_zone[1]} 구간 진입 감지")
 
             price_state[ticker] = current_price
             price_state[f"{ticker}_dd"] = drawdown_pct
@@ -333,7 +358,14 @@ def check_and_notify(config: dict):
         except Exception as e:
             logger.error(f"  {ticker} 체크 실패: {e}")
 
-    # 4) 요약 알림
+    # 4) 낙폭 구간 진입 통합 알림 (모아서 1건)
+    if dd_alerts:
+        sent = notifier.send_drawdown_batch(dd_alerts)
+        if sent:
+            alerts_sent += 1
+            logger.info(f"  🔔 낙폭 통합 알림 발송 ({len(dd_alerts)}종목)")
+
+    # 5) 요약 알림
     if summaries:
         notifier.send_summary(summaries, macro)
 

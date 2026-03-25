@@ -32,7 +32,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 .macro-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .macro-chip{background:#f2f4f6;border-radius:20px;padding:6px 14px;font-size:12px;color:#4e5968;display:flex;align-items:center;gap:4px}
 .macro-chip .val{font-weight:700;color:#191f28}
-.regime-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;color:#E65100;background:#FFF3E0}
+.regime-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;color:#2E7D32;background:#E8F5E9}
 .macro-desc{font-size:13px;color:#6b7684;line-height:1.6;margin-top:8px}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #f2f4f6}
 .stat{text-align:center;padding:16px 8px;border-right:1px solid #f2f4f6}
@@ -229,11 +229,11 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-03-26 01:11 KST</div>
+<div class="date">2026-03-26 02:59 KST</div>
 <div class="market-pulse">
-<div class="pulse-item"><div class="pulse-dot yellow"></div>횡보장</div>
-<div class="pulse-item">VIX 25.8</div>
-<div class="pulse-item">1종목 매수 추천</div>
+<div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
+<div class="pulse-item">VIX 25.1</div>
+<div class="pulse-item">0종목 매수 추천</div>
 </div>
 </div>
 
@@ -248,28 +248,28 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
 </div>
 <div class="noti-alert-list" id="notiList">
-<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>QLD</b> 매수 점수 61점 — 매수 고려</div></div>
+<div class="noti-alert"><div class="na-dot info"></div><div class="na-text">현재 특별한 매수 시그널이 없습니다. 그리드 레벨 도달 시 알려드릴게요.</div></div>
 </div>
 
 <div class="section">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-<span class="regime-badge">➡️ 횡보장</span>
+<span class="regime-badge">📈 상승장</span>
 </div>
 <div class="macro-chips">
-<div class="macro-chip">VIX <span class="val">25.8</span></div>
+<div class="macro-chip">VIX <span class="val">25.1</span></div>
 <div class="macro-chip">금리 <span class="val">4.32%</span></div>
-<div class="macro-chip">S&P500 <span class="val">-4.3%</span></div>
-<div class="macro-chip">매크로 <span class="val">65%</span></div>
+<div class="macro-chip">S&P500 <span class="val">-4.0%</span></div>
+<div class="macro-chip">매크로 <span class="val">75%</span></div>
 </div>
-<div class="macro-desc">방향성이 불확실합니다. 그리드 매수를 천천히 진행하세요.</div>
+<div class="macro-desc">상승 추세입니다. 단기 조정 시 분할매수를 시작하기 좋은 환경입니다.</div>
 </div>
 
 <div class="section">
 <div class="stats-row">
 <div class="stat"><div class="sl">분석 ETF</div><div class="sv">3</div></div>
-<div class="stat"><div class="sl">매수 추천</div><div class="sv green">1</div></div>
-<div class="stat"><div class="sl">평균 점수</div><div class="sv">58</div></div>
-<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">QLD 61</div></div>
+<div class="stat"><div class="sl">매수 추천</div><div class="sv green">0</div></div>
+<div class="stat"><div class="sl">평균 점수</div><div class="sv">55</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">QLD 57</div></div>
 </div>
 </div>
 
@@ -277,12 +277,12 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="section-title">이 페이지 보는 법</div>
 <div class="tip-box">
 <p>매주 정해진 금액을 DCA 매수하되, <b>낙폭이 깊을수록 더 많이</b> 매수합니다. 낙폭 매수 가이드에서 현재 구간과 매수 배수를 확인하세요.</p>
-<p>시장: 횡보장 · 적립식 + 낙폭 배수 매수 · 매도는 직접 판단</p>
+<p>시장: 상승장 · 적립식 + 낙폭 배수 매수 · 매도는 직접 판단</p>
 <div class="warn">손절 기준(-50%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
 </div>
 </div>
 
-<div class="card" data-ticker="QLD" data-grid='[{"l":1,"p":60.17,"q":9},{"l":2,"p":57.01,"q":9},{"l":3,"p":53.84,"q":10},{"l":4,"p":50.67,"q":10},{"l":5,"p":47.51,"q":11},{"l":6,"p":44.34,"q":12},{"l":7,"p":41.17,"q":13},{"l":8,"p":38.00,"q":14},{"l":9,"p":34.84,"q":15},{"l":10,"p":31.67,"q":17}]' data-upgrid='[{"l":1,"p":65.24,"q":5},{"l":2,"p":67.14,"q":4},{"l":3,"p":69.04,"q":4},{"l":4,"p":70.94,"q":4},{"l":5,"p":72.84,"q":4}]' data-ath="76.36" data-low52="34.61" data-high52="76.36" data-config='{"levels":10,"spacing":5.0}' data-budget="10000" data-regime="SIDEWAYS">
+<div class="card" data-ticker="QLD" data-grid='[{"l":1,"p":60.54,"q":11},{"l":2,"p":57.36,"q":12},{"l":3,"p":54.17,"q":12},{"l":4,"p":50.98,"q":13},{"l":5,"p":47.80,"q":14},{"l":6,"p":44.61,"q":15},{"l":7,"p":41.42,"q":16},{"l":8,"p":38.24,"q":18},{"l":9,"p":35.05,"q":19},{"l":10,"p":31.86,"q":21}]' data-upgrid='[{"l":1,"p":65.64,"q":6},{"l":2,"p":67.55,"q":6},{"l":3,"p":69.47,"q":6},{"l":4,"p":71.38,"q":5},{"l":5,"p":73.29,"q":5}]' data-ath="76.36" data-low52="34.61" data-high52="76.36" data-config='{"levels":10,"spacing":5.0}' data-budget="10000" data-regime="BULL">
 <div class="card-head">
 <div class="left">
 <div class="ticker">QLD</div>
@@ -294,31 +294,31 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 </div>
 </div>
 <div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#2196F3" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="53.9" stroke-linecap="round"/></svg>
-<span class="num" style="color:#1565C0">61</span>
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="59.4" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">57</span>
 </div>
 </div>
 
-<div class="verdict-bar" style="background:#E3F2FD">
-<div class="vd-title" style="color:#1565C0">🔵 매수 고려</div>
-<div class="vd-detail" style="color:#1565C0">[횡보장] 다음 그리드 레벨($60.17)까지 5.0% 남았습니다.</div>
+<div class="verdict-bar" style="background:#FFF3E0">
+<div class="vd-title" style="color:#E65100">🟡 관망</div>
+<div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
 <div class="price-area" id="pa-QLD">
-<span class="price" id="pr-QLD">$63.34</span>
-<span class="chg-pill up" id="chg-QLD">+1.12%</span>
+<span class="price" id="pr-QLD">$63.73</span>
+<span class="chg-pill up" id="chg-QLD">+1.74%</span>
 </div>
 <div class="live-alert" id="la-QLD" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$34.61</span><span>52주</span><span>$76.36</span></div>
-<div class="range-track"><div class="range-fill" style="width:69%;background:#ff9500"></div><div class="range-dot" style="left:69%"></div></div>
+<div class="range-track"><div class="range-fill" style="width:70%;background:#ff9500"></div><div class="range-dot" style="left:70%"></div></div>
 </div>
 
 <div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">39</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-17.1%</div></div>
-<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-7.0%</div></div>
+<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">42</div></div>
+<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-16.5%</div></div>
+<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-6.5%</div></div>
 <div class="metric warn" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">역배열</div></div>
 </div>
 
@@ -346,8 +346,8 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="sr-grid">
 <div class="sr-item">
 <div class="sr-label">시장 레짐</div>
-<div class="sr-val side" id="regime-QLD">횡보장</div>
-<div class="sr-sub" id="regime-sub-QLD">SIDEWAYS</div>
+<div class="sr-val bull" id="regime-QLD">상승장</div>
+<div class="sr-sub" id="regime-sub-QLD">BULL</div>
 <div class="sr-change neutral" id="regime-chg-QLD">—</div>
 </div>
 <div class="sr-item">
@@ -360,7 +360,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
-<div class="sr-val loss" id="ath-dd-QLD">-17.1%</div>
+<div class="sr-val loss" id="ath-dd-QLD">-16.5%</div>
 <div class="sr-sub">ATH $76.36</div>
 <div class="ath-bar"><div class="ath-fill" style="width:83%;background:#f04452"></div></div>
 </div>
@@ -369,14 +369,14 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 $31.67 (-50%)</span>
+<span class="info-chip danger">손절 $31.86 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $76.36 · SMA20 $66.13 · SMA50 $68.46 · SMA200 $66.58 · 3M -8.5% · Vol 45%
+ATH $76.36 · SMA20 $66.15 · SMA50 $68.47 · SMA200 $66.58 · 3M -7.9% · Vol 45%
 </div>
 </div>
-<div class="card" data-ticker="SSO" data-grid='[{"l":1,"p":50.85,"q":10},{"l":2,"p":48.73,"q":11},{"l":3,"p":46.61,"q":11},{"l":4,"p":44.49,"q":12},{"l":5,"p":42.38,"q":12},{"l":6,"p":40.26,"q":13},{"l":7,"p":38.14,"q":14},{"l":8,"p":36.02,"q":15},{"l":9,"p":33.90,"q":16},{"l":10,"p":31.78,"q":17}]' data-upgrid='[{"l":1,"p":54.56,"q":6},{"l":2,"p":56.15,"q":5},{"l":3,"p":57.74,"q":5},{"l":4,"p":59.33,"q":5},{"l":5,"p":60.92,"q":5}]' data-ath="60.08" data-low52="32.21" data-high52="60.08" data-config='{"levels":10,"spacing":4.0}' data-budget="10000" data-regime="SIDEWAYS">
+<div class="card" data-ticker="SSO" data-grid='[{"l":1,"p":51.10,"q":13},{"l":2,"p":48.97,"q":14},{"l":3,"p":46.84,"q":14},{"l":4,"p":44.71,"q":15},{"l":5,"p":42.58,"q":16},{"l":6,"p":40.45,"q":17},{"l":7,"p":38.33,"q":18},{"l":8,"p":36.20,"q":19},{"l":9,"p":34.07,"q":20},{"l":10,"p":31.94,"q":21}]' data-upgrid='[{"l":1,"p":54.83,"q":7},{"l":2,"p":56.42,"q":7},{"l":3,"p":58.02,"q":7},{"l":4,"p":59.62,"q":7},{"l":5,"p":61.21,"q":6}]' data-ath="60.08" data-low52="32.21" data-high52="60.08" data-config='{"levels":10,"spacing":4.0}' data-budget="10000" data-regime="BULL">
 <div class="card-head">
 <div class="left">
 <div class="ticker">SSO</div>
@@ -388,31 +388,31 @@ ATH $76.36 · SMA20 $66.13 · SMA50 $68.46 · SMA200 $66.58 · 3M -8.5% · Vol 4
 </div>
 </div>
 <div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="58.1" stroke-linecap="round"/></svg>
-<span class="num" style="color:#E65100">58</span>
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="63.6" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">54</span>
 </div>
 </div>
 
 <div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[횡보장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
+<div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
 <div class="price-area" id="pa-SSO">
-<span class="price" id="pr-SSO">$52.97</span>
-<span class="chg-pill up" id="chg-SSO">+0.72%</span>
+<span class="price" id="pr-SSO">$53.23</span>
+<span class="chg-pill up" id="chg-SSO">+1.22%</span>
 </div>
 <div class="live-alert" id="la-SSO" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$32.21</span><span>52주</span><span>$60.08</span></div>
-<div class="range-track"><div class="range-fill" style="width:74%;background:#f04452"></div><div class="range-dot" style="left:74%"></div></div>
+<div class="range-track"><div class="range-fill" style="width:75%;background:#f04452"></div><div class="range-dot" style="left:75%"></div></div>
 </div>
 
 <div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">37</div></div>
-<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-11.8%</div></div>
-<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-9.1%</div></div>
+<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">40</div></div>
+<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-11.4%</div></div>
+<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-8.6%</div></div>
 <div class="metric warn" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">역배열</div></div>
 </div>
 
@@ -440,8 +440,8 @@ ATH $76.36 · SMA20 $66.13 · SMA50 $68.46 · SMA200 $66.58 · 3M -8.5% · Vol 4
 <div class="sr-grid">
 <div class="sr-item">
 <div class="sr-label">시장 레짐</div>
-<div class="sr-val side" id="regime-SSO">횡보장</div>
-<div class="sr-sub" id="regime-sub-SSO">SIDEWAYS</div>
+<div class="sr-val bull" id="regime-SSO">상승장</div>
+<div class="sr-sub" id="regime-sub-SSO">BULL</div>
 <div class="sr-change neutral" id="regime-chg-SSO">—</div>
 </div>
 <div class="sr-item">
@@ -454,23 +454,23 @@ ATH $76.36 · SMA20 $66.13 · SMA50 $68.46 · SMA200 $66.58 · 3M -8.5% · Vol 4
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
-<div class="sr-val bear" id="ath-dd-SSO">-11.8%</div>
+<div class="sr-val bear" id="ath-dd-SSO">-11.4%</div>
 <div class="sr-sub">ATH $60.08</div>
-<div class="ath-bar"><div class="ath-fill" style="width:88%;background:#ff9500"></div></div>
+<div class="ath-bar"><div class="ath-fill" style="width:89%;background:#ff9500"></div></div>
 </div>
 </div>
 </div>
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 $26.49 (-50%)</span>
+<span class="info-chip danger">손절 $26.61 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $60.08 · SMA20 $55.38 · SMA50 $57.39 · SMA200 $54.82 · 3M -6.7% · Vol 36%
+ATH $60.08 · SMA20 $55.39 · SMA50 $57.40 · SMA200 $54.82 · 3M -6.3% · Vol 36%
 </div>
 </div>
-<div class="card" data-ticker="SOXL" data-grid='[{"l":1,"p":52.69,"q":7},{"l":2,"p":48.73,"q":8},{"l":3,"p":44.76,"q":8},{"l":4,"p":40.80,"q":9},{"l":5,"p":36.83,"q":10},{"l":6,"p":32.86,"q":11},{"l":7,"p":28.90,"q":13},{"l":8,"p":24.93,"q":15},{"l":9,"p":20.96,"q":18},{"l":10,"p":17.00,"q":23},{"l":11,"p":13.03,"q":30},{"l":12,"p":9.07,"q":43},{"l":13,"p":5.10,"q":77},{"l":14,"p":1.13,"q":346}]' data-upgrid='[{"l":1,"p":58.36,"q":5},{"l":2,"p":60.06,"q":5},{"l":3,"p":61.76,"q":5},{"l":4,"p":63.46,"q":5},{"l":5,"p":65.16,"q":5}]' data-ath="71.86" data-low52="8.22" data-high52="71.86" data-config='{"levels":15,"spacing":7.0}' data-budget="10000" data-regime="SIDEWAYS">
+<div class="card" data-ticker="SOXL" data-grid='[{"l":1,"p":53.35,"q":9},{"l":2,"p":49.34,"q":10},{"l":3,"p":45.32,"q":11},{"l":4,"p":41.31,"q":12},{"l":5,"p":37.29,"q":13},{"l":6,"p":33.27,"q":15},{"l":7,"p":29.26,"q":17},{"l":8,"p":25.24,"q":19},{"l":9,"p":21.23,"q":23},{"l":10,"p":17.21,"q":29},{"l":11,"p":13.20,"q":37},{"l":12,"p":9.18,"q":54},{"l":13,"p":5.16,"q":96},{"l":14,"p":1.15,"q":435}]' data-upgrid='[{"l":1,"p":59.09,"q":7},{"l":2,"p":60.81,"q":6},{"l":3,"p":62.53,"q":6},{"l":4,"p":64.25,"q":6},{"l":5,"p":65.98,"q":6}]' data-ath="71.86" data-low52="8.22" data-high52="71.86" data-config='{"levels":15,"spacing":7.0}' data-budget="10000" data-regime="BULL">
 <div class="card-head">
 <div class="left">
 <div class="ticker">SOXL</div>
@@ -482,31 +482,31 @@ ATH $60.08 · SMA20 $55.38 · SMA50 $57.39 · SMA200 $54.82 · 3M -6.7% · Vol 3
 </div>
 </div>
 <div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="63.6" stroke-linecap="round"/></svg>
-<span class="num" style="color:#E65100">54</span>
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="65.0" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">53</span>
 </div>
 </div>
 
 <div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[횡보장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
+<div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
 </div>
 
 <div class="price-area" id="pa-SOXL">
-<span class="price" id="pr-SOXL">$56.66</span>
-<span class="chg-pill up" id="chg-SOXL">+3.09%</span>
+<span class="price" id="pr-SOXL">$57.37</span>
+<span class="chg-pill up" id="chg-SOXL">+4.39%</span>
 </div>
 <div class="live-alert" id="la-SOXL" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>$8.22</span><span>52주</span><span>$71.86</span></div>
-<div class="range-track"><div class="range-fill" style="width:76%;background:#f04452"></div><div class="range-dot" style="left:76%"></div></div>
+<div class="range-track"><div class="range-fill" style="width:77%;background:#f04452"></div><div class="range-dot" style="left:77%"></div></div>
 </div>
 
 <div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">56</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-21.2%</div></div>
-<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-17.3%</div></div>
+<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">58</div></div>
+<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-20.2%</div></div>
+<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-16.3%</div></div>
 <div class="metric " onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">역배열</div></div>
 </div>
 
@@ -534,8 +534,8 @@ ATH $60.08 · SMA20 $55.38 · SMA50 $57.39 · SMA200 $54.82 · 3M -6.7% · Vol 3
 <div class="sr-grid">
 <div class="sr-item">
 <div class="sr-label">시장 레짐</div>
-<div class="sr-val side" id="regime-SOXL">횡보장</div>
-<div class="sr-sub" id="regime-sub-SOXL">SIDEWAYS</div>
+<div class="sr-val bull" id="regime-SOXL">상승장</div>
+<div class="sr-sub" id="regime-sub-SOXL">BULL</div>
 <div class="sr-change neutral" id="regime-chg-SOXL">—</div>
 </div>
 <div class="sr-item">
@@ -548,20 +548,20 @@ ATH $60.08 · SMA20 $55.38 · SMA50 $57.39 · SMA200 $54.82 · 3M -6.7% · Vol 3
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
-<div class="sr-val loss" id="ath-dd-SOXL">-21.2%</div>
+<div class="sr-val loss" id="ath-dd-SOXL">-20.2%</div>
 <div class="sr-sub">ATH $71.86</div>
-<div class="ath-bar"><div class="ath-fill" style="width:79%;background:#f04452"></div></div>
+<div class="ath-bar"><div class="ath-fill" style="width:80%;background:#f04452"></div></div>
 </div>
 </div>
 </div>
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 $28.33 (-50%)</span>
+<span class="info-chip danger">손절 $28.68 (-50%)</span>
 </div>
 
 <div class="details">
-ATH $71.86 · SMA20 $55.09 · SMA50 $59.88 · SMA200 $40.72 · 3M +46.9% · Vol 117%
+ATH $71.86 · SMA20 $55.13 · SMA50 $59.89 · SMA200 $40.72 · 3M +48.7% · Vol 117%
 </div>
 </div>
 
@@ -581,7 +581,7 @@ ATH $71.86 · SMA20 $55.09 · SMA50 $59.88 · SMA200 $40.72 · 3M +46.9% · Vol 
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-26 01:11 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-03-26 02:59 KST</p>
 </div>
 </div>
 
@@ -617,7 +617,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')hideInfo();});
 // === 알림 시스템 ===
 const NOTI_KEY='ding_noti_enabled';
 const NOTI_SENT_KEY='ding_noti_sent';
-const alerts=[{"type":"buy","ticker":"QLD","msg":"QLD 61점 — 매수 고려"}];
+const alerts=[];
 let swReg=null;
 
 // SW 등록

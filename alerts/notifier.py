@@ -22,16 +22,13 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-# 중복 알림 방지 캐시: key -> timestamp
-_alert_cache: dict[str, float] = {}
-ALERT_COOLDOWN = 14400  # 4시간
-
-# 방향 필터용 상태 파일
+# 상태 파일 (가격 + 알림 쿨다운 통합)
 STATE_FILE = Path(__file__).parent / "state.json"
+ALERT_COOLDOWN = 86400  # 24시간 — 같은 알림 하루에 1번만
 
 
 def _load_state() -> dict:
-    """이전 실행의 가격 상태 로드."""
+    """이전 실행의 가격/알림 상태 로드."""
     if STATE_FILE.exists():
         try:
             return json.loads(STATE_FILE.read_text(encoding="utf-8"))
@@ -41,27 +38,30 @@ def _load_state() -> dict:
 
 
 def _save_state(state: dict):
-    """현재 가격 상태 저장."""
+    """현재 가격/알림 상태 저장."""
     STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
-def _should_alert(key: str) -> bool:
-    """쿨다운 내 중복 알림 방지."""
+def _should_alert(key: str, state: dict) -> bool:
+    """쿨다운 내 중복 알림 방지 (state.json에 영속 저장)."""
     now = time.time()
-    last = _alert_cache.get(key, 0)
+    cache_key = f"_alert_{key}"
+    last = state.get(cache_key, 0)
     if now - last < ALERT_COOLDOWN:
         return False
-    _alert_cache[key] = now
+    state[cache_key] = now
     return True
 
 
 class TelegramNotifier:
     """Telegram Bot API를 통한 알림 발송."""
 
-    def __init__(self, bot_token: str = None, chat_id: str = None):
+    def __init__(self, bot_token: str = None, chat_id: str = None,
+                 state: dict = None):
         self.bot_token = bot_token or os.environ.get("TELEGRAM_BOT_TOKEN", "")
         self.chat_id = chat_id or os.environ.get("TELEGRAM_CHAT_ID", "")
         self.base_url = f"https://api.telegram.org/bot{self.bot_token}"
+        self._state = state if state is not None else {}
 
     @property
     def is_configured(self) -> bool:
@@ -95,7 +95,7 @@ class TelegramNotifier:
                             drawdown_pct: float, ath: float,
                             dd_zone: str, multiplier: float) -> bool:
         """낙폭 구간 진입 알림."""
-        if not _should_alert(f"dd_{ticker}_{dd_zone}"):
+        if not _should_alert(f"dd_{ticker}_{dd_zone}", self._state):
             return False
 
         emoji_map = {
@@ -119,7 +119,7 @@ class TelegramNotifier:
         """낙폭 구간 진입 종목 통합 알림 (1건)."""
         if not dd_alerts:
             return False
-        if not _should_alert("dd_batch"):
+        if not _should_alert("dd_batch", self._state):
             return False
 
         emoji_map = {
@@ -142,7 +142,7 @@ class TelegramNotifier:
                          price: float, rsi: float, drawdown: float,
                          regime_kr: str, mom_1m: float) -> bool:
         """매수 점수 알림 (60점 이상)."""
-        if not _should_alert(f"score_{ticker}_{score // 10}"):
+        if not _should_alert(f"score_{ticker}_{score // 10}", self._state):
             return False
 
         emoji = "🟢" if score >= 75 else "🔵"
@@ -162,7 +162,7 @@ class TelegramNotifier:
     def send_crash_alert(self, ticker: str, price: float,
                          change_pct: float, drawdown: float) -> bool:
         """급락 알림."""
-        if not _should_alert(f"crash_{ticker}"):
+        if not _should_alert(f"crash_{ticker}", self._state):
             return False
 
         msg = (
@@ -176,7 +176,7 @@ class TelegramNotifier:
 
     def send_summary(self, summaries: list[dict], macro: dict) -> bool:
         """종합 요약 알림."""
-        if not _should_alert("summary"):
+        if not _should_alert("summary", self._state):
             return False
 
         regime_kr = macro.get("regime_kr", "")
@@ -238,9 +238,10 @@ def check_and_notify(config: dict):
     fetcher = ETFDataFetcher(config.get("data", {}))
     signal_gen = SignalGenerator(config.get("signals", {}))
 
+    price_state = _load_state()
+    notifier._state = price_state  # 쿨다운 상태 공유
     summaries = []
     dd_alerts = []
-    price_state = _load_state()
     alerts_sent = 0
 
     for ticker, preset in presets.get("presets", {}).items():

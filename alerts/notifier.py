@@ -116,10 +116,11 @@ class TelegramNotifier:
         return self.send_message(msg)
 
     def send_drawdown_batch(self, dd_alerts: list[dict]) -> bool:
-        """낙폭 구간 진입 종목 통합 알림 (1건)."""
+        """낙폭 구간 진입 종목 통합 알림 (1건).
+
+        개별 쿨다운은 check_and_notify()에서 dd_{ticker}_{threshold} 키로 관리.
+        """
         if not dd_alerts:
-            return False
-        if not _should_alert("dd_batch", self._state):
             return False
 
         emoji_map = {
@@ -294,8 +295,10 @@ def check_and_notify(config: dict):
 
             # === 알림 조건 ===
 
-            # 1) 매수 점수 60점 이상
-            if score >= 60:
+            # 1) 매수 점수 알림: 상승장은 75점 이상, 그 외는 60점 이상
+            # 상승장에서는 추세·매크로 점수만으로 60점을 쉽게 넘기므로 임계값 상향
+            score_threshold = 75 if regime in ("BULL", "BULL_STRONG") else 60
+            if score >= score_threshold:
                 sent = notifier.send_score_alert(
                     ticker, score, verdict, current_price,
                     rsi, drawdown_pct, regime_kr, mom_1m,
@@ -325,15 +328,18 @@ def check_and_notify(config: dict):
                 if drawdown_pct <= threshold:
                     current_zone = (threshold, zone_name, mult)
             if current_zone and prev_dd > current_zone[0]:
-                dd_alerts.append({
-                    "ticker": ticker,
-                    "price": current_price,
-                    "drawdown": drawdown_pct,
-                    "ath": ath,
-                    "zone": current_zone[1],
-                    "mult": current_zone[2],
-                })
-                logger.info(f"    📌 낙폭 {current_zone[1]} 구간 진입 감지")
+                # 종목+구간별 쿨다운 체크 (단일 dd_batch 키 대신)
+                zone_key = f"dd_{ticker}_{current_zone[0]}"
+                if _should_alert(zone_key, price_state):
+                    dd_alerts.append({
+                        "ticker": ticker,
+                        "price": current_price,
+                        "drawdown": drawdown_pct,
+                        "ath": ath,
+                        "zone": current_zone[1],
+                        "mult": current_zone[2],
+                    })
+                    logger.info(f"    📌 낙폭 {current_zone[1]} 구간 진입 감지")
 
             price_state[ticker] = current_price
             price_state[f"{ticker}_dd"] = drawdown_pct

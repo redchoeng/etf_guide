@@ -438,6 +438,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 
         config_json = f'{{"levels":{r["num_levels"]},"spacing":{r["spacing_pct"]}}}'
         wm = r.get("weekly_mult", 1.0)
+        wb_base = r.get("weekly_base", 0)
         if wm > 1.0:
             wb_bar = f'<div class="weekly-buy-bar"><b>이번 주는 {wm:.1f}배로 사세요</b> 📈</div>'
         else:

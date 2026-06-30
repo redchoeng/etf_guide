@@ -154,18 +154,16 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 .strat-item .desc b{color:#191f28}
 .strat-tips{margin-top:12px;padding:12px;background:#f8f9fa;border-radius:10px;font-size:12px;color:#6b7684;line-height:1.6}
 .strat-tips .warn{color:#f04452;margin-top:6px;padding:8px 10px;background:#fff5f5;border-radius:6px;font-size:11px}
-.weekly-buy-bar{background:#e8f3ff;border-radius:10px;padding:10px 14px;font-size:14px;color:#1565C0;margin-bottom:12px}
-.weekly-buy-bar b{font-size:20px;color:#3182f6}
-.weekly-buy-bar.wbb-dim{background:#f2f4f6;color:#8b95a1;font-size:12px}
+.weekly-buy-bar{border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:12px;background:#e8f3ff;color:#1565C0;font-weight:600}
+.weekly-buy-bar b{font-size:18px;color:#3182f6}
+.weekly-buy-bar.wbb-base{background:#f2f4f6;color:#4e5968;font-weight:400}
 .weekly-guide{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
 .wg-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f9fa;border-radius:10px}
 .wg-name{font-size:14px;font-weight:700;color:#191f28;min-width:90px}
 .wg-dd{font-size:11px;color:#8b95a1;min-width:60px}
 .wg-mult{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:#e5e8eb;color:#4e5968}
 .wg-mult.hot{background:#fff0e0;color:#c05000}
-.wg-amt{margin-left:auto;font-size:18px;font-weight:700;color:#3182f6}
-.wg-no-base{font-size:12px;color:#b0b8c1}
-.wg-hint{font-size:11px;color:#8b95a1;margin-top:4px}
+.wg-action{margin-left:auto;font-size:14px;font-weight:700;color:#191f28}
 .footer{text-align:center;padding:24px 0;font-size:12px;color:#b0b8c1}
 .footer a{color:#3182f6;text-decoration:none;font-weight:500}
 .overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;backdrop-filter:blur(2px)}
@@ -241,11 +239,11 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-06-30 17:08 KST</div>
+<div class="date">2026-06-30 17:22 KST</div>
 <div class="market-pulse">
 <div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
 <div class="pulse-item">VIX 17.6</div>
-<div class="pulse-item">2종목 매수 추천</div>
+<div class="pulse-item">1종목 매수 추천</div>
 </div>
 </div>
 
@@ -253,14 +251,14 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="noti-left">
 <div class="noti-icon">🔔</div>
 <div>
-<div class="noti-text"><b>매수 알림</b> 2건</div>
+<div class="noti-text"><b>매수 알림</b> 1건</div>
 <div class="noti-status" id="notiStatus">알림 허용 시 시그널을 푸시로 받아요</div>
 </div>
 </div>
 <button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
 </div>
 <div class="noti-alert-list" id="notiList">
-<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>SOXL</b> 매수 점수 60점 — 매수 고려</div></div><div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>476850.KS</b> 매수 점수 60점 — 매수 고려</div></div>
+<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>476850.KS</b> 매수 점수 60점 — 매수 고려</div></div>
 </div>
 
 <div class="section">
@@ -278,115 +276,20 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 
 <div class="section">
 <div class="stats-row">
-<div class="stat"><div class="sl">분석 ETF</div><div class="sv">4</div></div>
-<div class="stat"><div class="sl">매수 추천</div><div class="sv green">2</div></div>
+<div class="stat"><div class="sl">분석 ETF</div><div class="sv">2</div></div>
+<div class="stat"><div class="sl">매수 추천</div><div class="sv green">1</div></div>
 <div class="stat"><div class="sl">평균 점수</div><div class="sv">56</div></div>
-<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">SOXL 60</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">476850.KS 60</div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-title">📅 이번 주 매수 가이드</div>
-<div class="weekly-guide"><div class="wg-row"><span class="wg-name">SOXL</span><span class="wg-dd">ATH -21%</span><span class="wg-mult hot">×2.0</span><span class="wg-amt">$200.00</span></div><div class="wg-row"><span class="wg-name">KoACT</span><span class="wg-dd">ATH -7%</span><span class="wg-mult">기본</span><span class="wg-amt">₩250,000</span></div><div class="wg-row"><span class="wg-name">QLD</span><span class="wg-dd">ATH -7%</span><span class="wg-mult">기본</span><span class="wg-amt">$200.00</span></div><div class="wg-row"><span class="wg-name">TIMEFOLIO</span><span class="wg-dd">ATH -4%</span><span class="wg-mult">기본</span><span class="wg-amt">₩250,000</span></div></div>
-<p class="wg-hint">금액 변경: 아래 각 카드의 <b>주간 투자금</b> 입력칸에서 바꾸면 실시간 반영돼요</p>
+<div class="weekly-guide"><div class="wg-row"><span class="wg-name">KoACT</span><span class="wg-dd">ATH -7%</span><span class="wg-mult">기본</span><span class="wg-action">매수 금액대로 사세요</span></div><div class="wg-row"><span class="wg-name">TIMEFOLIO</span><span class="wg-dd">ATH -4%</span><span class="wg-mult">기본</span><span class="wg-action">매수 금액대로 사세요</span></div></div>
 </div>
 
-<div class="card" data-ticker="SOXL" data-currency="USD" data-grid='[{"l":1,"p":219.96,"q":2},{"l":2,"p":203.41,"q":2},{"l":3,"p":186.85,"q":2},{"l":4,"p":170.29,"q":2},{"l":5,"p":153.74,"q":3},{"l":6,"p":137.18,"q":3},{"l":7,"p":120.63,"q":4},{"l":8,"p":104.07,"q":4},{"l":9,"p":87.51,"q":5},{"l":10,"p":70.96,"q":7},{"l":11,"p":54.40,"q":9},{"l":12,"p":37.84,"q":13},{"l":13,"p":21.29,"q":23},{"l":14,"p":4.73,"q":105}]' data-upgrid='[{"l":1,"p":243.62,"q":1},{"l":2,"p":250.71,"q":1},{"l":3,"p":257.81,"q":1},{"l":4,"p":264.90,"q":1},{"l":5,"p":272.00,"q":1}]' data-ath="300.77" data-low52="23.98" data-high52="300.77" data-config='{"levels":15,"spacing":7.0}' data-budget="10000" data-regime="BULL" data-weekly-base="100" data-weekly-mult="2.0">
-<div class="weekly-buy-bar">이번 주 <b>$200.00</b> 사라 <span style="color:#c05000">(2.0배)</span></div>
-<div class="card-head">
-<div class="left">
-<div class="ticker">SOXL</div>
-<div class="etf-sub">Direxion Daily Semiconductor Bull 3X · 기초: SOXX</div>
-<div class="tags">
-<span class="tag lev">3x</span>
-<span class="tag cat">Semiconductor</span>
-<span class="tag trend-up">정배열</span>
-</div>
-</div>
-<div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#2196F3" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="55.3" stroke-linecap="round"/></svg>
-<span class="num" style="color:#1565C0">60</span>
-</div>
-</div>
-
-<div class="verdict-bar" style="background:#E3F2FD">
-<div class="vd-title" style="color:#1565C0">🔵 매수 고려</div>
-<div class="vd-detail" style="color:#1565C0">[상승장] 추세 양호. 소량 분할매수 또는 다음 풀백 대기.</div>
-</div>
-
-<div class="price-area" id="pa-SOXL">
-<span class="price" id="pr-SOXL">$236.52</span>
-<span class="chg-pill up" id="chg-SOXL">+9.70%</span>
-</div>
-<div class="live-alert" id="la-SOXL" style="display:none"></div>
-
-<div class="range-bar">
-<div class="range-labels"><span>$23.98</span><span>52주</span><span>$300.77</span></div>
-<div class="range-track"><div class="range-fill" style="width:77%;background:#f04452"></div><div class="range-dot" style="left:77%"></div></div>
-</div>
-
-<div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">50</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-21.4%</div></div>
-<div class="metric " onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+5.3%</div></div>
-<div class="metric hi" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">정배열</div></div>
-</div>
-
-<div class="budget-input-area">
-<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
-<div class="input-wrap">
-<span class="currency">$</span>
-<input type="number" id="bi-SOXL" value="200" min="10" step="10" oninput="recalcDCA('SOXL')">
-</div>
-</div>
-<div id="grid-wrap-SOXL">
-<div class="buy-plan">
-<div class="bp-title">낙폭 매수 가이드</div>
-<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
-<table>
-<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
-<tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>$285.73 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$270.69</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$240.62</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$210.54</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$180.46</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$150.38</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
-</table>
-</div>
-</div>
-
-<div class="sell-ref">
-<div class="sr-title">매도 참고 지표</div>
-<div class="sr-grid">
-<div class="sr-item">
-<div class="sr-label">시장 레짐</div>
-<div class="sr-val bull" id="regime-SOXL">상승장</div>
-<div class="sr-sub" id="regime-sub-SOXL">BULL</div>
-<div class="sr-change neutral" id="regime-chg-SOXL">—</div>
-</div>
-<div class="sr-item">
-<div class="sr-label">내 수익률</div>
-<div class="sr-val" id="pnl-SOXL">—</div>
-<div class="pnl-input">
-<span class="sym">$</span>
-<input type="number" id="avgcost-SOXL" placeholder="평단가" step="0.01" oninput="calcPnL('SOXL')">
-</div>
-</div>
-<div class="sr-item">
-<div class="sr-label">ATH 대비</div>
-<div class="sr-val loss" id="ath-dd-SOXL">-21.4%</div>
-<div class="sr-sub">ATH $300.77</div>
-<div class="ath-bar"><div class="ath-fill" style="width:79%;background:#f04452"></div></div>
-</div>
-</div>
-</div>
-
-<div class="info-row">
-<span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 $118.26 (-50%)</span>
-</div>
-
-<div class="details">
-ATH $300.77 · SMA20 $237.50 · SMA50 $187.93 · SMA200 $84.17 · 3M +314.7% · Vol 91%
-</div>
-</div>
 <div class="card" data-ticker="476850.KS" data-currency="KRW" data-grid='[{"l":1,"p":24686.40,"q":28},{"l":2,"p":23657.80,"q":29},{"l":3,"p":22629.20,"q":30},{"l":4,"p":21600.60,"q":32},{"l":5,"p":20572.00,"q":34},{"l":6,"p":19543.40,"q":35},{"l":7,"p":18514.80,"q":37},{"l":8,"p":17486.20,"q":40},{"l":9,"p":16457.60,"q":42},{"l":10,"p":15429.00,"q":45}]' data-upgrid='[{"l":1,"p":26486.45,"q":15},{"l":2,"p":27257.90,"q":15},{"l":3,"p":28029.35,"q":14},{"l":4,"p":28800.80,"q":14},{"l":5,"p":29572.25,"q":14}]' data-ath="27530.00" data-low52="10258.00" data-high52="27530.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL" data-weekly-base="250000" data-weekly-mult="1.0">
-<div class="weekly-buy-bar">이번 주 <b>₩250,000</b> 사라</div>
+<div class="weekly-buy-bar wbb-base">이번 주는 매수 금액대로 사세요</div>
 <div class="card-head">
 <div class="left">
 <div class="ticker">KoACT</div>
@@ -479,102 +382,8 @@ ATH $300.77 · SMA20 $237.50 · SMA50 $187.93 · SMA200 $84.17 · 3M +314.7% · 
 ATH ₩27,530 · SMA20 ₩25,822 · SMA50 ₩23,996 · SMA200 ₩16,825 · 3M +40.9% · Vol 31%
 </div>
 </div>
-<div class="card" data-ticker="QLD" data-currency="USD" data-grid='[{"l":1,"p":89.00,"q":7},{"l":2,"p":84.31,"q":8},{"l":3,"p":79.63,"q":8},{"l":4,"p":74.94,"q":9},{"l":5,"p":70.26,"q":9},{"l":6,"p":65.58,"q":10},{"l":7,"p":60.89,"q":11},{"l":8,"p":56.21,"q":12},{"l":9,"p":51.52,"q":13},{"l":10,"p":46.84,"q":14}]' data-upgrid='[{"l":1,"p":96.49,"q":4},{"l":2,"p":99.30,"q":4},{"l":3,"p":102.11,"q":4},{"l":4,"p":104.92,"q":4},{"l":5,"p":107.73,"q":3}]' data-ath="100.46" data-low52="57.12" data-high52="100.46" data-config='{"levels":10,"spacing":5.0}' data-budget="10000" data-regime="BULL" data-weekly-base="200" data-weekly-mult="1.0">
-<div class="weekly-buy-bar">이번 주 <b>$200.00</b> 사라</div>
-<div class="card-head">
-<div class="left">
-<div class="ticker">QLD</div>
-<div class="etf-sub">ProShares Ultra QQQ · 기초: QQQ</div>
-<div class="tags">
-<span class="tag lev">2x</span>
-<span class="tag cat">NASDAQ</span>
-<span class="tag trend-up">정배열</span>
-</div>
-</div>
-<div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="65.0" stroke-linecap="round"/></svg>
-<span class="num" style="color:#E65100">53</span>
-</div>
-</div>
-
-<div class="verdict-bar" style="background:#FFF3E0">
-<div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[상승장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
-</div>
-
-<div class="price-area" id="pa-QLD">
-<span class="price" id="pr-QLD">$93.68</span>
-<span class="chg-pill up" id="chg-QLD">+5.12%</span>
-</div>
-<div class="live-alert" id="la-QLD" style="display:none"></div>
-
-<div class="range-bar">
-<div class="range-labels"><span>$57.12</span><span>52주</span><span>$100.46</span></div>
-<div class="range-track"><div class="range-fill" style="width:84%;background:#f04452"></div><div class="range-dot" style="left:84%"></div></div>
-</div>
-
-<div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">52</div></div>
-<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-6.8%</div></div>
-<div class="metric hi" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">-4.1%</div></div>
-<div class="metric hi" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">정배열</div></div>
-</div>
-
-<div class="budget-input-area">
-<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
-<div class="input-wrap">
-<span class="currency">$</span>
-<input type="number" id="bi-QLD" value="200" min="10" step="10" oninput="recalcDCA('QLD')">
-</div>
-</div>
-<div id="grid-wrap-QLD">
-<div class="buy-plan">
-<div class="bp-title">낙폭 매수 가이드</div>
-<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
-<table>
-<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
-<tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>$95.44 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$90.42</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$80.37</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$70.32</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$60.28</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$50.23</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
-</table>
-</div>
-</div>
-
-<div class="sell-ref">
-<div class="sr-title">매도 참고 지표</div>
-<div class="sr-grid">
-<div class="sr-item">
-<div class="sr-label">시장 레짐</div>
-<div class="sr-val bull" id="regime-QLD">상승장</div>
-<div class="sr-sub" id="regime-sub-QLD">BULL</div>
-<div class="sr-change neutral" id="regime-chg-QLD">—</div>
-</div>
-<div class="sr-item">
-<div class="sr-label">내 수익률</div>
-<div class="sr-val" id="pnl-QLD">—</div>
-<div class="pnl-input">
-<span class="sym">$</span>
-<input type="number" id="avgcost-QLD" placeholder="평단가" step="0.01" oninput="calcPnL('QLD')">
-</div>
-</div>
-<div class="sr-item">
-<div class="sr-label">ATH 대비</div>
-<div class="sr-val bear" id="ath-dd-QLD">-6.8%</div>
-<div class="sr-sub">ATH $100.46</div>
-<div class="ath-bar"><div class="ath-fill" style="width:93%;background:#ff9500"></div></div>
-</div>
-</div>
-</div>
-
-<div class="info-row">
-<span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 $46.84 (-50%)</span>
-</div>
-
-<div class="details">
-ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol 44%
-</div>
-</div>
 <div class="card" data-ticker="426030.KS" data-currency="KRW" data-grid='[{"l":1,"p":57916.80,"q":12},{"l":2,"p":55503.60,"q":12},{"l":3,"p":53090.40,"q":13},{"l":4,"p":50677.20,"q":13},{"l":5,"p":48264.00,"q":14},{"l":6,"p":45850.80,"q":15},{"l":7,"p":43437.60,"q":16},{"l":8,"p":41024.40,"q":17},{"l":9,"p":38611.20,"q":18},{"l":10,"p":36198.00,"q":19}]' data-upgrid='[{"l":1,"p":62139.90,"q":6},{"l":2,"p":63949.80,"q":6},{"l":3,"p":65759.70,"q":6},{"l":4,"p":67569.60,"q":6},{"l":5,"p":69379.50,"q":6}]' data-ath="62605.00" data-low52="27881.12" data-high52="62605.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL" data-weekly-base="250000" data-weekly-mult="1.0">
-<div class="weekly-buy-bar">이번 주 <b>₩250,000</b> 사라</div>
+<div class="weekly-buy-bar wbb-base">이번 주는 매수 금액대로 사세요</div>
 <div class="card-head">
 <div class="left">
 <div class="ticker">TIMEFOLIO</div>
@@ -684,7 +493,7 @@ ATH ₩62,605 · SMA20 ₩58,468 · SMA50 ₩53,674 · SMA200 ₩40,714 · 3M +5
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-06-30 17:08 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-06-30 17:22 KST</p>
 </div>
 </div>
 
@@ -719,7 +528,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')hideInfo();});
 
 const NOTI_KEY='ding_noti_enabled';
 const NOTI_SENT_KEY='ding_noti_sent';
-const alerts=[{"type":"buy","ticker":"SOXL","msg":"SOXL 60점 — 매수 고려"},{"type":"buy","ticker":"476850.KS","msg":"476850.KS 60점 — 매수 고려"}];
+const alerts=[{"type":"buy","ticker":"476850.KS","msg":"476850.KS 60점 — 매수 고려"}];
 let swReg=null;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});}
 function initNoti(){
@@ -758,7 +567,7 @@ function sendNoti(title,body,tag){
 document.getElementById('notiBar').addEventListener('click',e=>{if(e.target.id==='notiToggle')return;document.getElementById('notiList').classList.toggle('show');});
 initNoti();
 
-const TICKERS=["SOXL","476850.KS","QLD","426030.KS"];
+const TICKERS=["476850.KS","426030.KS"];
 function curOf(ticker){const c=document.querySelector('.card[data-ticker="'+ticker+'"]');return c&&c.dataset.currency||'USD';}
 function moneyFmt(v,cur){return cur==='KRW'?'₩'+Math.round(v).toLocaleString():'$'+v.toFixed(2);}
 function moneyParse(t){const n=parseFloat(String(t).replace(/[^0-9.]/g,''));return isFinite(n)?n:0;}
@@ -881,11 +690,15 @@ function recalcDCA(ticker){
   const card2=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(card2){
     const wm2=parseFloat(card2.dataset.weeklyMult)||1;
-    const buyAmt=Math.round(weeklyBudget*wm2);
     const bar=card2.querySelector('.weekly-buy-bar');
     if(bar){
-      const amtStr=moneyFmt(buyAmt,curOf(ticker));
-      bar.innerHTML='이번 주 <b>'+amtStr+'</b> 사라'+(wm2>1?' <span style="color:#c05000">('+wm2.toFixed(1)+'배)</span>':'');
+      if(wm2>1){
+        bar.className='weekly-buy-bar';
+        bar.innerHTML='<b>이번 주는 '+wm2.toFixed(1)+'배로 사세요</b> 📈';
+      }else{
+        bar.className='weekly-buy-bar wbb-base';
+        bar.innerHTML='이번 주는 매수 금액대로 사세요';
+      }
     }
   }
 }

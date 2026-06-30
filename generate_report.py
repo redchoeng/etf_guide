@@ -49,13 +49,21 @@ def load_presets():
         return yaml.safe_load(f)
 
 
+def money(value: float, currency: str = "USD") -> str:
+    """통화별 가격 표기 ($xx.xx / ₩x,xxx)."""
+    if currency == "KRW":
+        return f"₩{value:,.0f}"
+    return f"${value:,.2f}"
+
+
 def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | None:
     """단일 ETF 종합 분석 (매크로 환경 포함)."""
     try:
         fetcher = ETFDataFetcher(config.get("data", {}))
         signal_gen = SignalGenerator(config.get("signals", {}))
 
-        df = fetcher.fetch_history(ticker, period="1y")
+        # period="max": 진짜 전고점(ATH) 기준 낙폭 계산 (1년 고점 아님)
+        df = fetcher.fetch_history(ticker, period="max")
         if df is None or df.empty or len(df) < 60:
             return None
 
@@ -127,9 +135,10 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             spacing_pct=3.0,
         )
 
-        # 52주
-        high_52w = float(close.max())
-        low_52w = float(close.min())
+        # 52주 (최근 1년 ≈ 252거래일 기준; ATH는 전체기간)
+        recent_52w = close.tail(252)
+        high_52w = float(recent_52w.max())
+        low_52w = float(recent_52w.min())
         pos_52w = (current_price - low_52w) / (high_52w - low_52w) * 100 if high_52w != low_52w else 50
 
         # 손절 가격
@@ -147,6 +156,7 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "underlying": preset.get("underlying", ""),
             "leverage": preset.get("leverage", 2),
             "category": preset.get("category", ""),
+            "currency": preset.get("currency", "USD"),
             "price": current_price,
             "change_pct": change_pct,
             "signal": overall,
@@ -749,6 +759,12 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         sign = "+" if r["change_pct"] >= 0 else ""
         vc, vbg, vborder = verdict_color(r["score"])
 
+        # 통화 (USD=$ / KRW=₩)
+        cur = r.get("currency", "USD")
+        sym = "₩" if cur == "KRW" else "$"
+        def_budget = 500000 if cur == "KRW" else 200
+        budget_step = 10000 if cur == "KRW" else 10
+
         # 레짐 CSS 클래스
         regime = macro.get("regime", "SIDEWAYS")
         regime_cls = "bull" if regime in ("BULL", "BULL_STRONG") else ("bear" if regime in ("BEAR", "CRISIS", "CORRECTION") else "side")
@@ -787,7 +803,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
             is_active = current_dd <= threshold
             active_cls = ' class="next-row"' if is_active and (threshold == max(t for t, _, _, _ in dd_zones if current_dd <= t)) else ""
             marker = " ← 현재" if active_cls else ""
-            dd_rows += f'<tr{active_cls}><td style="color:{color};font-weight:600">{threshold}%</td><td>${price_at:.2f}{marker}</td><td style="color:{color};font-weight:700">{mult}</td><td>{label}</td></tr>'
+            dd_rows += f'<tr{active_cls}><td style="color:{color};font-weight:600">{threshold}%</td><td>{money(price_at, cur)}{marker}</td><td style="color:{color};font-weight:700">{mult}</td><td>{label}</td></tr>'
 
         buy_table = f"""<div class="buy-plan">
 <div class="bp-title">낙폭 매수 가이드</div>
@@ -803,7 +819,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         # 52주 위치 바
         bar_color = "#00c073" if r["pos_52w"] < 30 else ("#ff9500" if r["pos_52w"] < 70 else "#f04452")
         pos_bar = f"""<div class="range-bar">
-<div class="range-labels"><span>${r['low_52w']:.2f}</span><span>52주</span><span>${r['high_52w']:.2f}</span></div>
+<div class="range-labels"><span>{money(r['low_52w'], cur)}</span><span>52주</span><span>{money(r['high_52w'], cur)}</span></div>
 <div class="range-track"><div class="range-fill" style="width:{r['pos_52w']:.0f}%;background:{bar_color}"></div><div class="range-dot" style="left:{r['pos_52w']:.0f}%"></div></div>
 </div>"""
 
@@ -819,7 +835,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         upgrid_data_attr = "[" + ",".join(upgrid_json) + "]"
 
         config_json = f'{{"levels":{r["num_levels"]},"spacing":{r["spacing_pct"]}}}'
-        html += f"""<div class="card" data-ticker="{r['ticker']}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}">
+        html += f"""<div class="card" data-ticker="{r['ticker']}" data-currency="{cur}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}">
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['ticker']}</div>
@@ -842,7 +858,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 </div>
 
 <div class="price-area" id="pa-{r['ticker']}">
-<span class="price" id="pr-{r['ticker']}">${r['price']:.2f}</span>
+<span class="price" id="pr-{r['ticker']}">{money(r['price'], cur)}</span>
 <span class="chg-pill {chg_cls}" id="chg-{r['ticker']}">{sign}{r['change_pct']:.2f}%</span>
 </div>
 <div class="live-alert" id="la-{r['ticker']}" style="display:none"></div>
@@ -859,8 +875,8 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="budget-input-area">
 <div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
 <div class="input-wrap">
-<span class="currency">$</span>
-<input type="number" id="bi-{r['ticker']}" value="200" min="10" step="10" oninput="recalcDCA('{r['ticker']}')">
+<span class="currency">{sym}</span>
+<input type="number" id="bi-{r['ticker']}" value="{def_budget}" min="{budget_step}" step="{budget_step}" oninput="recalcDCA('{r['ticker']}')">
 </div>
 </div>
 <div id="grid-wrap-{r['ticker']}">
@@ -881,14 +897,14 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="sr-label">내 수익률</div>
 <div class="sr-val" id="pnl-{r['ticker']}">—</div>
 <div class="pnl-input">
-<span class="sym">$</span>
+<span class="sym">{sym}</span>
 <input type="number" id="avgcost-{r['ticker']}" placeholder="평단가" step="0.01" oninput="calcPnL('{r['ticker']}')">
 </div>
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
 <div class="sr-val {'loss' if r['drawdown_pct'] <= -15 else ('bear' if r['drawdown_pct'] <= -5 else 'bull')}" id="ath-dd-{r['ticker']}">{r['drawdown_pct']:.1f}%</div>
-<div class="sr-sub">ATH ${r['ath']:.2f}</div>
+<div class="sr-sub">ATH {money(r['ath'], cur)}</div>
 <div class="ath-bar"><div class="ath-fill" style="width:{max(0, 100 + r['drawdown_pct']):.0f}%;background:{'#f04452' if r['drawdown_pct'] <= -15 else ('#ff9500' if r['drawdown_pct'] <= -5 else '#00c073')}"></div></div>
 </div>
 </div>
@@ -896,11 +912,11 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 ${r['stop_loss_price']:.2f} ({STOP_LOSS_PCT:.0f}%)</span>
+<span class="info-chip danger">손절 {money(r['stop_loss_price'], cur)} ({STOP_LOSS_PCT:.0f}%)</span>
 </div>
 
 <div class="details">
-ATH ${r['ath']:.2f} · SMA20 ${r['sma20']:.2f} · SMA50 ${r['sma50']:.2f} · SMA200 ${r['sma200']:.2f} · 3M {r['mom_3m']:+.1f}% · Vol {r['vol_annual']:.0f}%
+ATH {money(r['ath'], cur)} · SMA20 {money(r['sma20'], cur)} · SMA50 {money(r['sma50'], cur)} · SMA200 {money(r['sma200'], cur)} · 3M {r['mom_3m']:+.1f}% · Vol {r['vol_annual']:.0f}%
 </div>
 </div>
 """
@@ -1043,6 +1059,10 @@ initNoti();
 
 // === 실시간 가격 업데이트 ===
 const TICKERS={tickers_js};
+// 통화 포맷/파싱 (USD $x.xx / KRW ₩x,xxx)
+function curOf(ticker){{const c=document.querySelector('.card[data-ticker="'+ticker+'"]');return c&&c.dataset.currency||'USD';}}
+function moneyFmt(v,cur){{return cur==='KRW'?'₩'+Math.round(v).toLocaleString():'$'+v.toFixed(2);}}
+function moneyParse(t){{const n=parseFloat(String(t).replace(/[^0-9.]/g,''));return isFinite(n)?n:0;}}
 const PROXY=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
 let proxyIdx=0;
 let liveTimer=null;
@@ -1089,7 +1109,8 @@ function updateCard(ticker,data){{
   const chEl=document.getElementById('chg-'+ticker);
   if(!prEl||!chEl||!data)return;
 
-  const oldPrice=parseFloat(prEl.textContent.replace('$',''));
+  const cur=curOf(ticker);
+  const oldPrice=moneyParse(prEl.textContent);
   const newPrice=data.price;
   if(!newPrice||!data.prev||data.prev===0)return;
   const chgPct=((newPrice-data.prev)/data.prev*100);
@@ -1097,7 +1118,7 @@ function updateCard(ticker,data){{
   const sign=chgPct>=0?'+':'';
   const cls=chgPct>=0?'up':'down';
 
-  prEl.textContent='$'+newPrice.toFixed(2);
+  prEl.textContent=moneyFmt(newPrice,cur);
   chEl.textContent=sign+chgPct.toFixed(2)+'%';
   chEl.className='chg-pill '+cls;
 
@@ -1212,8 +1233,9 @@ function recalcDCA(ticker){{
   const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(!card)return;
 
+  const cur=curOf(ticker);
   const prEl=document.getElementById('pr-'+ticker);
-  const price=parseFloat(prEl.textContent.replace('$',''));
+  const price=moneyParse(prEl.textContent);
   const ath=parseFloat(card.dataset.ath)||0;
   if(!price||price<=0||!ath)return;
 
@@ -1233,12 +1255,12 @@ function recalcDCA(ticker){{
     const marker=isCurrent?' ← 현재':'';
     const colors={{'-5':'#6b7684','-10':'#ff9500','-20':'#f04452','-30':'#f04452','-40':'#d91f11','-50':'#d91f11'}};
     const c=colors[th]||'#6b7684';
-    rows+='<tr'+cls+'><td style="color:'+c+';font-weight:600">'+th+'%</td><td>$'+pAt.toFixed(2)+marker+'</td><td style="color:'+c+';font-weight:700">x'+mult.toFixed(1)+'</td><td>$'+amt+' ('+qty+'주)</td></tr>';
+    rows+='<tr'+cls+'><td style="color:'+c+';font-weight:600">'+th+'%</td><td>'+moneyFmt(pAt,cur)+marker+'</td><td style="color:'+c+';font-weight:700">x'+mult.toFixed(1)+'</td><td>'+moneyFmt(amt,cur)+' ('+qty+'주)</td></tr>';
   }});
 
   let html='<div class="buy-plan">';
   html+='<div class="bp-title">낙폭 매수 가이드</div>';
-  html+='<div class="bp-sub">주 1회 $'+weeklyBudget+' 적립 · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>';
+  html+='<div class="bp-sub">주 1회 '+moneyFmt(weeklyBudget,cur)+' 적립 · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>';
   html+='<table><tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>주간 매수액</th></tr>';
   html+=rows+'</table></div>';
 
@@ -1256,7 +1278,7 @@ function calcPnL(ticker){{
   const avgCost=parseFloat(input.value);
   if(!avgCost||avgCost<=0){{pnlEl.textContent='—';pnlEl.className='sr-val';return;}}
   const prEl=document.getElementById('pr-'+ticker);
-  const price=parseFloat(prEl.textContent.replace('$',''));
+  const price=moneyParse(prEl.textContent);
   if(!price)return;
   const pnlPct=((price-avgCost)/avgCost*100);
   const sign=pnlPct>=0?'+':'';
@@ -1359,7 +1381,7 @@ def main():
         r = analyze_etf(ticker, preset, config, macro)
         if r:
             results.append(r)
-            print(f"    ${r['price']:.2f} ({r['change_pct']:+.2f}%) | {r['score']}점 | {r['verdict']}")
+            print(f"    {money(r['price'], r['currency'])} ({r['change_pct']:+.2f}%) | {r['score']}점 | {r['verdict']}")
 
     if not results:
         print("❌ 분석 결과 없음")

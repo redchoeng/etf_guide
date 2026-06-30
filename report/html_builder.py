@@ -37,21 +37,22 @@ def generate_html(results: list, macro: dict, now: datetime) -> str:
     noti_items = []
     noti_js_arr = []
     for r in results:
+        name = r.get("display", r["ticker"])
         if r["score"] >= 70:
-            noti_items.append(("buy", f"<b>{r['ticker']}</b> 매수 점수 {r['score']}점 — 적극 매수 구간"))
-            noti_js_arr.append(f'{{"type":"buy","ticker":"{r["ticker"]}","msg":"{r["ticker"]} {r["score"]}점 — 적극 매수 구간"}}')
+            noti_items.append(("buy", f"<b>{name}</b> 매수 점수 {r['score']}점 — 적극 매수 구간"))
+            noti_js_arr.append(f'{{"type":"buy","ticker":"{r["ticker"]}","name":"{name}","msg":"{name} {r["score"]}점 — 적극 매수 구간"}}')
         elif r["score"] >= 60:
-            noti_items.append(("buy", f"<b>{r['ticker']}</b> 매수 점수 {r['score']}점 — 매수 고려"))
-            noti_js_arr.append(f'{{"type":"buy","ticker":"{r["ticker"]}","msg":"{r["ticker"]} {r["score"]}점 — 매수 고려"}}')
+            noti_items.append(("buy", f"<b>{name}</b> 매수 점수 {r['score']}점 — 매수 고려"))
+            noti_js_arr.append(f'{{"type":"buy","ticker":"{r["ticker"]}","name":"{name}","msg":"{name} {r["score"]}점 — 매수 고려"}}')
         if r["rsi"] < 30:
-            noti_items.append(("warn", f"<b>{r['ticker']}</b> RSI {r['rsi']:.0f} — 과매도 진입"))
-            noti_js_arr.append(f'{{"type":"warn","ticker":"{r["ticker"]}","msg":"{r["ticker"]} RSI {r["rsi"]:.0f} 과매도"}}')
+            noti_items.append(("warn", f"<b>{name}</b> RSI {r['rsi']:.0f} — 과매도 진입"))
+            noti_js_arr.append(f'{{"type":"warn","ticker":"{r["ticker"]}","name":"{name}","msg":"{name} RSI {r["rsi"]:.0f} 과매도"}}')
         if r["drawdown_pct"] <= -25:
-            noti_items.append(("warn", f"<b>{r['ticker']}</b> 낙폭 {r['drawdown_pct']:.1f}% — 그리드 하위 레벨 도달"))
-            noti_js_arr.append(f'{{"type":"warn","ticker":"{r["ticker"]}","msg":"{r["ticker"]} 낙폭 {r["drawdown_pct"]:.1f}%"}}')
+            noti_items.append(("warn", f"<b>{name}</b> 낙폭 {r['drawdown_pct']:.1f}% — 그리드 하위 레벨 도달"))
+            noti_js_arr.append(f'{{"type":"warn","ticker":"{r["ticker"]}","name":"{name}","msg":"{name} 낙폭 {r["drawdown_pct"]:.1f}%"}}')
     if vix >= 30:
         noti_items.append(("warn", f"VIX {vix:.1f} — 공포 구간, 분할매수 기회"))
-        noti_js_arr.append(f'{{"type":"warn","ticker":"MACRO","msg":"VIX {vix:.1f} 공포구간"}}')
+        noti_js_arr.append(f'{{"type":"warn","ticker":"MACRO","name":"MACRO","msg":"VIX {vix:.1f} 공포구간"}}')
     if not noti_items:
         noti_items.append(("info", "현재 특별한 매수 시그널이 없습니다. 그리드 레벨 도달 시 알려드릴게요."))
 
@@ -342,7 +343,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 <div class="stat"><div class="sl">분석 ETF</div><div class="sv">{total}</div></div>
 <div class="stat"><div class="sl">매수 추천</div><div class="sv green">{buy_count}</div></div>
 <div class="stat"><div class="sl">평균 점수</div><div class="sv">{avg_score:.0f}</div></div>
-<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">{best['ticker'] if best else '-'} {best['score'] if best else 0}</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">{best.get('display', best['ticker']) if best else '-'} {best['score'] if best else 0}</div></div>
 </div>
 </div>
 
@@ -611,7 +612,7 @@ function fireAlerts(){{
   if(alerts.length===0)return;
   localStorage.setItem(NOTI_SENT_KEY,today);
   sendNoti('🔔 딩쵱 매수 시그널',alerts[0].msg,'ding-main');
-  alerts.slice(1,4).forEach((a,i)=>{{setTimeout(()=>{{sendNoti('📊 '+a.ticker,a.msg,'ding-'+a.ticker);}}, (i+1)*30000);}});
+  alerts.slice(1,4).forEach((a,i)=>{{setTimeout(()=>{{sendNoti('📊 '+(a.name||a.ticker),a.msg,'ding-'+a.ticker);}}, (i+1)*30000);}});
 }}
 function sendNoti(title,body,tag){{
   if(swReg){{swReg.active?.postMessage({{type:'SHOW_NOTIFICATION',title,body,tag}});}}

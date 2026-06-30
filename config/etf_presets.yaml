@@ -15,17 +15,6 @@ presets:
     suggested_levels: 10
     suggested_spacing: 5.0
 
-  # --- S&P 500 2x (미국상장) ---
-  SSO:
-    name: "ProShares Ultra S&P 500"
-    underlying: "SPY"
-    leverage: 2
-    category: "S&P 500"
-    currency: "USD"
-    suggested_budget: 10000
-    suggested_levels: 10
-    suggested_spacing: 4.0
-
   # --- Semiconductor 3x (미국상장) ---
   SOXL:
     name: "Direxion Daily Semiconductor Bull 3X"
@@ -62,7 +51,6 @@ presets:
 # ETF underlying pairs (for decay analysis)
 underlying_pairs:
   QLD: "QQQ"
-  SSO: "SPY"
   SOXL: "SOXX"
   426030.KS: "QQQ"
   476850.KS: "QQQ"

@@ -1,40 +1,68 @@
 # ================================================
-# ETF Presets - 주 종목 3개
+# ETF Presets
+#  - currency: 가격/알림 표시 통화 (USD=$ / KRW=₩)
 # ================================================
 
 presets:
-  # --- NASDAQ 2x ---
+  # --- NASDAQ 2x (미국상장) ---
   QLD:
     name: "ProShares Ultra QQQ"
     underlying: "QQQ"
     leverage: 2
     category: "NASDAQ"
+    currency: "USD"
     suggested_budget: 10000
     suggested_levels: 10
     suggested_spacing: 5.0
 
-  # --- S&P 500 2x ---
+  # --- S&P 500 2x (미국상장) ---
   SSO:
     name: "ProShares Ultra S&P 500"
     underlying: "SPY"
     leverage: 2
     category: "S&P 500"
+    currency: "USD"
     suggested_budget: 10000
     suggested_levels: 10
     suggested_spacing: 4.0
 
-  # --- Semiconductor 3x ---
+  # --- Semiconductor 3x (미국상장) ---
   SOXL:
     name: "Direxion Daily Semiconductor Bull 3X"
     underlying: "SOXX"
     leverage: 3
     category: "Semiconductor"
+    currency: "USD"
     suggested_budget: 10000
     suggested_levels: 15
     suggested_spacing: 7.0
+
+  # --- NASDAQ100 액티브 1x (국내상장) ---
+  426030.KS:
+    name: "TIMEFOLIO 미국나스닥100액티브"
+    underlying: "QQQ"
+    leverage: 1
+    category: "NASDAQ Active"
+    currency: "KRW"
+    suggested_budget: 10000000
+    suggested_levels: 10
+    suggested_spacing: 4.0
+
+  # --- NASDAQ 성장기업 액티브 1x (국내상장) ---
+  476850.KS:
+    name: "KoACT 미국나스닥성장기업액티브"
+    underlying: "QQQ"
+    leverage: 1
+    category: "NASDAQ Active"
+    currency: "KRW"
+    suggested_budget: 10000000
+    suggested_levels: 10
+    suggested_spacing: 4.0
 
 # ETF underlying pairs (for decay analysis)
 underlying_pairs:
   QLD: "QQQ"
   SSO: "SPY"
   SOXL: "SOXX"
+  426030.KS: "QQQ"
+  476850.KS: "QQQ"

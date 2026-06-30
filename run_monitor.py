@@ -121,7 +121,7 @@ def main():
         return
 
     # 시작 메시지
-    notifier.send_message("📊 <b>ETF 모니터 시작</b>\n\n체크 간격: {args.interval}분")
+    notifier.send_message(f"📊 <b>ETF 모니터 시작</b>\n\n체크 간격: {args.interval}분")
 
     # 스케줄 설정
     schedule.every(args.interval).minutes.do(run_check)

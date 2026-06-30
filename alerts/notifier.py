@@ -53,6 +53,33 @@ def _should_alert(key: str, state: dict) -> bool:
     return True
 
 
+# 낙폭 구간 정의: (임계값, 구간명, 매수배수)
+DD_ZONES = [
+    (-5,  "-5%",  1.0),
+    (-10, "-10%", 1.5),
+    (-20, "-20%", 2.0),
+    (-30, "-30%", 3.0),
+    (-40, "-40%", 4.0),
+    (-50, "-50%", 5.0),
+]
+
+
+def dd_multiplier(drawdown_pct: float) -> float:
+    """현재 낙폭(%, 음수)에 해당하는 매수 배수."""
+    mult = 1.0
+    for threshold, _, m in DD_ZONES:
+        if drawdown_pct <= threshold:
+            mult = m
+    return mult
+
+
+def fmt_price(price: float, currency: str = "USD") -> str:
+    """통화별 가격 표기 ($xx.xx / ₩x,xxx)."""
+    if currency == "KRW":
+        return f"₩{price:,.0f}"
+    return f"${price:,.2f}"
+
+
 class TelegramNotifier:
     """Telegram Bot API를 통한 알림 발송."""
 
@@ -93,7 +120,8 @@ class TelegramNotifier:
 
     def send_drawdown_alert(self, ticker: str, current_price: float,
                             drawdown_pct: float, ath: float,
-                            dd_zone: str, multiplier: float) -> bool:
+                            dd_zone: str, multiplier: float,
+                            currency: str = "USD") -> bool:
         """낙폭 구간 진입 알림."""
         if not _should_alert(f"dd_{ticker}_{dd_zone}", self._state):
             return False
@@ -107,8 +135,8 @@ class TelegramNotifier:
         msg = (
             f"{emoji} <b>낙폭 {dd_zone} 구간 진입</b>\n\n"
             f"종목: <b>{ticker}</b>\n"
-            f"현재가: ${current_price:.2f}\n"
-            f"ATH: ${ath:.2f}\n"
+            f"현재가: {fmt_price(current_price, currency)}\n"
+            f"ATH: {fmt_price(ath, currency)}\n"
             f"낙폭: {drawdown_pct:.1f}%\n"
             f"매수 배수: <b>x{multiplier:.1f}</b>\n\n"
             f"⚠️ 평소보다 {multiplier:.1f}배 매수 구간입니다!"
@@ -131,9 +159,10 @@ class TelegramNotifier:
         lines = ["📉 <b>낙폭 구간 진입 알림</b>\n"]
         for a in dd_alerts:
             e = emoji_map.get(a["zone"], "📉")
+            price_str = fmt_price(a["price"], a.get("currency", "USD"))
             lines.append(
                 f"{e} <b>{a['ticker']}</b> {a['zone']} "
-                f"(${a['price']:.2f}, ATH 대비 {a['drawdown']:.1f}%) "
+                f"({price_str}, ATH 대비 {a['drawdown']:.1f}%) "
                 f"→ <b>x{a['mult']:.1f}</b> 매수"
             )
         lines.append("\n⚠️ 낙폭 배수만큼 매수 금액을 늘리세요!")
@@ -141,37 +170,43 @@ class TelegramNotifier:
 
     def send_score_alert(self, ticker: str, score: int, verdict: str,
                          price: float, rsi: float, drawdown: float,
-                         regime_kr: str, mom_1m: float) -> bool:
+                         regime_kr: str, mom_1m: float,
+                         currency: str = "USD") -> bool:
         """매수 점수 알림 (60점 이상)."""
         if not _should_alert(f"score_{ticker}_{score // 10}", self._state):
             return False
 
         emoji = "🟢" if score >= 75 else "🔵"
+        mult = dd_multiplier(drawdown)
+        mult_line = f"매수 배수: <b>x{mult:.1f}</b>\n" if mult > 1.0 else ""
 
         msg = (
             f"{emoji} <b>매수 추천 알림</b>\n\n"
             f"종목: <b>{ticker}</b>\n"
             f"점수: <b>{score}점</b> ({verdict})\n"
-            f"현재가: ${price:.2f}\n"
+            f"현재가: {fmt_price(price, currency)}\n"
             f"RSI: {rsi:.0f}\n"
             f"ATH 낙폭: {drawdown:.1f}%\n"
+            f"{mult_line}"
             f"1개월: {mom_1m:+.1f}%\n"
             f"시장: {regime_kr}\n"
         )
         return self.send_message(msg)
 
     def send_crash_alert(self, ticker: str, price: float,
-                         change_pct: float, drawdown: float) -> bool:
+                         change_pct: float, drawdown: float,
+                         currency: str = "USD") -> bool:
         """급락 알림."""
         if not _should_alert(f"crash_{ticker}", self._state):
             return False
 
+        mult = dd_multiplier(drawdown)
         msg = (
             f"🔴 <b>급락 알림</b>\n\n"
             f"종목: <b>{ticker}</b>\n"
-            f"현재가: ${price:.2f} ({change_pct:+.1f}%)\n"
+            f"현재가: {fmt_price(price, currency)} ({change_pct:+.1f}%)\n"
             f"ATH 대비: {drawdown:.1f}%\n\n"
-            f"📉 낙폭 배수 매수 구간 체크!"
+            f"📉 현재 낙폭 배수: <b>x{mult:.1f}</b> 매수 구간!"
         )
         return self.send_message(msg)
 
@@ -191,10 +226,13 @@ class TelegramNotifier:
 
         for s in summaries:
             emoji = "🟢" if s["score"] >= 75 else ("🔵" if s["score"] >= 60 else ("🟡" if s["score"] >= 40 else "🟠"))
+            mult = dd_multiplier(s.get("drawdown", 0))
+            mult_str = f" ⚡x{mult:.1f}" if mult > 1.0 else ""
+            price_str = fmt_price(s["price"], s.get("currency", "USD"))
             lines.append(
                 f"{emoji} <b>{s['ticker']}</b> {s['score']}점: "
-                f"${s['price']:.2f} ({s['change']:+.1f}%) "
-                f"RSI {s['rsi']:.0f}"
+                f"{price_str} ({s['change']:+.1f}%) "
+                f"RSI {s['rsi']:.0f}{mult_str}"
             )
 
         buy_count = len([s for s in summaries if s["score"] >= 60])
@@ -247,7 +285,9 @@ def check_and_notify(config: dict):
 
     for ticker, preset in presets.get("presets", {}).items():
         try:
-            df = fetcher.fetch_history(ticker, period="1y")
+            currency = preset.get("currency", "USD")
+            # period="max": 진짜 전고점(ATH) 기준 낙폭 계산 (1년 고점 아님)
+            df = fetcher.fetch_history(ticker, period="max")
             if df is None or df.empty or len(df) < 60:
                 logger.warning(f"{ticker}: 데이터 부족, 스킵")
                 continue
@@ -301,25 +341,15 @@ def check_and_notify(config: dict):
             if score >= score_threshold:
                 sent = notifier.send_score_alert(
                     ticker, score, verdict, current_price,
-                    rsi, drawdown_pct, regime_kr, mom_1m,
+                    rsi, drawdown_pct, regime_kr, mom_1m, currency,
                 )
                 if sent:
                     alerts_sent += 1
                     logger.info(f"    🔔 매수 추천 알림 발송 ({score}점)")
 
-            # 2) 낙폭 구간 진입 알림 (ATH 대비)
+            # 2) 낙폭 구간 진입 알림 (ATH 대비, DD_ZONES는 모듈 상수)
             high = close.cummax()
             ath = float(high.iloc[-1])
-
-            # 낙폭 구간 정의: (임계값, 구간명, 매수배수)
-            DD_ZONES = [
-                (-5,  "-5%",  1.0),
-                (-10, "-10%", 1.5),
-                (-20, "-20%", 2.0),
-                (-30, "-30%", 3.0),
-                (-40, "-40%", 4.0),
-                (-50, "-50%", 5.0),
-            ]
 
             prev_dd = price_state.get(f"{ticker}_dd", 0)
             # 현재 해당하는 가장 깊은 구간만 수집 (이전보다 깊어졌을 때)
@@ -338,6 +368,7 @@ def check_and_notify(config: dict):
                         "ath": ath,
                         "zone": current_zone[1],
                         "mult": current_zone[2],
+                        "currency": currency,
                     })
                     logger.info(f"    📌 낙폭 {current_zone[1]} 구간 진입 감지")
 
@@ -347,7 +378,7 @@ def check_and_notify(config: dict):
             # 3) 급락 알림 (1일 -5% 이상)
             if change_pct <= -5:
                 sent = notifier.send_crash_alert(
-                    ticker, current_price, change_pct, drawdown_pct,
+                    ticker, current_price, change_pct, drawdown_pct, currency,
                 )
                 if sent:
                     alerts_sent += 1
@@ -360,6 +391,7 @@ def check_and_notify(config: dict):
                 "rsi": rsi,
                 "score": score,
                 "drawdown": drawdown_pct,
+                "currency": currency,
             })
 
         except Exception as e:

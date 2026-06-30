@@ -157,6 +157,7 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "leverage": preset.get("leverage", 2),
             "category": preset.get("category", ""),
             "currency": preset.get("currency", "USD"),
+            "display": preset.get("display", ticker),
             "price": current_price,
             "change_pct": change_pct,
             "signal": overall,
@@ -838,7 +839,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         html += f"""<div class="card" data-ticker="{r['ticker']}" data-currency="{cur}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}">
 <div class="card-head">
 <div class="left">
-<div class="ticker">{r['ticker']}</div>
+<div class="ticker">{r['display']}</div>
 <div class="etf-sub">{r['name']} · 기초: {r['underlying']}</div>
 <div class="tags">
 <span class="tag lev">{r['leverage']}x</span>

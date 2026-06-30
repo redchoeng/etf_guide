@@ -7,6 +7,7 @@ presets:
   # --- NASDAQ 2x (미국상장) ---
   QLD:
     name: "ProShares Ultra QQQ"
+    display: "QLD"
     underlying: "QQQ"
     leverage: 2
     category: "NASDAQ"
@@ -18,6 +19,7 @@ presets:
   # --- Semiconductor 3x (미국상장) ---
   SOXL:
     name: "Direxion Daily Semiconductor Bull 3X"
+    display: "SOXL"
     underlying: "SOXX"
     leverage: 3
     category: "Semiconductor"
@@ -29,6 +31,7 @@ presets:
   # --- NASDAQ100 액티브 1x (국내상장) ---
   426030.KS:
     name: "TIMEFOLIO 미국나스닥100액티브"
+    display: "TIMEFOLIO"
     underlying: "QQQ"
     leverage: 1
     category: "NASDAQ Active"
@@ -40,6 +43,7 @@ presets:
   # --- NASDAQ 성장기업 액티브 1x (국내상장) ---
   476850.KS:
     name: "KoACT 미국나스닥성장기업액티브"
+    display: "KoACT"
     underlying: "QQQ"
     leverage: 1
     category: "NASDAQ Active"

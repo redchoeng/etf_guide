@@ -160,8 +160,9 @@ class TelegramNotifier:
         for a in dd_alerts:
             e = emoji_map.get(a["zone"], "📉")
             price_str = fmt_price(a["price"], a.get("currency", "USD"))
+            name = a.get("display", a["ticker"])
             lines.append(
-                f"{e} <b>{a['ticker']}</b> {a['zone']} "
+                f"{e} <b>{name}</b> {a['zone']} "
                 f"({price_str}, ATH 대비 {a['drawdown']:.1f}%) "
                 f"→ <b>x{a['mult']:.1f}</b> 매수"
             )
@@ -171,18 +172,19 @@ class TelegramNotifier:
     def send_score_alert(self, ticker: str, score: int, verdict: str,
                          price: float, rsi: float, drawdown: float,
                          regime_kr: str, mom_1m: float,
-                         currency: str = "USD") -> bool:
+                         currency: str = "USD", display: str = None) -> bool:
         """매수 점수 알림 (60점 이상)."""
         if not _should_alert(f"score_{ticker}_{score // 10}", self._state):
             return False
 
+        name = display or ticker
         emoji = "🟢" if score >= 75 else "🔵"
         mult = dd_multiplier(drawdown)
         mult_line = f"매수 배수: <b>x{mult:.1f}</b>\n" if mult > 1.0 else ""
 
         msg = (
             f"{emoji} <b>매수 추천 알림</b>\n\n"
-            f"종목: <b>{ticker}</b>\n"
+            f"종목: <b>{name}</b>\n"
             f"점수: <b>{score}점</b> ({verdict})\n"
             f"현재가: {fmt_price(price, currency)}\n"
             f"RSI: {rsi:.0f}\n"
@@ -195,15 +197,16 @@ class TelegramNotifier:
 
     def send_crash_alert(self, ticker: str, price: float,
                          change_pct: float, drawdown: float,
-                         currency: str = "USD") -> bool:
+                         currency: str = "USD", display: str = None) -> bool:
         """급락 알림."""
         if not _should_alert(f"crash_{ticker}", self._state):
             return False
 
+        name = display or ticker
         mult = dd_multiplier(drawdown)
         msg = (
             f"🔴 <b>급락 알림</b>\n\n"
-            f"종목: <b>{ticker}</b>\n"
+            f"종목: <b>{name}</b>\n"
             f"현재가: {fmt_price(price, currency)} ({change_pct:+.1f}%)\n"
             f"ATH 대비: {drawdown:.1f}%\n\n"
             f"📉 현재 낙폭 배수: <b>x{mult:.1f}</b> 매수 구간!"
@@ -229,8 +232,9 @@ class TelegramNotifier:
             mult = dd_multiplier(s.get("drawdown", 0))
             mult_str = f" ⚡x{mult:.1f}" if mult > 1.0 else ""
             price_str = fmt_price(s["price"], s.get("currency", "USD"))
+            name = s.get("display", s["ticker"])
             lines.append(
-                f"{emoji} <b>{s['ticker']}</b> {s['score']}점: "
+                f"{emoji} <b>{name}</b> {s['score']}점: "
                 f"{price_str} ({s['change']:+.1f}%) "
                 f"RSI {s['rsi']:.0f}{mult_str}"
             )
@@ -286,6 +290,7 @@ def check_and_notify(config: dict):
     for ticker, preset in presets.get("presets", {}).items():
         try:
             currency = preset.get("currency", "USD")
+            display = preset.get("display", ticker)
             # period="max": 진짜 전고점(ATH) 기준 낙폭 계산 (1년 고점 아님)
             df = fetcher.fetch_history(ticker, period="max")
             if df is None or df.empty or len(df) < 60:
@@ -341,7 +346,7 @@ def check_and_notify(config: dict):
             if score >= score_threshold:
                 sent = notifier.send_score_alert(
                     ticker, score, verdict, current_price,
-                    rsi, drawdown_pct, regime_kr, mom_1m, currency,
+                    rsi, drawdown_pct, regime_kr, mom_1m, currency, display,
                 )
                 if sent:
                     alerts_sent += 1
@@ -363,6 +368,7 @@ def check_and_notify(config: dict):
                 if _should_alert(zone_key, price_state):
                     dd_alerts.append({
                         "ticker": ticker,
+                        "display": display,
                         "price": current_price,
                         "drawdown": drawdown_pct,
                         "ath": ath,
@@ -378,7 +384,7 @@ def check_and_notify(config: dict):
             # 3) 급락 알림 (1일 -5% 이상)
             if change_pct <= -5:
                 sent = notifier.send_crash_alert(
-                    ticker, current_price, change_pct, drawdown_pct, currency,
+                    ticker, current_price, change_pct, drawdown_pct, currency, display,
                 )
                 if sent:
                     alerts_sent += 1
@@ -386,6 +392,7 @@ def check_and_notify(config: dict):
 
             summaries.append({
                 "ticker": ticker,
+                "display": display,
                 "price": current_price,
                 "change": change_pct,
                 "rsi": rsi,

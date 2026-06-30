@@ -73,6 +73,9 @@ def load_config():
         return yaml.safe_load(f)
 
 
+RUN_MODE = "urgent"  # 기본은 긴급만; --digest 시 하루 1번 종합 리포트
+
+
 def run_check():
     """1회 가격 체크 및 알림."""
     if not is_extended_hours():
@@ -80,11 +83,11 @@ def run_check():
         return
 
     market_status = "🟢 정규장" if is_market_hours() else "🟡 시간외"
-    logger.info(f"{market_status} 가격 체크 시작...")
+    logger.info(f"{market_status} 가격 체크 시작... (mode={RUN_MODE})")
 
     try:
         config = load_config()
-        check_and_notify(config)
+        check_and_notify(config, mode=RUN_MODE)
         logger.info("✅ 체크 완료")
     except Exception as e:
         logger.error(f"❌ 체크 실패: {e}")
@@ -95,7 +98,11 @@ def main():
     parser.add_argument("--interval", type=int, default=5, help="체크 간격 (분, 기본: 5)")
     parser.add_argument("--once", action="store_true", help="1회만 실행")
     parser.add_argument("--force", action="store_true", help="장외 시간에도 실행")
+    parser.add_argument("--digest", action="store_true", help="하루 1번 종합 리포트 발송 (미지정 시 긴급 알림만)")
     args = parser.parse_args()
+
+    global RUN_MODE
+    RUN_MODE = "digest" if args.digest else "urgent"
 
     # Telegram 설정 확인
     notifier = TelegramNotifier()
@@ -115,7 +122,7 @@ def main():
     if args.once:
         if args.force or is_extended_hours():
             config = load_config()
-            check_and_notify(config)
+            check_and_notify(config, mode=RUN_MODE)
         else:
             logger.info("장외 시간입니다. --force로 강제 실행할 수 있습니다.")
         return

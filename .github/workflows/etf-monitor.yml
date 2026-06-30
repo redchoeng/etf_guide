@@ -42,7 +42,14 @@ jobs:
           echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
 
       - name: Run price check & Telegram alerts
-        run: python run_monitor.py --once --force
+        run: |
+          # 매일 오전 7시(KST) 스케줄 또는 수동 실행 → 종합 리포트(--digest)
+          # 장중 매시간 스케줄 → 긴급(급락/더사라) 알림만
+          if [ "${{ github.event.schedule }}" = "0 22 * * 1-5" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python run_monitor.py --once --force --digest
+          else
+            python run_monitor.py --once --force
+          fi
 
       - name: Generate HTML report
         run: python generate_report.py

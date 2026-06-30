@@ -80,6 +80,30 @@ def fmt_price(price: float, currency: str = "USD") -> str:
     return f"${price:,.2f}"
 
 
+# 웹 상세 리포트 URL (GitHub Pages). 필요시 REPORT_URL 환경변수로 덮어쓰기.
+REPORT_URL = os.environ.get("REPORT_URL", "https://redchoeng.github.io/etf_guide/")
+
+
+def buy_phrase(mult: float) -> str:
+    """낙폭 배수를 '얼만큼 더 사라' 친근한 문구로."""
+    if mult >= 5:
+        return "5배로 풀매수 찬스! 🔥"
+    if mult >= 4:
+        return "4배로 팍팍 담아! 💥"
+    if mult >= 3:
+        return "3배로 더 사! 🔴"
+    if mult >= 2:
+        return "2배로 더 담아! 🟠"
+    if mult >= 1.5:
+        return "평소보다 1.5배 더! 🟡"
+    return "평소대로 적립 🟢"
+
+
+def report_kb(label: str = "📊 자세히 보기") -> dict:
+    """웹 리포트로 가는 인라인 URL 버튼."""
+    return {"inline_keyboard": [[{"text": label, "url": REPORT_URL}]]}
+
+
 class TelegramNotifier:
     """Telegram Bot API를 통한 알림 발송."""
 
@@ -94,20 +118,26 @@ class TelegramNotifier:
     def is_configured(self) -> bool:
         return bool(self.bot_token and self.chat_id)
 
-    def send_message(self, text: str, parse_mode: str = "HTML") -> bool:
-        """메시지 전송."""
+    def send_message(self, text: str, parse_mode: str = "HTML",
+                     reply_markup: dict = None) -> bool:
+        """메시지 전송 (reply_markup으로 인라인 버튼 첨부 가능)."""
         if not self.is_configured:
             logger.warning("Telegram 봇 토큰/채팅 ID가 설정되지 않았습니다")
             return False
 
+        payload = {
+            "chat_id": self.chat_id,
+            "text": text,
+            "parse_mode": parse_mode,
+            "disable_web_page_preview": True,
+        }
+        if reply_markup:
+            payload["reply_markup"] = reply_markup
+
         try:
             resp = requests.post(
                 f"{self.base_url}/sendMessage",
-                json={
-                    "chat_id": self.chat_id,
-                    "text": text,
-                    "parse_mode": parse_mode,
-                },
+                json=payload,
                 timeout=10,
             )
             if resp.status_code == 200:
@@ -144,30 +174,26 @@ class TelegramNotifier:
         return self.send_message(msg)
 
     def send_drawdown_batch(self, dd_alerts: list[dict]) -> bool:
-        """낙폭 구간 진입 종목 통합 알림 (1건).
+        """'지금 더 사라' 통합 알림 (1건).
 
         개별 쿨다운은 check_and_notify()에서 dd_{ticker}_{threshold} 키로 관리.
         """
         if not dd_alerts:
             return False
 
-        emoji_map = {
-            "-5%": "🟡", "-10%": "🟠", "-20%": "🔴",
-            "-30%": "🔴", "-40%": "💥", "-50%": "💥",
-        }
-
-        lines = ["📉 <b>낙폭 구간 진입 알림</b>\n"]
+        lines = [
+            "🛒 <b>지금 더 사라!</b>",
+            "<i>평소보다 얼마나 더 살지 알려주는 알림이에요</i>\n",
+        ]
         for a in dd_alerts:
-            e = emoji_map.get(a["zone"], "📉")
-            price_str = fmt_price(a["price"], a.get("currency", "USD"))
             name = a.get("display", a["ticker"])
+            price_str = fmt_price(a["price"], a.get("currency", "USD"))
             lines.append(
-                f"{e} <b>{name}</b> {a['zone']} "
-                f"({price_str}, ATH 대비 {a['drawdown']:.1f}%) "
-                f"→ <b>x{a['mult']:.1f}</b> 매수"
+                f"<b>{name}</b> {price_str} "
+                f"(전고점보다 {a['drawdown']:.0f}% ↓)\n"
+                f"   👉 {buy_phrase(a['mult'])}"
             )
-        lines.append("\n⚠️ 낙폭 배수만큼 매수 금액을 늘리세요!")
-        return self.send_message("\n".join(lines))
+        return self.send_message("\n".join(lines), reply_markup=report_kb())
 
     def send_score_alert(self, ticker: str, score: int, verdict: str,
                          price: float, rsi: float, drawdown: float,
@@ -205,54 +231,59 @@ class TelegramNotifier:
         name = display or ticker
         mult = dd_multiplier(drawdown)
         msg = (
-            f"🔴 <b>급락 알림</b>\n\n"
-            f"종목: <b>{name}</b>\n"
-            f"현재가: {fmt_price(price, currency)} ({change_pct:+.1f}%)\n"
-            f"ATH 대비: {drawdown:.1f}%\n\n"
-            f"📉 현재 낙폭 배수: <b>x{mult:.1f}</b> 매수 구간!"
+            f"🚨 <b>{name} 지금 많이 빠졌어!</b>\n"
+            f"<i>하루 새 큰 하락 — 매수 찬스 알림</i>\n\n"
+            f"현재가: {fmt_price(price, currency)} (오늘 {change_pct:+.1f}%)\n"
+            f"전고점 대비: {drawdown:.0f}%\n\n"
+            f"👉 {buy_phrase(mult)}"
         )
-        return self.send_message(msg)
+        return self.send_message(msg, reply_markup=report_kb())
 
     def send_summary(self, summaries: list[dict], macro: dict) -> bool:
-        """종합 요약 알림."""
+        """하루 1번 종합 리포트."""
         if not _should_alert("summary", self._state):
             return False
 
         regime_kr = macro.get("regime_kr", "")
         vix = macro.get("vix", 0)
-        rate = macro.get("rate_10y", 0)
 
         lines = [
-            f"📋 <b>ETF 현황 요약</b>\n",
-            f"시장: {regime_kr} | VIX {vix:.1f} | 금리 {rate:.1f}%\n",
+            "📋 <b>오늘의 ETF 한눈에 보기</b>",
+            "<i>하루 한 번 보내는 종합 현황이에요 🌅</i>\n",
+            f"시장: {regime_kr} · VIX {vix:.1f}\n",
         ]
 
         for s in summaries:
             emoji = "🟢" if s["score"] >= 75 else ("🔵" if s["score"] >= 60 else ("🟡" if s["score"] >= 40 else "🟠"))
             mult = dd_multiplier(s.get("drawdown", 0))
-            mult_str = f" ⚡x{mult:.1f}" if mult > 1.0 else ""
             price_str = fmt_price(s["price"], s.get("currency", "USD"))
             name = s.get("display", s["ticker"])
+            if mult > 1.0:
+                tip = buy_phrase(mult)
+            elif s["score"] >= 75:
+                tip = "적극 매수! 🟢"
+            elif s["score"] >= 60:
+                tip = "살만해요 🙂"
+            else:
+                tip = "지금은 관망 😴"
             lines.append(
-                f"{emoji} <b>{name}</b> {s['score']}점: "
-                f"{price_str} ({s['change']:+.1f}%) "
-                f"RSI {s['rsi']:.0f}{mult_str}"
+                f"{emoji} <b>{name}</b> {price_str} ({s['change']:+.1f}%)\n"
+                f"   👉 {tip}"
             )
 
-        buy_count = len([s for s in summaries if s["score"] >= 60])
-        if buy_count > 0:
-            lines.append(f"\n🔔 매수 추천: {buy_count}개 종목")
+        buys = [s.get("display", s["ticker"]) for s in summaries if s["score"] >= 60]
+        if buys:
+            lines.append(f"\n💰 <b>오늘 살만한 거: {', '.join(buys)}</b>")
+        lines.append("<i>점수 60↑ 매수고려 · 75↑ 적극매수</i>")
 
-        return self.send_message("\n".join(lines))
+        return self.send_message("\n".join(lines), reply_markup=report_kb())
 
 
-def check_and_notify(config: dict):
+def check_and_notify(config: dict, mode: str = "digest"):
     """프리셋 기반 자동 알림 (DB 불필요).
 
-    1. 프리셋에서 모든 ETF 로드
-    2. 매크로 환경 분석
-    3. 각 ETF 점수 계산 + 그리드 레벨 체크
-    4. 조건 충족 시 텔레그램 알림
+    mode="digest": 하루 1번 종합 리포트 + 긴급(급락/더사라) 알림
+    mode="urgent": 긴급(급락/더사라) 알림만 — 종합 리포트는 보내지 않음
     """
     import numpy as np
     from engine.data_fetcher import ETFDataFetcher
@@ -339,20 +370,9 @@ def check_and_notify(config: dict):
             logger.info(f"  {ticker}: ${current_price:.2f} ({change_pct:+.1f}%) | {score}점 {verdict}")
 
             # === 알림 조건 ===
+            # (개별 점수 알림은 폐지 — 하루 1번 종합 리포트로 통합)
 
-            # 1) 매수 점수 알림: 상승장은 75점 이상, 그 외는 60점 이상
-            # 상승장에서는 추세·매크로 점수만으로 60점을 쉽게 넘기므로 임계값 상향
-            score_threshold = 75 if regime in ("BULL", "BULL_STRONG") else 60
-            if score >= score_threshold:
-                sent = notifier.send_score_alert(
-                    ticker, score, verdict, current_price,
-                    rsi, drawdown_pct, regime_kr, mom_1m, currency, display,
-                )
-                if sent:
-                    alerts_sent += 1
-                    logger.info(f"    🔔 매수 추천 알림 발송 ({score}점)")
-
-            # 2) 낙폭 구간 진입 알림 (ATH 대비, DD_ZONES는 모듈 상수)
+            # 2) '지금 더 사라' 알림 (ATH 대비, DD_ZONES는 모듈 상수)
             high = close.cummax()
             ath = float(high.iloc[-1])
 
@@ -362,7 +382,8 @@ def check_and_notify(config: dict):
             for threshold, zone_name, mult in DD_ZONES:
                 if drawdown_pct <= threshold:
                     current_zone = (threshold, zone_name, mult)
-            if current_zone and prev_dd > current_zone[0]:
+            # 배수 1.0(-5%) 구간은 '더 사라'가 아니므로 제외, x1.5(-10%)부터 알림
+            if current_zone and current_zone[2] > 1.0 and prev_dd > current_zone[0]:
                 # 종목+구간별 쿨다운 체크 (단일 dd_batch 키 대신)
                 zone_key = f"dd_{ticker}_{current_zone[0]}"
                 if _should_alert(zone_key, price_state):
@@ -411,8 +432,8 @@ def check_and_notify(config: dict):
             alerts_sent += 1
             logger.info(f"  🔔 낙폭 통합 알림 발송 ({len(dd_alerts)}종목)")
 
-    # 5) 요약 알림
-    if summaries:
+    # 5) 종합 리포트 — digest 모드(하루 1번)에서만
+    if summaries and mode == "digest":
         notifier.send_summary(summaries, macro)
 
     _save_state(price_state)

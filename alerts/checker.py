@@ -8,7 +8,7 @@ import yaml
 
 from alerts.state import _load_state, _save_state, _should_alert
 from alerts.telegram import TelegramNotifier
-from engine.scorer import DD_ZONES, calculate_score
+from engine.scorer import DD_ZONES, calculate_score, dd_multiplier
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,7 @@ def check_and_notify(config: dict, mode: str = "digest"):
         try:
             currency = preset.get("currency", "USD")
             display = preset.get("display", ticker)
+            weekly_base = preset.get("weekly_base", 0)
 
             # period="max": 진짜 전고점(ATH) 기준 낙폭
             df = fetcher.fetch_history(ticker, period="max")
@@ -109,6 +110,7 @@ def check_and_notify(config: dict, mode: str = "digest"):
                         "zone": current_zone[1],
                         "mult": current_zone[2],
                         "currency": currency,
+                        "weekly_base": weekly_base,
                     })
                     logger.info(f"    📌 낙폭 {current_zone[1]} 구간 진입 감지")
 
@@ -124,6 +126,8 @@ def check_and_notify(config: dict, mode: str = "digest"):
                     alerts_sent += 1
                     logger.info(f"    🔔 급락 알림 ({change_pct:.1f}%)")
 
+            mult = dd_multiplier(drawdown_pct)
+            weekly_buy = round(weekly_base * mult) if weekly_base else 0
             summaries.append({
                 "ticker": ticker,
                 "display": display,
@@ -133,6 +137,9 @@ def check_and_notify(config: dict, mode: str = "digest"):
                 "score": score,
                 "drawdown": drawdown_pct,
                 "currency": currency,
+                "weekly_base": weekly_base,
+                "weekly_buy": weekly_buy,
+                "mult": mult,
             })
 
         except Exception as e:

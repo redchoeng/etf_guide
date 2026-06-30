@@ -57,18 +57,18 @@ class TelegramNotifier:
         """'지금 더 사라' 통합 알림 (모아서 1건)."""
         if not dd_alerts:
             return False
-        lines = [
-            "🛒 <b>지금 더 사라!</b>",
-            "<i>평소보다 얼마나 더 살지 알려주는 알림이에요</i>\n",
-        ]
+        lines = ["🛒 <b>지금 더 사라!</b>\n"]
         for a in dd_alerts:
             name = a.get("display", a["ticker"])
-            price_str = fmt_price(a["price"], a.get("currency", "USD"))
-            lines.append(
-                f"<b>{name}</b> {price_str} "
-                f"(전고점보다 {a['drawdown']:.0f}% ↓)\n"
-                f"   👉 {buy_phrase(a['mult'])}"
-            )
+            cur = a.get("currency", "USD")
+            mult = a["mult"]
+            weekly_base = a.get("weekly_base", 0)
+            dd = a["drawdown"]
+            if weekly_base:
+                amt = round(weekly_base * mult)
+                lines.append(f"<b>{name}</b> → {fmt_price(amt, cur)} 사라 (ATH {dd:.0f}%, {mult:.1f}배)")
+            else:
+                lines.append(f"<b>{name}</b> → {mult:.1f}배 매수 (ATH {dd:.0f}%)")
         return self.send_message("\n".join(lines), reply_markup=report_kb())
 
     def send_crash_alert(self, ticker: str, price: float, change_pct: float,
@@ -88,37 +88,33 @@ class TelegramNotifier:
         return self.send_message(msg, reply_markup=report_kb())
 
     def send_summary(self, summaries: list, macro: dict) -> bool:
-        """하루 1번 종합 리포트."""
+        """하루 1번 '이번 주 얼마 사라' 가이드."""
         if not _should_alert("summary", self._state):
             return False
         regime_kr = macro.get("regime_kr", "")
         vix = macro.get("vix", 0)
         lines = [
-            "📋 <b>오늘의 ETF 한눈에 보기</b>",
-            "<i>하루 한 번 보내는 종합 현황이에요 🌅</i>\n",
-            f"시장: {regime_kr} · VIX {vix:.1f}\n",
+            "📅 <b>이번 주 뭐 얼마 사지?</b>",
+            f"<i>시장: {regime_kr} · VIX {vix:.1f}</i>\n",
         ]
         for s in summaries:
-            emoji = "🟢" if s["score"] >= 75 else ("🔵" if s["score"] >= 60 else ("🟡" if s["score"] >= 40 else "🟠"))
-            mult = dd_multiplier(s.get("drawdown", 0))
-            price_str = fmt_price(s["price"], s.get("currency", "USD"))
             name = s.get("display", s["ticker"])
-            if mult > 1.0:
-                tip = buy_phrase(mult)
-            elif s["score"] >= 75:
-                tip = "적극 매수! 🟢"
-            elif s["score"] >= 60:
-                tip = "살만해요 🙂"
+            cur = s.get("currency", "USD")
+            mult = s.get("mult", dd_multiplier(s.get("drawdown", 0)))
+            weekly_buy = s.get("weekly_buy", 0)
+            dd = s.get("drawdown", 0)
+
+            if weekly_buy:
+                amt_str = fmt_price(weekly_buy, cur)
+                if mult > 1.0:
+                    lines.append(f"<b>{name}</b> → {amt_str} 사라 (ATH {dd:.0f}%, {mult:.1f}배)")
+                else:
+                    lines.append(f"<b>{name}</b> → {amt_str} 사라 (기본 DCA)")
             else:
-                tip = "지금은 관망 😴"
-            lines.append(
-                f"{emoji} <b>{name}</b> {price_str} ({s['change']:+.1f}%)\n"
-                f"   👉 {tip}"
-            )
-        buys = [s.get("display", s["ticker"]) for s in summaries if s["score"] >= 60]
-        if buys:
-            lines.append(f"\n💰 <b>오늘 살만한 거: {', '.join(buys)}</b>")
-        lines.append("<i>점수 60↑ 매수고려 · 75↑ 적극매수</i>")
+                # weekly_base 미설정 시 배수만 표시
+                lines.append(f"<b>{name}</b> → {'x'+str(mult) if mult > 1.0 else '기본'} (ATH {dd:.0f}%)")
+
+        lines.append("\n<i>presets.yaml의 weekly_base × 낙폭배수 자동 계산</i>")
         return self.send_message("\n".join(lines), reply_markup=report_kb())
 
     # ── 하위 호환 (직접 호출 시 유지) ──

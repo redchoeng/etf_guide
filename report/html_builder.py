@@ -217,6 +217,18 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .strat-item .desc b{{color:#191f28}}
 .strat-tips{{margin-top:12px;padding:12px;background:#f8f9fa;border-radius:10px;font-size:12px;color:#6b7684;line-height:1.6}}
 .strat-tips .warn{{color:#f04452;margin-top:6px;padding:8px 10px;background:#fff5f5;border-radius:6px;font-size:11px}}
+.weekly-buy-bar{{background:#e8f3ff;border-radius:10px;padding:10px 14px;font-size:14px;color:#1565C0;margin-bottom:12px}}
+.weekly-buy-bar b{{font-size:20px;color:#3182f6}}
+.weekly-buy-bar.wbb-dim{{background:#f2f4f6;color:#8b95a1;font-size:12px}}
+.weekly-guide{{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}}
+.wg-row{{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f9fa;border-radius:10px}}
+.wg-name{{font-size:14px;font-weight:700;color:#191f28;min-width:90px}}
+.wg-dd{{font-size:11px;color:#8b95a1;min-width:60px}}
+.wg-mult{{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:#e5e8eb;color:#4e5968}}
+.wg-mult.hot{{background:#fff0e0;color:#c05000}}
+.wg-amt{{margin-left:auto;font-size:18px;font-weight:700;color:#3182f6}}
+.wg-no-base{{font-size:12px;color:#b0b8c1}}
+.wg-hint{{font-size:11px;color:#8b95a1;margin-top:4px}}
 .footer{{text-align:center;padding:24px 0;font-size:12px;color:#b0b8c1}}
 .footer a{{color:#3182f6;text-decoration:none;font-weight:500}}
 .overlay{{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;backdrop-filter:blur(2px)}}
@@ -337,12 +349,29 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 </div>
 
 <div class="section">
-<div class="section-title">이 페이지 보는 법</div>
-<div class="tip-box">
-<p>매주 정해진 금액을 DCA 매수하되, <b>낙폭이 깊을수록 더 많이</b> 매수합니다. 낙폭 매수 가이드에서 현재 구간과 매수 배수를 확인하세요.</p>
-<p>시장: {regime_kr} · 적립식 + 낙폭 배수 매수 · 매도는 직접 판단</p>
-<div class="warn">손절 기준({STOP_LOSS_PCT:.0f}%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
-</div>
+<div class="section-title">📅 이번 주 매수 가이드</div>
+<div class="weekly-guide">"""
+
+    for r in results:
+        cur = r.get("currency", "USD")
+        sym = "₩" if cur == "KRW" else "$"
+        wb = r.get("weekly_buy", 0)
+        wm = r.get("weekly_mult", 1.0)
+        wb_base = r.get("weekly_base", 0)
+        dd = r.get("drawdown_pct", 0)
+        name = r.get("display", r["ticker"])
+        if wb:
+            amt_str = fmt_price(wb, cur)
+            if wm > 1.0:
+                mult_badge = f'<span class="wg-mult hot">×{wm:.1f}</span>'
+            else:
+                mult_badge = '<span class="wg-mult">기본</span>'
+            html += f'<div class="wg-row"><span class="wg-name">{name}</span><span class="wg-dd">ATH {dd:.0f}%</span>{mult_badge}<span class="wg-amt">{amt_str}</span></div>'
+        else:
+            html += f'<div class="wg-row"><span class="wg-name">{name}</span><span class="wg-dd">ATH {dd:.0f}%</span><span class="wg-mult">{"×"+str(wm) if wm>1 else "기본"}</span><span class="wg-amt wg-no-base">weekly_base 미설정</span></div>'
+
+    html += f"""</div>
+<p class="wg-hint">금액 변경: 아래 각 카드의 <b>주간 투자금</b> 입력칸에서 바꾸면 실시간 반영돼요</p>
 </div>
 
 """
@@ -417,7 +446,20 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         upgrid_data_attr = "[" + ",".join(upgrid_json) + "]"
 
         config_json = f'{{"levels":{r["num_levels"]},"spacing":{r["spacing_pct"]}}}'
-        html += f"""<div class="card" data-ticker="{r['ticker']}" data-currency="{cur}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}">
+        wb = r.get("weekly_buy", 0)
+        wm = r.get("weekly_mult", 1.0)
+        wb_base = r.get("weekly_base", 0)
+        if wb:
+            wb_display = f'이번 주 <b>{fmt_price(wb, cur)}</b> 사라'
+            if wm > 1.0:
+                wb_display += f' <span style="color:#c05000">({wm:.1f}배)</span>'
+            wb_bar = f'<div class="weekly-buy-bar">{wb_display}</div>'
+        elif wb_base == 0:
+            wb_bar = '<div class="weekly-buy-bar wbb-dim">weekly_base 미설정 → 아래 입력칸 사용</div>'
+        else:
+            wb_bar = ''
+        html += f"""<div class="card" data-ticker="{r['ticker']}" data-currency="{cur}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}" data-weekly-base="{wb_base}" data-weekly-mult="{wm}">
+{wb_bar}
 <div class="card-head">
 <div class="left">
 <div class="ticker">{r['display']}</div>
@@ -713,6 +755,16 @@ function recalcDCA(ticker){{
   h+=rows+'</table></div>';
   wrap.innerHTML=h;
   localStorage.setItem('weekly_'+ticker,weeklyBudget);
+  const card2=document.querySelector('.card[data-ticker="'+ticker+'"]');
+  if(card2){{
+    const wm2=parseFloat(card2.dataset.weeklyMult)||1;
+    const buyAmt=Math.round(weeklyBudget*wm2);
+    const bar=card2.querySelector('.weekly-buy-bar');
+    if(bar){{
+      const amtStr=moneyFmt(buyAmt,curOf(ticker));
+      bar.innerHTML='이번 주 <b>'+amtStr+'</b> 사라'+(wm2>1?' <span style="color:#c05000">('+wm2.toFixed(1)+'배)</span>':'');
+    }}
+  }}
 }}
 function calcPnL(ticker){{
   const input=document.getElementById('avgcost-'+ticker);

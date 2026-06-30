@@ -138,6 +138,11 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             macro, mom_1m, trend_aligned,
         )
 
+        weekly_base = preset.get("weekly_base", 0)
+        from engine.scorer import dd_multiplier as _dd_mult
+        weekly_mult = _dd_mult(drawdown_pct)
+        weekly_buy = round(weekly_base * weekly_mult) if weekly_base else 0
+
         return {
             "ticker": ticker,
             "name": preset.get("name", ticker),
@@ -176,6 +181,9 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             "allocation": allocation,
             "num_levels": preset.get("suggested_levels", 10),
             "spacing_pct": preset.get("suggested_spacing", 5.0),
+            "weekly_base": weekly_base,
+            "weekly_buy": weekly_buy,
+            "weekly_mult": weekly_mult,
         }
     except Exception as e:
         print(f"  {ticker} 분석 실패: {e}")

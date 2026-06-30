@@ -12,6 +12,7 @@ presets:
     leverage: 2
     category: "NASDAQ"
     currency: "USD"
+    weekly_base: 200        # 주간 기본 매수액 ($) — 낙폭 배수로 자동 계산
     suggested_budget: 10000
     suggested_levels: 10
     suggested_spacing: 5.0
@@ -24,6 +25,7 @@ presets:
     leverage: 3
     category: "Semiconductor"
     currency: "USD"
+    weekly_base: 100        # 주간 기본 매수액 ($)
     suggested_budget: 10000
     suggested_levels: 15
     suggested_spacing: 7.0
@@ -36,6 +38,7 @@ presets:
     leverage: 1
     category: "NASDAQ Active"
     currency: "KRW"
+    weekly_base: 250000     # 주간 기본 매수액 (₩)
     suggested_budget: 10000000
     suggested_levels: 10
     suggested_spacing: 4.0
@@ -48,6 +51,7 @@ presets:
     leverage: 1
     category: "NASDAQ Active"
     currency: "KRW"
+    weekly_base: 250000     # 주간 기본 매수액 (₩)
     suggested_budget: 10000000
     suggested_levels: 10
     suggested_spacing: 4.0

@@ -154,6 +154,18 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 .strat-item .desc b{color:#191f28}
 .strat-tips{margin-top:12px;padding:12px;background:#f8f9fa;border-radius:10px;font-size:12px;color:#6b7684;line-height:1.6}
 .strat-tips .warn{color:#f04452;margin-top:6px;padding:8px 10px;background:#fff5f5;border-radius:6px;font-size:11px}
+.weekly-buy-bar{background:#e8f3ff;border-radius:10px;padding:10px 14px;font-size:14px;color:#1565C0;margin-bottom:12px}
+.weekly-buy-bar b{font-size:20px;color:#3182f6}
+.weekly-buy-bar.wbb-dim{background:#f2f4f6;color:#8b95a1;font-size:12px}
+.weekly-guide{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.wg-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f9fa;border-radius:10px}
+.wg-name{font-size:14px;font-weight:700;color:#191f28;min-width:90px}
+.wg-dd{font-size:11px;color:#8b95a1;min-width:60px}
+.wg-mult{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:#e5e8eb;color:#4e5968}
+.wg-mult.hot{background:#fff0e0;color:#c05000}
+.wg-amt{margin-left:auto;font-size:18px;font-weight:700;color:#3182f6}
+.wg-no-base{font-size:12px;color:#b0b8c1}
+.wg-hint{font-size:11px;color:#8b95a1;margin-top:4px}
 .footer{text-align:center;padding:24px 0;font-size:12px;color:#b0b8c1}
 .footer a{color:#3182f6;text-decoration:none;font-weight:500}
 .overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;backdrop-filter:blur(2px)}
@@ -229,7 +241,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-06-30 13:28 KST</div>
+<div class="date">2026-06-30 17:08 KST</div>
 <div class="market-pulse">
 <div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
 <div class="pulse-item">VIX 17.6</div>
@@ -248,7 +260,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
 </div>
 <div class="noti-alert-list" id="notiList">
-<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>476850.KS</b> 매수 점수 61점 — 매수 고려</div></div><div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>SOXL</b> 매수 점수 60점 — 매수 고려</div></div>
+<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>SOXL</b> 매수 점수 60점 — 매수 고려</div></div><div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>476850.KS</b> 매수 점수 60점 — 매수 고려</div></div>
 </div>
 
 <div class="section">
@@ -269,114 +281,18 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="stat"><div class="sl">분석 ETF</div><div class="sv">4</div></div>
 <div class="stat"><div class="sl">매수 추천</div><div class="sv green">2</div></div>
 <div class="stat"><div class="sl">평균 점수</div><div class="sv">56</div></div>
-<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">476850.KS 61</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">SOXL 60</div></div>
 </div>
 </div>
 
 <div class="section">
-<div class="section-title">이 페이지 보는 법</div>
-<div class="tip-box">
-<p>매주 정해진 금액을 DCA 매수하되, <b>낙폭이 깊을수록 더 많이</b> 매수합니다. 낙폭 매수 가이드에서 현재 구간과 매수 배수를 확인하세요.</p>
-<p>시장: 상승장 · 적립식 + 낙폭 배수 매수 · 매도는 직접 판단</p>
-<div class="warn">손절 기준(-50%)에 도달하면 추가 매수를 중단하고 포지션을 재검토하세요.</div>
-</div>
+<div class="section-title">📅 이번 주 매수 가이드</div>
+<div class="weekly-guide"><div class="wg-row"><span class="wg-name">SOXL</span><span class="wg-dd">ATH -21%</span><span class="wg-mult hot">×2.0</span><span class="wg-amt">$200.00</span></div><div class="wg-row"><span class="wg-name">KoACT</span><span class="wg-dd">ATH -7%</span><span class="wg-mult">기본</span><span class="wg-amt">₩250,000</span></div><div class="wg-row"><span class="wg-name">QLD</span><span class="wg-dd">ATH -7%</span><span class="wg-mult">기본</span><span class="wg-amt">$200.00</span></div><div class="wg-row"><span class="wg-name">TIMEFOLIO</span><span class="wg-dd">ATH -4%</span><span class="wg-mult">기본</span><span class="wg-amt">₩250,000</span></div></div>
+<p class="wg-hint">금액 변경: 아래 각 카드의 <b>주간 투자금</b> 입력칸에서 바꾸면 실시간 반영돼요</p>
 </div>
 
-<div class="card" data-ticker="476850.KS" data-currency="KRW" data-grid='[{"l":1,"p":24825.60,"q":28},{"l":2,"p":23791.20,"q":29},{"l":3,"p":22756.80,"q":30},{"l":4,"p":21722.40,"q":32},{"l":5,"p":20688.00,"q":33},{"l":6,"p":19653.60,"q":35},{"l":7,"p":18619.20,"q":37},{"l":8,"p":17584.80,"q":39},{"l":9,"p":16550.40,"q":42},{"l":10,"p":15516.00,"q":45}]' data-upgrid='[{"l":1,"p":26635.80,"q":15},{"l":2,"p":27411.60,"q":15},{"l":3,"p":28187.40,"q":14},{"l":4,"p":28963.20,"q":14},{"l":5,"p":29739.00,"q":14}]' data-ath="27530.00" data-low52="10258.00" data-high52="27530.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL">
-<div class="card-head">
-<div class="left">
-<div class="ticker">KoACT</div>
-<div class="etf-sub">KoACT 미국나스닥성장기업액티브 · 기초: QQQ</div>
-<div class="tags">
-<span class="tag lev">1x</span>
-<span class="tag cat">NASDAQ Active</span>
-<span class="tag trend-up">정배열</span>
-</div>
-</div>
-<div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#2196F3" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="53.9" stroke-linecap="round"/></svg>
-<span class="num" style="color:#1565C0">61</span>
-</div>
-</div>
-
-<div class="verdict-bar" style="background:#E3F2FD">
-<div class="vd-title" style="color:#1565C0">🔵 매수 고려</div>
-<div class="vd-detail" style="color:#1565C0">[상승장] 추세 양호. 소량 분할매수 또는 다음 풀백 대기.</div>
-</div>
-
-<div class="price-area" id="pa-476850.KS">
-<span class="price" id="pr-476850.KS">₩25,860</span>
-<span class="chg-pill up" id="chg-476850.KS">+0.94%</span>
-</div>
-<div class="live-alert" id="la-476850.KS" style="display:none"></div>
-
-<div class="range-bar">
-<div class="range-labels"><span>₩10,258</span><span>52주</span><span>₩27,530</span></div>
-<div class="range-track"><div class="range-fill" style="width:90%;background:#f04452"></div><div class="range-dot" style="left:90%"></div></div>
-</div>
-
-<div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">49</div></div>
-<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-6.1%</div></div>
-<div class="metric " onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+1.1%</div></div>
-<div class="metric hi" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">정배열</div></div>
-</div>
-
-<div class="budget-input-area">
-<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
-<div class="input-wrap">
-<span class="currency">₩</span>
-<input type="number" id="bi-476850.KS" value="500000" min="10000" step="10000" oninput="recalcDCA('476850.KS')">
-</div>
-</div>
-<div id="grid-wrap-476850.KS">
-<div class="buy-plan">
-<div class="bp-title">낙폭 매수 가이드</div>
-<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
-<table>
-<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
-<tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>₩26,154 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>₩24,777</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>₩22,024</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>₩19,271</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>₩16,518</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>₩13,765</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
-</table>
-</div>
-
-</div>
-
-<div class="sell-ref">
-<div class="sr-title">매도 참고 지표</div>
-<div class="sr-grid">
-<div class="sr-item">
-<div class="sr-label">시장 레짐</div>
-<div class="sr-val bull" id="regime-476850.KS">상승장</div>
-<div class="sr-sub" id="regime-sub-476850.KS">BULL</div>
-<div class="sr-change neutral" id="regime-chg-476850.KS">—</div>
-</div>
-<div class="sr-item">
-<div class="sr-label">내 수익률</div>
-<div class="sr-val" id="pnl-476850.KS">—</div>
-<div class="pnl-input">
-<span class="sym">₩</span>
-<input type="number" id="avgcost-476850.KS" placeholder="평단가" step="0.01" oninput="calcPnL('476850.KS')">
-</div>
-</div>
-<div class="sr-item">
-<div class="sr-label">ATH 대비</div>
-<div class="sr-val bear" id="ath-dd-476850.KS">-6.1%</div>
-<div class="sr-sub">ATH ₩27,530</div>
-<div class="ath-bar"><div class="ath-fill" style="width:94%;background:#ff9500"></div></div>
-</div>
-</div>
-</div>
-
-<div class="info-row">
-<span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 ₩12,930 (-50%)</span>
-</div>
-
-<div class="details">
-ATH ₩27,530 · SMA20 ₩25,829 · SMA50 ₩23,999 · SMA200 ₩16,826 · 3M +41.7% · Vol 31%
-</div>
-</div>
-<div class="card" data-ticker="SOXL" data-currency="USD" data-grid='[{"l":1,"p":219.96,"q":2},{"l":2,"p":203.41,"q":2},{"l":3,"p":186.85,"q":2},{"l":4,"p":170.29,"q":2},{"l":5,"p":153.74,"q":3},{"l":6,"p":137.18,"q":3},{"l":7,"p":120.63,"q":4},{"l":8,"p":104.07,"q":4},{"l":9,"p":87.51,"q":5},{"l":10,"p":70.96,"q":7},{"l":11,"p":54.40,"q":9},{"l":12,"p":37.84,"q":13},{"l":13,"p":21.29,"q":23},{"l":14,"p":4.73,"q":105}]' data-upgrid='[{"l":1,"p":243.62,"q":1},{"l":2,"p":250.71,"q":1},{"l":3,"p":257.81,"q":1},{"l":4,"p":264.90,"q":1},{"l":5,"p":272.00,"q":1}]' data-ath="300.77" data-low52="23.98" data-high52="300.77" data-config='{"levels":15,"spacing":7.0}' data-budget="10000" data-regime="BULL">
+<div class="card" data-ticker="SOXL" data-currency="USD" data-grid='[{"l":1,"p":219.96,"q":2},{"l":2,"p":203.41,"q":2},{"l":3,"p":186.85,"q":2},{"l":4,"p":170.29,"q":2},{"l":5,"p":153.74,"q":3},{"l":6,"p":137.18,"q":3},{"l":7,"p":120.63,"q":4},{"l":8,"p":104.07,"q":4},{"l":9,"p":87.51,"q":5},{"l":10,"p":70.96,"q":7},{"l":11,"p":54.40,"q":9},{"l":12,"p":37.84,"q":13},{"l":13,"p":21.29,"q":23},{"l":14,"p":4.73,"q":105}]' data-upgrid='[{"l":1,"p":243.62,"q":1},{"l":2,"p":250.71,"q":1},{"l":3,"p":257.81,"q":1},{"l":4,"p":264.90,"q":1},{"l":5,"p":272.00,"q":1}]' data-ath="300.77" data-low52="23.98" data-high52="300.77" data-config='{"levels":15,"spacing":7.0}' data-budget="10000" data-regime="BULL" data-weekly-base="100" data-weekly-mult="2.0">
+<div class="weekly-buy-bar">이번 주 <b>$200.00</b> 사라 <span style="color:#c05000">(2.0배)</span></div>
 <div class="card-head">
 <div class="left">
 <div class="ticker">SOXL</div>
@@ -432,7 +348,6 @@ ATH ₩27,530 · SMA20 ₩25,829 · SMA50 ₩23,999 · SMA200 ₩16,826 · 3M +4
 <tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>$285.73 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$270.69</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$240.62</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$210.54</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$180.46</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$150.38</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
 </table>
 </div>
-
 </div>
 
 <div class="sell-ref">
@@ -470,7 +385,102 @@ ATH ₩27,530 · SMA20 ₩25,829 · SMA50 ₩23,999 · SMA200 ₩16,826 · 3M +4
 ATH $300.77 · SMA20 $237.50 · SMA50 $187.93 · SMA200 $84.17 · 3M +314.7% · Vol 91%
 </div>
 </div>
-<div class="card" data-ticker="QLD" data-currency="USD" data-grid='[{"l":1,"p":89.00,"q":7},{"l":2,"p":84.31,"q":8},{"l":3,"p":79.63,"q":8},{"l":4,"p":74.94,"q":9},{"l":5,"p":70.26,"q":9},{"l":6,"p":65.58,"q":10},{"l":7,"p":60.89,"q":11},{"l":8,"p":56.21,"q":12},{"l":9,"p":51.52,"q":13},{"l":10,"p":46.84,"q":14}]' data-upgrid='[{"l":1,"p":96.49,"q":4},{"l":2,"p":99.30,"q":4},{"l":3,"p":102.11,"q":4},{"l":4,"p":104.92,"q":4},{"l":5,"p":107.73,"q":3}]' data-ath="100.46" data-low52="57.12" data-high52="100.46" data-config='{"levels":10,"spacing":5.0}' data-budget="10000" data-regime="BULL">
+<div class="card" data-ticker="476850.KS" data-currency="KRW" data-grid='[{"l":1,"p":24686.40,"q":28},{"l":2,"p":23657.80,"q":29},{"l":3,"p":22629.20,"q":30},{"l":4,"p":21600.60,"q":32},{"l":5,"p":20572.00,"q":34},{"l":6,"p":19543.40,"q":35},{"l":7,"p":18514.80,"q":37},{"l":8,"p":17486.20,"q":40},{"l":9,"p":16457.60,"q":42},{"l":10,"p":15429.00,"q":45}]' data-upgrid='[{"l":1,"p":26486.45,"q":15},{"l":2,"p":27257.90,"q":15},{"l":3,"p":28029.35,"q":14},{"l":4,"p":28800.80,"q":14},{"l":5,"p":29572.25,"q":14}]' data-ath="27530.00" data-low52="10258.00" data-high52="27530.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL" data-weekly-base="250000" data-weekly-mult="1.0">
+<div class="weekly-buy-bar">이번 주 <b>₩250,000</b> 사라</div>
+<div class="card-head">
+<div class="left">
+<div class="ticker">KoACT</div>
+<div class="etf-sub">KoACT 미국나스닥성장기업액티브 · 기초: QQQ</div>
+<div class="tags">
+<span class="tag lev">1x</span>
+<span class="tag cat">NASDAQ Active</span>
+<span class="tag trend-up">정배열</span>
+</div>
+</div>
+<div class="score-ring">
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#2196F3" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="55.3" stroke-linecap="round"/></svg>
+<span class="num" style="color:#1565C0">60</span>
+</div>
+</div>
+
+<div class="verdict-bar" style="background:#E3F2FD">
+<div class="vd-title" style="color:#1565C0">🔵 매수 고려</div>
+<div class="vd-detail" style="color:#1565C0">[상승장] 추세 양호. 소량 분할매수 또는 다음 풀백 대기.</div>
+</div>
+
+<div class="price-area" id="pa-476850.KS">
+<span class="price" id="pr-476850.KS">₩25,715</span>
+<span class="chg-pill up" id="chg-476850.KS">+0.37%</span>
+</div>
+<div class="live-alert" id="la-476850.KS" style="display:none"></div>
+
+<div class="range-bar">
+<div class="range-labels"><span>₩10,258</span><span>52주</span><span>₩27,530</span></div>
+<div class="range-track"><div class="range-fill" style="width:89%;background:#f04452"></div><div class="range-dot" style="left:89%"></div></div>
+</div>
+
+<div class="metrics">
+<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">47</div></div>
+<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-6.6%</div></div>
+<div class="metric " onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+0.6%</div></div>
+<div class="metric hi" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">정배열</div></div>
+</div>
+
+<div class="budget-input-area">
+<div><label>주간 투자금</label><div class="bi-desc">매주 투자할 금액 입력 → 낙폭별 매수액 자동 계산</div></div>
+<div class="input-wrap">
+<span class="currency">₩</span>
+<input type="number" id="bi-476850.KS" value="500000" min="10000" step="10000" oninput="recalcDCA('476850.KS')">
+</div>
+</div>
+<div id="grid-wrap-476850.KS">
+<div class="buy-plan">
+<div class="bp-title">낙폭 매수 가이드</div>
+<div class="bp-sub">주 1회 적립식 DCA · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>
+<table>
+<tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>전략</th></tr>
+<tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>₩26,154 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>₩24,777</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>₩22,024</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>₩19,271</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>₩16,518</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>₩13,765</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
+</table>
+</div>
+</div>
+
+<div class="sell-ref">
+<div class="sr-title">매도 참고 지표</div>
+<div class="sr-grid">
+<div class="sr-item">
+<div class="sr-label">시장 레짐</div>
+<div class="sr-val bull" id="regime-476850.KS">상승장</div>
+<div class="sr-sub" id="regime-sub-476850.KS">BULL</div>
+<div class="sr-change neutral" id="regime-chg-476850.KS">—</div>
+</div>
+<div class="sr-item">
+<div class="sr-label">내 수익률</div>
+<div class="sr-val" id="pnl-476850.KS">—</div>
+<div class="pnl-input">
+<span class="sym">₩</span>
+<input type="number" id="avgcost-476850.KS" placeholder="평단가" step="0.01" oninput="calcPnL('476850.KS')">
+</div>
+</div>
+<div class="sr-item">
+<div class="sr-label">ATH 대비</div>
+<div class="sr-val bear" id="ath-dd-476850.KS">-6.6%</div>
+<div class="sr-sub">ATH ₩27,530</div>
+<div class="ath-bar"><div class="ath-fill" style="width:93%;background:#ff9500"></div></div>
+</div>
+</div>
+</div>
+
+<div class="info-row">
+<span class="info-chip">무한매수 · 장기 보유</span>
+<span class="info-chip danger">손절 ₩12,858 (-50%)</span>
+</div>
+
+<div class="details">
+ATH ₩27,530 · SMA20 ₩25,822 · SMA50 ₩23,996 · SMA200 ₩16,825 · 3M +40.9% · Vol 31%
+</div>
+</div>
+<div class="card" data-ticker="QLD" data-currency="USD" data-grid='[{"l":1,"p":89.00,"q":7},{"l":2,"p":84.31,"q":8},{"l":3,"p":79.63,"q":8},{"l":4,"p":74.94,"q":9},{"l":5,"p":70.26,"q":9},{"l":6,"p":65.58,"q":10},{"l":7,"p":60.89,"q":11},{"l":8,"p":56.21,"q":12},{"l":9,"p":51.52,"q":13},{"l":10,"p":46.84,"q":14}]' data-upgrid='[{"l":1,"p":96.49,"q":4},{"l":2,"p":99.30,"q":4},{"l":3,"p":102.11,"q":4},{"l":4,"p":104.92,"q":4},{"l":5,"p":107.73,"q":3}]' data-ath="100.46" data-low52="57.12" data-high52="100.46" data-config='{"levels":10,"spacing":5.0}' data-budget="10000" data-regime="BULL" data-weekly-base="200" data-weekly-mult="1.0">
+<div class="weekly-buy-bar">이번 주 <b>$200.00</b> 사라</div>
 <div class="card-head">
 <div class="left">
 <div class="ticker">QLD</div>
@@ -526,7 +536,6 @@ ATH $300.77 · SMA20 $237.50 · SMA50 $187.93 · SMA200 $84.17 · 3M +314.7% · 
 <tr class="next-row"><td style="color:#6b7684;font-weight:600">-5%</td><td>$95.44 ← 현재</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>$90.42</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>$80.37</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>$70.32</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>$60.28</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>$50.23</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
 </table>
 </div>
-
 </div>
 
 <div class="sell-ref">
@@ -564,7 +573,8 @@ ATH $300.77 · SMA20 $237.50 · SMA50 $187.93 · SMA200 $84.17 · 3M +314.7% · 
 ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol 44%
 </div>
 </div>
-<div class="card" data-ticker="426030.KS" data-currency="KRW" data-grid='[{"l":1,"p":57801.60,"q":12},{"l":2,"p":55393.20,"q":12},{"l":3,"p":52984.80,"q":13},{"l":4,"p":50576.40,"q":13},{"l":5,"p":48168.00,"q":14},{"l":6,"p":45759.60,"q":15},{"l":7,"p":43351.20,"q":16},{"l":8,"p":40942.80,"q":17},{"l":9,"p":38534.40,"q":18},{"l":10,"p":36126.00,"q":19}]' data-upgrid='[{"l":1,"p":62016.30,"q":6},{"l":2,"p":63822.60,"q":6},{"l":3,"p":65628.90,"q":6},{"l":4,"p":67435.20,"q":6},{"l":5,"p":69241.50,"q":6}]' data-ath="62605.00" data-low52="27881.12" data-high52="62605.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL">
+<div class="card" data-ticker="426030.KS" data-currency="KRW" data-grid='[{"l":1,"p":57916.80,"q":12},{"l":2,"p":55503.60,"q":12},{"l":3,"p":53090.40,"q":13},{"l":4,"p":50677.20,"q":13},{"l":5,"p":48264.00,"q":14},{"l":6,"p":45850.80,"q":15},{"l":7,"p":43437.60,"q":16},{"l":8,"p":41024.40,"q":17},{"l":9,"p":38611.20,"q":18},{"l":10,"p":36198.00,"q":19}]' data-upgrid='[{"l":1,"p":62139.90,"q":6},{"l":2,"p":63949.80,"q":6},{"l":3,"p":65759.70,"q":6},{"l":4,"p":67569.60,"q":6},{"l":5,"p":69379.50,"q":6}]' data-ath="62605.00" data-low52="27881.12" data-high52="62605.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL" data-weekly-base="250000" data-weekly-mult="1.0">
+<div class="weekly-buy-bar">이번 주 <b>₩250,000</b> 사라</div>
 <div class="card-head">
 <div class="left">
 <div class="ticker">TIMEFOLIO</div>
@@ -587,8 +597,8 @@ ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol
 </div>
 
 <div class="price-area" id="pa-426030.KS">
-<span class="price" id="pr-426030.KS">₩60,210</span>
-<span class="chg-pill up" id="chg-426030.KS">+3.63%</span>
+<span class="price" id="pr-426030.KS">₩60,330</span>
+<span class="chg-pill up" id="chg-426030.KS">+3.84%</span>
 </div>
 <div class="live-alert" id="la-426030.KS" style="display:none"></div>
 
@@ -599,8 +609,8 @@ ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol
 
 <div class="metrics">
 <div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">56</div></div>
-<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-3.8%</div></div>
-<div class="metric " onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+4.7%</div></div>
+<div class="metric " onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-3.6%</div></div>
+<div class="metric " onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+4.9%</div></div>
 <div class="metric hi" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">정배열</div></div>
 </div>
 
@@ -620,7 +630,6 @@ ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol
 <tr><td style="color:#6b7684;font-weight:600">-5%</td><td>₩59,475</td><td style="color:#6b7684;font-weight:700">x1.0</td><td>기본 DCA</td></tr><tr><td style="color:#ff9500;font-weight:600">-10%</td><td>₩56,344</td><td style="color:#ff9500;font-weight:700">x1.5</td><td>1.5배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-20%</td><td>₩50,084</td><td style="color:#f04452;font-weight:700">x2.0</td><td>2배 매수</td></tr><tr><td style="color:#f04452;font-weight:600">-30%</td><td>₩43,824</td><td style="color:#f04452;font-weight:700">x3.0</td><td>3배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-40%</td><td>₩37,563</td><td style="color:#d91f11;font-weight:700">x4.0</td><td>4배 매수</td></tr><tr><td style="color:#d91f11;font-weight:600">-50%</td><td>₩31,302</td><td style="color:#d91f11;font-weight:700">x5.0</td><td>5배 매수</td></tr>
 </table>
 </div>
-
 </div>
 
 <div class="sell-ref">
@@ -642,7 +651,7 @@ ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
-<div class="sr-val bull" id="ath-dd-426030.KS">-3.8%</div>
+<div class="sr-val bull" id="ath-dd-426030.KS">-3.6%</div>
 <div class="sr-sub">ATH ₩62,605</div>
 <div class="ath-bar"><div class="ath-fill" style="width:96%;background:#00c073"></div></div>
 </div>
@@ -651,11 +660,11 @@ ATH $100.46 · SMA20 $94.10 · SMA50 $89.74 · SMA200 $74.33 · 3M +47.8% · Vol
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 ₩30,105 (-50%)</span>
+<span class="info-chip danger">손절 ₩30,165 (-50%)</span>
 </div>
 
 <div class="details">
-ATH ₩62,605 · SMA20 ₩58,462 · SMA50 ₩53,672 · SMA200 ₩40,713 · 3M +51.4% · Vol 31%
+ATH ₩62,605 · SMA20 ₩58,468 · SMA50 ₩53,674 · SMA200 ₩40,714 · 3M +51.7% · Vol 31%
 </div>
 </div>
 
@@ -675,7 +684,7 @@ ATH ₩62,605 · SMA20 ₩58,462 · SMA50 ₩53,672 · SMA200 ₩40,713 · 3M +5
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-06-30 13:28 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-06-30 17:08 KST</p>
 </div>
 </div>
 
@@ -708,111 +717,55 @@ function showInfo(k){const d=info[k];document.getElementById('popT').textContent
 function hideInfo(){document.getElementById('ov').classList.remove('show');document.getElementById('pop').classList.remove('show');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideInfo();});
 
-// === 알림 시스템 ===
 const NOTI_KEY='ding_noti_enabled';
 const NOTI_SENT_KEY='ding_noti_sent';
-const alerts=[{"type":"buy","ticker":"476850.KS","msg":"476850.KS 61점 — 매수 고려"},{"type":"buy","ticker":"SOXL","msg":"SOXL 60점 — 매수 고려"}];
+const alerts=[{"type":"buy","ticker":"SOXL","msg":"SOXL 60점 — 매수 고려"},{"type":"buy","ticker":"476850.KS","msg":"476850.KS 60점 — 매수 고려"}];
 let swReg=null;
-
-// SW 등록
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});
-}
-
-// 알림 토글 UI 초기화
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});}
 function initNoti(){
   const enabled=localStorage.getItem(NOTI_KEY)==='true';
   const toggle=document.getElementById('notiToggle');
   const status=document.getElementById('notiStatus');
   const list=document.getElementById('notiList');
-  if(enabled && Notification.permission==='granted'){
-    toggle.className='noti-toggle on';
-    status.textContent='알림이 켜져 있어요';
-    list.classList.add('show');
-    fireAlerts();
-  }else{
-    toggle.className='noti-toggle off';
-    status.textContent='알림 허용 시 시그널을 푸시로 받아요';
-    list.classList.remove('show');
-  }
+  if(enabled && Notification.permission==='granted'){toggle.className='noti-toggle on';status.textContent='알림이 켜져 있어요';list.classList.add('show');fireAlerts();}
+  else{toggle.className='noti-toggle off';status.textContent='알림 허용 시 시그널을 푸시로 받아요';list.classList.remove('show');}
 }
-
-// 알림 토글
 function toggleNoti(){
   const toggle=document.getElementById('notiToggle');
   const isOn=toggle.classList.contains('on');
-  if(isOn){
-    localStorage.setItem(NOTI_KEY,'false');
-    initNoti();
-  }else{
-    if(!('Notification' in window)){
-      document.getElementById('notiStatus').textContent='이 브라우저는 알림을 지원하지 않아요';
-      return;
-    }
+  if(isOn){localStorage.setItem(NOTI_KEY,'false');initNoti();}
+  else{
+    if(!('Notification' in window)){document.getElementById('notiStatus').textContent='이 브라우저는 알림을 지원하지 않아요';return;}
     Notification.requestPermission().then(p=>{
-      if(p==='granted'){
-        localStorage.setItem(NOTI_KEY,'true');
-        initNoti();
-      }else{
-        document.getElementById('notiStatus').textContent='알림이 차단되었어요. 브라우저 설정에서 허용해주세요';
-      }
+      if(p==='granted'){localStorage.setItem(NOTI_KEY,'true');initNoti();}
+      else{document.getElementById('notiStatus').textContent='알림이 차단되었어요. 브라우저 설정에서 허용해주세요';}
     });
   }
 }
-
-// 시그널 알림 발송
 function fireAlerts(){
   const today=new Date().toDateString();
   const sent=localStorage.getItem(NOTI_SENT_KEY);
-  if(sent===today)return; // 하루 1회만
-
+  if(sent===today)return;
   if(alerts.length===0)return;
   localStorage.setItem(NOTI_SENT_KEY,today);
-
-  // 가장 중요한 알림 1개는 즉시
   sendNoti('🔔 딩쵱 매수 시그널',alerts[0].msg,'ding-main');
-
-  // 나머지는 30초 간격으로
-  alerts.slice(1,4).forEach((a,i)=>{
-    setTimeout(()=>{sendNoti('📊 '+a.ticker,a.msg,'ding-'+a.ticker);}, (i+1)*30000);
-  });
+  alerts.slice(1,4).forEach((a,i)=>{setTimeout(()=>{sendNoti('📊 '+a.ticker,a.msg,'ding-'+a.ticker);}, (i+1)*30000);});
 }
-
 function sendNoti(title,body,tag){
-  if(swReg){
-    swReg.active?.postMessage({type:'SHOW_NOTIFICATION',title,body,tag});
-  }else{
-    new Notification(title,{body,icon:'./icons/icon-192.png',tag});
-  }
+  if(swReg){swReg.active?.postMessage({type:'SHOW_NOTIFICATION',title,body,tag});}
+  else{new Notification(title,{body,icon:'./icons/icon-192.png',tag});}
 }
-
-// 알림바 클릭 시 목록 토글
-document.getElementById('notiBar').addEventListener('click',e=>{
-  if(e.target.id==='notiToggle')return;
-  document.getElementById('notiList').classList.toggle('show');
-});
-
+document.getElementById('notiBar').addEventListener('click',e=>{if(e.target.id==='notiToggle')return;document.getElementById('notiList').classList.toggle('show');});
 initNoti();
 
-// === 실시간 가격 업데이트 ===
-const TICKERS=["476850.KS","SOXL","QLD","426030.KS"];
-// 통화 포맷/파싱 (USD $x.xx / KRW ₩x,xxx)
+const TICKERS=["SOXL","476850.KS","QLD","426030.KS"];
 function curOf(ticker){const c=document.querySelector('.card[data-ticker="'+ticker+'"]');return c&&c.dataset.currency||'USD';}
 function moneyFmt(v,cur){return cur==='KRW'?'₩'+Math.round(v).toLocaleString():'$'+v.toFixed(2);}
 function moneyParse(t){const n=parseFloat(String(t).replace(/[^0-9.]/g,''));return isFinite(n)?n:0;}
 const PROXY=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
 let proxyIdx=0;
 let liveTimer=null;
-
-function isMarketOpen(){
-  const now=new Date();
-  const et=new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
-  const d=et.getDay(),h=et.getHours(),m=et.getMinutes();
-  if(d===0||d===6)return false;
-  const t=h*60+m;
-  return t>=570&&t<=960; // 09:30~16:00 ET
-}
-
+function isMarketOpen(){const now=new Date();const et=new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));const d=et.getDay(),h=et.getHours(),m=et.getMinutes();if(d===0||d===6)return false;const t=h*60+m;return t>=570&&t<=960;}
 async function fetchPrice(ticker){
   const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=5m&range=1d&includePrePost=true');
   for(let i=0;i<PROXY.length;i++){
@@ -826,26 +779,19 @@ async function fetchPrice(ticker){
       const meta=res.meta;
       const prev=meta.chartPreviousClose||meta.previousClose;
       if(!prev)continue;
-      // 장중: 마지막 캔들의 close가 실시간 가격
       const closes=res.indicators?.quote?.[0]?.close;
       let price=meta.regularMarketPrice;
-      if(closes&&closes.length>0){
-        for(let k=closes.length-1;k>=0;k--){
-          if(closes[k]!=null){price=closes[k];break;}
-        }
-      }
+      if(closes&&closes.length>0){for(let k=closes.length-1;k>=0;k--){if(closes[k]!=null){price=closes[k];break;}}}
       if(!price)continue;
       return{price,prev};
     }catch(e){continue;}
   }
   return null;
 }
-
 function updateCard(ticker,data){
   const prEl=document.getElementById('pr-'+ticker);
   const chEl=document.getElementById('chg-'+ticker);
   if(!prEl||!chEl||!data)return;
-
   const cur=curOf(ticker);
   const oldPrice=moneyParse(prEl.textContent);
   const newPrice=data.price;
@@ -854,114 +800,49 @@ function updateCard(ticker,data){
   if(!isFinite(chgPct))return;
   const sign=chgPct>=0?'+':'';
   const cls=chgPct>=0?'up':'down';
-
   prEl.textContent=moneyFmt(newPrice,cur);
   chEl.textContent=sign+chgPct.toFixed(2)+'%';
   chEl.className='chg-pill '+cls;
-
-  if(Math.abs(newPrice-oldPrice)>0.005){
-    prEl.classList.remove('price-flash');
-    void prEl.offsetWidth;
-    prEl.classList.add('price-flash');
-  }
-
-  // 실시간 그리드 매수 알림
+  if(Math.abs(newPrice-oldPrice)>0.005){prEl.classList.remove('price-flash');void prEl.offsetWidth;prEl.classList.add('price-flash');}
   checkGridAlert(ticker,newPrice,data.prev);
-  // 가격 변경 시 그리드 재계산
   if(document.getElementById('bi-'+ticker))recalcDCA(ticker);
-  // 매도 참고 지표 갱신
   if(typeof calcPnL==='function')calcPnL(ticker);
   if(typeof updateAthDD==='function')updateAthDD(ticker,newPrice);
 }
-
 function checkGridAlert(ticker,price,prev){
   const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
   const alertEl=document.getElementById('la-'+ticker);
   if(!card||!alertEl)return;
-
   const ath=parseFloat(card.dataset.ath)||0;
   if(!ath)return;
   const ddPct=((price-ath)/ath*100);
-
-  // 낙폭 구간별 메시지
   let msg='',cls='';
-  if(ddPct<=-40){
-    msg='💥 ATH 대비 '+ddPct.toFixed(1)+'% — x4~5배 적극 매수 구간';
-    cls='buy';
-  }else if(ddPct<=-20){
-    msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% — x2~3배 매수 구간';
-    cls='buy';
-  }else if(ddPct<=-10){
-    msg='🟠 ATH 대비 '+ddPct.toFixed(1)+'% — x1.5배 매수 구간';
-    cls='near';
-  }else if(ddPct<=-5){
-    msg='🟡 ATH 대비 '+ddPct.toFixed(1)+'% — 기본 DCA 매수';
-    cls='near';
-  }
-
-  if(msg){
-    alertEl.innerHTML=msg;
-    alertEl.className='live-alert '+cls;
-    alertEl.style.display='';
-  }else{
-    alertEl.style.display='none';
-  }
+  if(ddPct<=-40){msg='💥 ATH 대비 '+ddPct.toFixed(1)+'% — x4~5배 적극 매수 구간';cls='buy';}
+  else if(ddPct<=-20){msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% — x2~3배 매수 구간';cls='buy';}
+  else if(ddPct<=-10){msg='🟠 ATH 대비 '+ddPct.toFixed(1)+'% — x1.5배 매수 구간';cls='near';}
+  else if(ddPct<=-5){msg='🟡 ATH 대비 '+ddPct.toFixed(1)+'% — 기본 DCA 매수';cls='near';}
+  if(msg){alertEl.innerHTML=msg;alertEl.className='live-alert '+cls;alertEl.style.display='';}
+  else{alertEl.style.display='none';}
 }
-
 async function refreshAll(){
-  // 로딩 표시
   const badge=document.getElementById('liveBadge');
   if(badge)badge.innerHTML='<span class="price-spinner"></span> 갱신 중';
-
   let ok=0;
-  const promises=TICKERS.map(async t=>{
-    const data=await fetchPrice(t);
-    if(data){updateCard(t,data);ok++;}
-  });
+  const promises=TICKERS.map(async t=>{const data=await fetchPrice(t);if(data){updateCard(t,data);ok++;}});
   await Promise.all(promises);
-
   if(badge){
-    if(ok>0){
-      const now=new Date();
-      const hh=String(now.getHours()).padStart(2,'0');
-      const mm=String(now.getMinutes()).padStart(2,'0');
-      badge.innerHTML='<span class="live-dot"></span>LIVE '+hh+':'+mm;
-      badge.className='live-badge';
-    }else{
-      badge.textContent='갱신 실패';
-      badge.className='live-badge live-err';
-    }
+    if(ok>0){const now=new Date();const hh=String(now.getHours()).padStart(2,'0');const mm=String(now.getMinutes()).padStart(2,'0');badge.innerHTML='<span class="live-dot"></span>LIVE '+hh+':'+mm;badge.className='live-badge';}
+    else{badge.textContent='갱신 실패';badge.className='live-badge live-err';}
   }
-
-  // 다음 갱신 예약
   const interval=isMarketOpen()?60000:300000;
   liveTimer=setTimeout(refreshAll,interval);
 }
-
-// 헤더 date 옆에 LIVE 뱃지 삽입
 const dateEl=document.querySelector('.header .date');
-if(dateEl){
-  const lb=document.createElement('span');
-  lb.id='liveBadge';
-  lb.className='live-badge';
-  lb.innerHTML='<span class="price-spinner"></span> 연결 중';
-  dateEl.after(lb);
-}
-
-// 페이지 로드 후 1초 뒤 첫 갱신
+if(dateEl){const lb=document.createElement('span');lb.id='liveBadge';lb.className='live-badge';lb.innerHTML='<span class="price-spinner"></span> 연결 중';dateEl.after(lb);}
 setTimeout(refreshAll,1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){clearTimeout(liveTimer);refreshAll();}});
 
-// 페이지 포커스 시 즉시 갱신
-document.addEventListener('visibilitychange',()=>{
-  if(!document.hidden){
-    clearTimeout(liveTimer);
-    refreshAll();
-  }
-});
-
-// ── 주간 투자금 → 낙폭별 매수액 계산 ──
 const DD_MULT=[[-5,1.0],[-10,1.5],[-20,2.0],[-30,3.0],[-40,4.0],[-50,5.0]];
-
 function recalcDCA(ticker){
   const input=document.getElementById('bi-'+ticker);
   if(!input)return;
@@ -969,18 +850,14 @@ function recalcDCA(ticker){
   if(weeklyBudget<10)return;
   const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(!card)return;
-
   const cur=curOf(ticker);
   const prEl=document.getElementById('pr-'+ticker);
   const price=moneyParse(prEl.textContent);
   const ath=parseFloat(card.dataset.ath)||0;
   if(!price||price<=0||!ath)return;
-
   const ddPct=((price-ath)/ath*100);
-
   const wrap=document.getElementById('grid-wrap-'+ticker);
   if(!wrap)return;
-
   let rows='';
   DD_MULT.forEach(([th,mult])=>{
     const pAt=+(ath*(1+th/100)).toFixed(2);
@@ -994,20 +871,24 @@ function recalcDCA(ticker){
     const c=colors[th]||'#6b7684';
     rows+='<tr'+cls+'><td style="color:'+c+';font-weight:600">'+th+'%</td><td>'+moneyFmt(pAt,cur)+marker+'</td><td style="color:'+c+';font-weight:700">x'+mult.toFixed(1)+'</td><td>'+moneyFmt(amt,cur)+' ('+qty+'주)</td></tr>';
   });
-
-  let html='<div class="buy-plan">';
-  html+='<div class="bp-title">낙폭 매수 가이드</div>';
-  html+='<div class="bp-sub">주 1회 '+moneyFmt(weeklyBudget,cur)+' 적립 · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>';
-  html+='<table><tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>주간 매수액</th></tr>';
-  html+=rows+'</table></div>';
-
-  wrap.innerHTML=html;
+  let h='<div class="buy-plan">';
+  h+='<div class="bp-title">낙폭 매수 가이드</div>';
+  h+='<div class="bp-sub">주 1회 '+moneyFmt(weeklyBudget,cur)+' 적립 · 낙폭 깊을수록 매수 금액 증가 → 장기 보유</div>';
+  h+='<table><tr><th>ATH 낙폭</th><th>도달 가격</th><th>매수 배수</th><th>주간 매수액</th></tr>';
+  h+=rows+'</table></div>';
+  wrap.innerHTML=h;
   localStorage.setItem('weekly_'+ticker,weeklyBudget);
+  const card2=document.querySelector('.card[data-ticker="'+ticker+'"]');
+  if(card2){
+    const wm2=parseFloat(card2.dataset.weeklyMult)||1;
+    const buyAmt=Math.round(weeklyBudget*wm2);
+    const bar=card2.querySelector('.weekly-buy-bar');
+    if(bar){
+      const amtStr=moneyFmt(buyAmt,curOf(ticker));
+      bar.innerHTML='이번 주 <b>'+amtStr+'</b> 사라'+(wm2>1?' <span style="color:#c05000">('+wm2.toFixed(1)+'배)</span>':'');
+    }
+  }
 }
-
-// ── 매도 참고 지표 ──
-
-// 수익률 계산
 function calcPnL(ticker){
   const input=document.getElementById('avgcost-'+ticker);
   const pnlEl=document.getElementById('pnl-'+ticker);
@@ -1023,8 +904,6 @@ function calcPnL(ticker){
   pnlEl.className='sr-val '+(pnlPct>=0?'profit':'loss');
   localStorage.setItem('avgcost_'+ticker,avgCost);
 }
-
-// ATH 대비 낙폭 실시간 업데이트
 function updateAthDD(ticker,price){
   const card=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(!card)return;
@@ -1032,22 +911,12 @@ function updateAthDD(ticker,price){
   if(!ath)return;
   const ddPct=((price-ath)/ath*100);
   const el=document.getElementById('ath-dd-'+ticker);
-  if(el){
-    el.textContent=ddPct.toFixed(1)+'%';
-    el.className='sr-val '+(ddPct<=-15?'loss':(ddPct<=-5?'bear':'bull'));
-  }
+  if(el){el.textContent=ddPct.toFixed(1)+'%';el.className='sr-val '+(ddPct<=-15?'loss':(ddPct<=-5?'bear':'bull'));}
   const bar=card.querySelector('.ath-fill');
-  if(bar){
-    const w=Math.max(0,100+ddPct);
-    bar.style.width=w.toFixed(0)+'%';
-    bar.style.background=ddPct<=-15?'#f04452':(ddPct<=-5?'#ff9500':'#00c073');
-  }
+  if(bar){const w=Math.max(0,100+ddPct);bar.style.width=w.toFixed(0)+'%';bar.style.background=ddPct<=-15?'#f04452':(ddPct<=-5?'#ff9500':'#00c073');}
 }
-
-// 레짐 변경 감지
 const REGIME_ORDER=['CRISIS','BEAR','CORRECTION','SIDEWAYS','BULL','BULL_STRONG'];
 const REGIME_KR={'CRISIS':'위기','BEAR':'하락장','CORRECTION':'조정','SIDEWAYS':'횡보장','BULL':'상승장','BULL_STRONG':'강한 상승장'};
-
 function checkRegimeChange(){
   document.querySelectorAll('.card[data-ticker]').forEach(card=>{
     const ticker=card.dataset.ticker;
@@ -1057,41 +926,21 @@ function checkRegimeChange(){
     const chgEl=document.getElementById('regime-chg-'+ticker);
     if(!chgEl)return;
     if(prev&&prev!==curRegime){
-      const pi=REGIME_ORDER.indexOf(prev);
-      const ci=REGIME_ORDER.indexOf(curRegime);
-      if(ci<pi){
-        chgEl.textContent='⚠ '+(REGIME_KR[prev]||prev)+' → '+(REGIME_KR[curRegime]||curRegime);
-        chgEl.className='sr-change warn';
-      }else{
-        chgEl.textContent='▲ '+(REGIME_KR[prev]||prev)+' → '+(REGIME_KR[curRegime]||curRegime);
-        chgEl.className='sr-change ok';
-      }
-    }else if(!prev){
-      chgEl.textContent='변동 없음';
-      chgEl.className='sr-change neutral';
-    }
+      const pi=REGIME_ORDER.indexOf(prev);const ci=REGIME_ORDER.indexOf(curRegime);
+      if(ci<pi){chgEl.textContent='⚠ '+(REGIME_KR[prev]||prev)+' → '+(REGIME_KR[curRegime]||curRegime);chgEl.className='sr-change warn';}
+      else{chgEl.textContent='▲ '+(REGIME_KR[prev]||prev)+' → '+(REGIME_KR[curRegime]||curRegime);chgEl.className='sr-change ok';}
+    }else if(!prev){chgEl.textContent='변동 없음';chgEl.className='sr-change neutral';}
     localStorage.setItem(prevKey,curRegime);
   });
 }
-
-// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded',()=>{
-  // 저장된 예산 복원
   document.querySelectorAll('.card[data-ticker]').forEach(card=>{
     const t=card.dataset.ticker;
     const saved=localStorage.getItem('weekly_'+t);
-    if(saved){
-      const input=document.getElementById('bi-'+t);
-      if(input){input.value=saved;recalcDCA(t);}
-    }
-    // 저장된 평균단가 복원
+    if(saved){const input=document.getElementById('bi-'+t);if(input){input.value=saved;recalcDCA(t);}}
     const avgSaved=localStorage.getItem('avgcost_'+t);
-    if(avgSaved){
-      const avgInput=document.getElementById('avgcost-'+t);
-      if(avgInput){avgInput.value=avgSaved;calcPnL(t);}
-    }
+    if(avgSaved){const avgInput=document.getElementById('avgcost-'+t);if(avgInput){avgInput.value=avgSaved;calcPnL(t);}}
   });
-  // 레짐 변경 체크
   checkRegimeChange();
 });
 </script>

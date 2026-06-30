@@ -239,7 +239,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-06-30 17:22 KST</div>
+<div class="date">2026-06-30 17:49 KST</div>
 <div class="market-pulse">
 <div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
 <div class="pulse-item">VIX 17.6</div>
@@ -258,7 +258,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
 </div>
 <div class="noti-alert-list" id="notiList">
-<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>476850.KS</b> 매수 점수 60점 — 매수 고려</div></div>
+<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>KoACT</b> 매수 점수 60점 — 매수 고려</div></div>
 </div>
 
 <div class="section">
@@ -279,7 +279,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="stat"><div class="sl">분석 ETF</div><div class="sv">2</div></div>
 <div class="stat"><div class="sl">매수 추천</div><div class="sv green">1</div></div>
 <div class="stat"><div class="sl">평균 점수</div><div class="sv">56</div></div>
-<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">476850.KS 60</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">KoACT 60</div></div>
 </div>
 </div>
 
@@ -493,7 +493,7 @@ ATH ₩62,605 · SMA20 ₩58,468 · SMA50 ₩53,674 · SMA200 ₩40,714 · 3M +5
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-06-30 17:22 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-06-30 17:49 KST</p>
 </div>
 </div>
 
@@ -528,7 +528,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')hideInfo();});
 
 const NOTI_KEY='ding_noti_enabled';
 const NOTI_SENT_KEY='ding_noti_sent';
-const alerts=[{"type":"buy","ticker":"476850.KS","msg":"476850.KS 60점 — 매수 고려"}];
+const alerts=[{"type":"buy","ticker":"476850.KS","name":"KoACT","msg":"KoACT 60점 — 매수 고려"}];
 let swReg=null;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});}
 function initNoti(){
@@ -558,7 +558,7 @@ function fireAlerts(){
   if(alerts.length===0)return;
   localStorage.setItem(NOTI_SENT_KEY,today);
   sendNoti('🔔 딩쵱 매수 시그널',alerts[0].msg,'ding-main');
-  alerts.slice(1,4).forEach((a,i)=>{setTimeout(()=>{sendNoti('📊 '+a.ticker,a.msg,'ding-'+a.ticker);}, (i+1)*30000);});
+  alerts.slice(1,4).forEach((a,i)=>{setTimeout(()=>{sendNoti('📊 '+(a.name||a.ticker),a.msg,'ding-'+a.ticker);}, (i+1)*30000);});
 }
 function sendNoti(title,body,tag){
   if(swReg){swReg.active?.postMessage({type:'SHOW_NOTIFICATION',title,body,tag});}

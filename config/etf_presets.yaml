@@ -4,32 +4,6 @@
 # ================================================
 
 presets:
-  # --- NASDAQ 2x (미국상장) ---
-  QLD:
-    name: "ProShares Ultra QQQ"
-    display: "QLD"
-    underlying: "QQQ"
-    leverage: 2
-    category: "NASDAQ"
-    currency: "USD"
-    weekly_base: 200        # 주간 기본 매수액 ($) — 낙폭 배수로 자동 계산
-    suggested_budget: 10000
-    suggested_levels: 10
-    suggested_spacing: 5.0
-
-  # --- Semiconductor 3x (미국상장) ---
-  SOXL:
-    name: "Direxion Daily Semiconductor Bull 3X"
-    display: "SOXL"
-    underlying: "SOXX"
-    leverage: 3
-    category: "Semiconductor"
-    currency: "USD"
-    weekly_base: 100        # 주간 기본 매수액 ($)
-    suggested_budget: 10000
-    suggested_levels: 15
-    suggested_spacing: 7.0
-
   # --- NASDAQ100 액티브 1x (국내상장) ---
   426030.KS:
     name: "TIMEFOLIO 미국나스닥100액티브"
@@ -58,7 +32,5 @@ presets:
 
 # ETF underlying pairs (for decay analysis)
 underlying_pairs:
-  QLD: "QQQ"
-  SOXL: "SOXX"
   426030.KS: "QQQ"
   476850.KS: "QQQ"

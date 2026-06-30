@@ -60,15 +60,9 @@ class TelegramNotifier:
         lines = ["🛒 <b>지금 더 사라!</b>\n"]
         for a in dd_alerts:
             name = a.get("display", a["ticker"])
-            cur = a.get("currency", "USD")
             mult = a["mult"]
-            weekly_base = a.get("weekly_base", 0)
             dd = a["drawdown"]
-            if weekly_base:
-                amt = round(weekly_base * mult)
-                lines.append(f"<b>{name}</b> → {fmt_price(amt, cur)} 사라 (ATH {dd:.0f}%, {mult:.1f}배)")
-            else:
-                lines.append(f"<b>{name}</b> → {mult:.1f}배 매수 (ATH {dd:.0f}%)")
+            lines.append(f"<b>{name}</b> (ATH {dd:.0f}%) → {mult:.1f}배로 사세요 📈")
         return self.send_message("\n".join(lines), reply_markup=report_kb())
 
     def send_crash_alert(self, ticker: str, price: float, change_pct: float,
@@ -88,33 +82,24 @@ class TelegramNotifier:
         return self.send_message(msg, reply_markup=report_kb())
 
     def send_summary(self, summaries: list, macro: dict) -> bool:
-        """하루 1번 '이번 주 얼마 사라' 가이드."""
+        """하루 1번 이번 주 매수 가이드."""
         if not _should_alert("summary", self._state):
             return False
         regime_kr = macro.get("regime_kr", "")
         vix = macro.get("vix", 0)
         lines = [
-            "📅 <b>이번 주 뭐 얼마 사지?</b>",
+            "📅 <b>이번 주 매수 가이드</b>",
             f"<i>시장: {regime_kr} · VIX {vix:.1f}</i>\n",
         ]
         for s in summaries:
             name = s.get("display", s["ticker"])
-            cur = s.get("currency", "USD")
             mult = s.get("mult", dd_multiplier(s.get("drawdown", 0)))
-            weekly_buy = s.get("weekly_buy", 0)
             dd = s.get("drawdown", 0)
-
-            if weekly_buy:
-                amt_str = fmt_price(weekly_buy, cur)
-                if mult > 1.0:
-                    lines.append(f"<b>{name}</b> → {amt_str} 사라 (ATH {dd:.0f}%, {mult:.1f}배)")
-                else:
-                    lines.append(f"<b>{name}</b> → {amt_str} 사라 (기본 DCA)")
+            if mult > 1.0:
+                action = f"{mult:.1f}배로 사세요 📈"
             else:
-                # weekly_base 미설정 시 배수만 표시
-                lines.append(f"<b>{name}</b> → {'x'+str(mult) if mult > 1.0 else '기본'} (ATH {dd:.0f}%)")
-
-        lines.append("\n<i>presets.yaml의 weekly_base × 낙폭배수 자동 계산</i>")
+                action = "매수 금액대로 사세요"
+            lines.append(f"<b>{name}</b> (ATH {dd:.0f}%) → {action}")
         return self.send_message("\n".join(lines), reply_markup=report_kb())
 
     # ── 하위 호환 (직접 호출 시 유지) ──

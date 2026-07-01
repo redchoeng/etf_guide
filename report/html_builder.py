@@ -744,14 +744,16 @@ function recalcDCA(ticker){{
   const card2=document.querySelector('.card[data-ticker="'+ticker+'"]');
   if(card2){{
     const wm2=parseFloat(card2.dataset.weeklyMult)||1;
+    const cur2=card2.dataset.currency||'USD';
+    const weeklyAmt=Math.round(weeklyBudget*wm2);
     const bar=card2.querySelector('.weekly-buy-bar');
     if(bar){{
       if(wm2>1){{
         bar.className='weekly-buy-bar';
-        bar.innerHTML='<b>이번 주는 '+wm2.toFixed(1)+'배로 사세요</b> 📈';
+        bar.innerHTML='<b>이번 주는 '+moneyFmt(weeklyAmt,cur2)+' 사세요</b> <span style="opacity:0.7;font-size:12px">(×'+wm2.toFixed(1)+')</span> 📈';
       }}else{{
         bar.className='weekly-buy-bar wbb-base';
-        bar.innerHTML='이번 주는 매수 금액대로 사세요';
+        bar.innerHTML='이번 주는 <b>'+moneyFmt(weeklyAmt,cur2)+'</b> 사세요';
       }}
     }}
   }}
@@ -804,7 +806,9 @@ document.addEventListener('DOMContentLoaded',()=>{{
   document.querySelectorAll('.card[data-ticker]').forEach(card=>{{
     const t=card.dataset.ticker;
     const saved=localStorage.getItem('weekly_'+t);
-    if(saved){{const input=document.getElementById('bi-'+t);if(input){{input.value=saved;recalcDCA(t);}}}}
+    const input=document.getElementById('bi-'+t);
+    if(saved&&input){{input.value=saved;}}
+    if(input)recalcDCA(t);
     const avgSaved=localStorage.getItem('avgcost_'+t);
     if(avgSaved){{const avgInput=document.getElementById('avgcost-'+t);if(avgInput){{avgInput.value=avgSaved;calcPnL(t);}}}}
   }});

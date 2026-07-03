@@ -2,9 +2,9 @@ name: ETF Monitor & Report
 
 on:
   schedule:
-    # 한국 장 시초가 직후 (KST 09:30 = UTC 00:30) 월~금
-    # 09:00 정각은 yfinance 당일 캔들이 아직 불안정해서 30분 뒤 실행
-    - cron: '30 0 * * 1-5'
+    # 한국장 시간 30분 간격 (KST 09:00~15:30 = UTC 00:00~06:30) 월~금
+    # 장중 낙폭 구간 진입 시 바로 알림 — 같은 구간은 하루 1번만 (날짜 dedup)
+    - cron: '*/30 0-6 * * 1-5'
 
   workflow_dispatch:  # 수동 실행 가능
 

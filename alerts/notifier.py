@@ -8,7 +8,7 @@
 """
 
 from alerts.state import (  # noqa: F401
-    STATE_FILE, ALERT_COOLDOWN,
+    STATE_FILE,
     _load_state, _save_state, _should_alert,
 )
 from alerts.telegram import (  # noqa: F401

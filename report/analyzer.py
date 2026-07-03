@@ -1,9 +1,8 @@
 """ETF 단일 종목 분석 + 판정 로직."""
 
-import numpy as np
-
 from engine.formatters import fmt_price
-from engine.scorer import calculate_score
+from engine.metrics import compute_metrics
+from engine.scorer import calculate_score, dd_multiplier
 from engine.grid_calculator import GridCalculator
 
 REGIME_ALLOCATION = {
@@ -72,33 +71,24 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
         signal_gen = SignalGenerator(config.get("signals", {}))
 
         df = fetcher.fetch_history(ticker, period="max")
-        if df is None or df.empty or len(df) < 60:
+        m = compute_metrics(df)
+        if m is None:
             return None
 
-        close = df["Close"]
-        current_price = float(close.iloc[-1])
-        prev_price = float(close.iloc[-2])
-        change_pct = (current_price - prev_price) / prev_price * 100
+        current_price = m["price"]
+        change_pct = m["change_pct"]
+        drawdown_pct = m["drawdown_pct"]
+        ath = m["ath"]
+        vol_annual = m["vol_annual"]
+        sma20, sma50, sma200 = m["sma20"], m["sma50"], m["sma200"]
+        mom_1m, mom_3m = m["mom_1m"], m["mom_3m"]
+        trend_aligned = m["trend_aligned"]
+        high_52w, low_52w, pos_52w = m["high_52w"], m["low_52w"], m["pos_52w"]
 
         signals = signal_gen.generate_signals(df)
         overall = signals.get("overall_signal", "HOLD")
         strength = signals.get("signal_strength", 0)
         rsi = signals.get("rsi_14", 50)
-
-        high = close.cummax()
-        drawdown_pct = float(((close.iloc[-1] - high.iloc[-1]) / high.iloc[-1]) * 100)
-        ath = float(high.max())
-
-        returns = close.pct_change().dropna()
-        vol_annual = float(returns.std() * np.sqrt(252) * 100)
-
-        sma20 = float(close.rolling(20).mean().iloc[-1])
-        sma50 = float(close.rolling(50).mean().iloc[-1]) if len(close) >= 50 else sma20
-        sma200 = float(close.rolling(200).mean().iloc[-1]) if len(close) >= 200 else sma50
-
-        mom_1m = (current_price / float(close.iloc[-22]) - 1) * 100 if len(close) >= 22 else 0
-        mom_3m = (current_price / float(close.iloc[-66]) - 1) * 100 if len(close) >= 66 else 0
-        trend_aligned = sma20 > sma50 > sma200 if len(close) >= 200 else sma20 > sma50
 
         score = calculate_score(
             rsi, drawdown_pct, current_price, sma20, sma50, sma200,
@@ -126,11 +116,6 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
             spacing_pct=3.0,
         )
 
-        recent_52w = close.tail(252)
-        high_52w = float(recent_52w.max())
-        low_52w = float(recent_52w.min())
-        pos_52w = (current_price - low_52w) / (high_52w - low_52w) * 100 if high_52w != low_52w else 50
-
         stop_loss_price = current_price * (1 + STOP_LOSS_PCT / 100)
 
         verdict, verdict_detail = get_verdict(
@@ -139,8 +124,7 @@ def analyze_etf(ticker: str, preset: dict, config: dict, macro: dict) -> dict | 
         )
 
         weekly_base = preset.get("weekly_base", 0)
-        from engine.scorer import dd_multiplier as _dd_mult
-        weekly_mult = _dd_mult(drawdown_pct)
+        weekly_mult = dd_multiplier(drawdown_pct)
         weekly_buy = round(weekly_base * weekly_mult) if weekly_base else 0
 
         return {

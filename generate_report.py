@@ -52,26 +52,9 @@ def main():
         return
 
     html = generate_html(results, macro, now)
-    output_file = f"etf_report_{now.strftime('%Y%m%d')}.html"
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(html)
-    print(f"\n✅ 리포트 생성: {output_file} ({len(results)}개 ETF)")
-
-    index_html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=./{output_file}">
-    <title>우당탕탕 딩쵱 하우스 마련 대작전</title>
-</head>
-<body>
-    <p>최신 리포트로 이동 중... <a href="./{output_file}">클릭</a></p>
-</body>
-</html>"""
-
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(index_html)
-    print("✅ index.html 업데이트")
+        f.write(html)
+    print(f"\n✅ index.html 리포트 생성 ({len(results)}개 ETF)")
 
     return results
 

@@ -3,7 +3,12 @@
 from datetime import datetime
 
 from engine.formatters import fmt_price, buy_phrase, verdict_color, regime_color, signal_emoji
+from engine.scorer import DD_ZONES
 from report.analyzer import STOP_LOSS_PCT
+
+# 낙폭 구간별 표시 스타일: 배수가 깊을수록 붉게
+_ZONE_COLORS = ["#6b7684", "#ff9500", "#f04452", "#f04452", "#d91f11", "#d91f11"]
+_ZONE_LABELS = ["기본 DCA", "1.5배 매수", "2배 매수", "3배 매수", "4배 매수", "5배 매수"]
 
 REGIME_ALLOCATION = {
     "BULL_STRONG": 0.75,
@@ -61,6 +66,10 @@ def generate_html(results: list, macro: dict, now: datetime) -> str:
         noti_html += f'<div class="noti-alert"><div class="na-dot {ntype}"></div><div class="na-text">{text}</div></div>'
     noti_js_data = "[" + ",".join(noti_js_arr) + "]"
     tickers_js = "[" + ",".join(f'"{r["ticker"]}"' for r in results) + "]"
+
+    # JS 낙폭 계산기가 Python DD_ZONES와 항상 같은 구간을 쓰도록 생성
+    dd_mult_js = "[" + ",".join(f"[{t},{m}]" for t, _, m in DD_ZONES) + "]"
+    dd_colors_js = "{" + ",".join(f"'{t}':'{_ZONE_COLORS[i]}'" for i, (t, _, _m) in enumerate(DD_ZONES)) + "}"
 
     html = f"""<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -396,12 +405,8 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         stroke_offset = circumference * (1 - score_pct / 100)
 
         dd_zones = [
-            (-5,  "x1.0", "#6b7684", "기본 DCA"),
-            (-10, "x1.5", "#ff9500", "1.5배 매수"),
-            (-20, "x2.0", "#f04452", "2배 매수"),
-            (-30, "x3.0", "#f04452", "3배 매수"),
-            (-40, "x4.0", "#d91f11", "4배 매수"),
-            (-50, "x5.0", "#d91f11", "5배 매수"),
+            (threshold, f"x{mult:.1f}", _ZONE_COLORS[i], _ZONE_LABELS[i])
+            for i, (threshold, _, mult) in enumerate(DD_ZONES)
         ]
         current_dd = r["drawdown_pct"]
         dd_rows = ""
@@ -562,8 +567,8 @@ rsi:{{t:'RSI (상대강도지수)',c:[
 ]}},
 dd:{{t:'ATH 대비 낙폭',c:[
 {{s:'ATH 낙폭이란?',i:['역대 최고가(ATH) 대비 현재가의 하락률','낙폭이 클수록 싸게 살 수 있는 기회']}},
-{{s:'레버리지 ETF 낙폭 기준',i:['🟢 -20% 이상: 매수 적극 고려','🟡 -10%~-20%: 관심 구간','🟠 -5%~-10%: 관망','🔴 -5% 미만: 고점 영역']}},
-{{s:'주의사항',i:['레버리지 ETF는 기초지수보다 낙폭이 2~3배 깊음','TQQQ는 QQQ -30% 때 -60% 이상 빠질 수 있음']}}
+{{s:'1배 나스닥 ETF 낙폭 기준',i:['🟢 -12% 이상: 매수 적극 고려 (2배 이상)','🟡 -7%~-12%: 1.5배 매수 구간','🟠 -3%~-7%: 기본 DCA','🔴 -3% 미만: 고점 영역']}},
+{{s:'참고',i:['-7% 풀백은 나스닥에서 연 2~3회 발생','-20% 이하는 약세장 수준 — 최고의 기회']}}
 ]}},
 mom:{{t:'모멘텀 (1개월 수익률)',c:[
 {{s:'모멘텀이란?',i:['최근 1개월간 가격 변동률','상승장에서 풀백(조정)을 포착하는 핵심 지표']}},
@@ -680,10 +685,10 @@ function checkGridAlert(ticker,price,prev){{
   if(!ath)return;
   const ddPct=((price-ath)/ath*100);
   let msg='',cls='';
-  if(ddPct<=-40){{msg='💥 ATH 대비 '+ddPct.toFixed(1)+'% — x4~5배 적극 매수 구간';cls='buy';}}
-  else if(ddPct<=-20){{msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% — x2~3배 매수 구간';cls='buy';}}
-  else if(ddPct<=-10){{msg='🟠 ATH 대비 '+ddPct.toFixed(1)+'% — x1.5배 매수 구간';cls='near';}}
-  else if(ddPct<=-5){{msg='🟡 ATH 대비 '+ddPct.toFixed(1)+'% — 기본 DCA 매수';cls='near';}}
+  if(ddPct<=-30){{msg='💥 ATH 대비 '+ddPct.toFixed(1)+'% — x4~5배 적극 매수 구간';cls='buy';}}
+  else if(ddPct<=-12){{msg='🔴 ATH 대비 '+ddPct.toFixed(1)+'% — x2~3배 매수 구간';cls='buy';}}
+  else if(ddPct<=-7){{msg='🟠 ATH 대비 '+ddPct.toFixed(1)+'% — x1.5배 매수 구간';cls='near';}}
+  else if(ddPct<=-3){{msg='🟡 ATH 대비 '+ddPct.toFixed(1)+'% — 기본 DCA 매수';cls='near';}}
   if(msg){{alertEl.innerHTML=msg;alertEl.className='live-alert '+cls;alertEl.style.display='';}}
   else{{alertEl.style.display='none';}}
 }}
@@ -705,7 +710,8 @@ if(dateEl){{const lb=document.createElement('span');lb.id='liveBadge';lb.classNa
 setTimeout(refreshAll,1000);
 document.addEventListener('visibilitychange',()=>{{if(!document.hidden){{clearTimeout(liveTimer);refreshAll();}}}});
 
-const DD_MULT=[[-5,1.0],[-10,1.5],[-20,2.0],[-30,3.0],[-40,4.0],[-50,5.0]];
+const DD_MULT={dd_mult_js};
+const DD_COLORS={dd_colors_js};
 function recalcDCA(ticker){{
   const input=document.getElementById('bi-'+ticker);
   if(!input)return;
@@ -730,8 +736,7 @@ function recalcDCA(ticker){{
     const isCurrent=isActive&&!DD_MULT.some(([t2,_])=>t2<th&&ddPct<=t2);
     const cls=isCurrent?' class="next-row"':'';
     const marker=isCurrent?' ← 현재':'';
-    const colors={{'-5':'#6b7684','-10':'#ff9500','-20':'#f04452','-30':'#f04452','-40':'#d91f11','-50':'#d91f11'}};
-    const c=colors[th]||'#6b7684';
+    const c=DD_COLORS[th]||'#6b7684';
     rows+='<tr'+cls+'><td style="color:'+c+';font-weight:600">'+th+'%</td><td>'+moneyFmt(pAt,cur)+marker+'</td><td style="color:'+c+';font-weight:700">x'+mult.toFixed(1)+'</td><td>'+moneyFmt(amt,cur)+' ('+qty+'주)</td></tr>';
   }});
   let h='<div class="buy-plan">';

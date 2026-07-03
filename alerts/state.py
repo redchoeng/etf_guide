@@ -1,9 +1,9 @@
 import json
-import time
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 STATE_FILE = Path(__file__).parent / "state.json"
-ALERT_COOLDOWN = 72000  # 20시간 — 매일 09:00 KST 실행 기준으로 여유 있게
+KST = timezone(timedelta(hours=9))
 
 
 def _load_state() -> dict:
@@ -20,11 +20,14 @@ def _save_state(state: dict):
 
 
 def _should_alert(key: str, state: dict) -> bool:
-    """쿨다운 내 중복 알림 방지 (state.json에 영속 저장)."""
-    now = time.time()
+    """같은 알림은 하루(KST 날짜 기준) 1번만.
+
+    타임스탬프 비교가 아니라 날짜 문자열 비교라서
+    크론 지연·수동 실행 시간과 무관하게 매일 리셋된다.
+    """
+    today = datetime.now(KST).strftime("%Y-%m-%d")
     cache_key = f"_alert_{key}"
-    last = state.get(cache_key, 0)
-    if now - last < ALERT_COOLDOWN:
+    if state.get(cache_key) == today:
         return False
-    state[cache_key] = now
+    state[cache_key] = today
     return True

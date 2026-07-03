@@ -1,24 +1,21 @@
 #!/usr/bin/env python
 """
-가격 모니터링 + Telegram 알림 스케줄러.
+가격 체크 + Telegram 알림 실행기.
 
 사용법:
-  python run_monitor.py              # 기본: 5분 간격
-  python run_monitor.py --interval 3 # 3분 간격
-  python run_monitor.py --once       # 1회만 실행
+  python run_monitor.py --once            # 1회 실행 (긴급 알림만)
+  python run_monitor.py --once --digest   # 1회 실행 (주간 매수 가이드 포함)
+  python run_monitor.py                   # 5분 간격 반복 (로컬 테스트용)
 
-장 운영시간(미국 동부 09:30~16:00)에만 동작합니다.
-장외 시간에는 자동으로 대기합니다.
+실행 시점 관리는 GitHub Actions 크론(평일 KST 09:30)이 담당한다.
 """
 
 import argparse
 import logging
 import sys
 import time
-from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-# Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import schedule
@@ -36,36 +33,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# 미국 동부 시간 (ET) = UTC-5 (EST) / UTC-4 (EDT)
-ET_OFFSET = timedelta(hours=-5)
-
-
-def is_market_hours() -> bool:
-    """미국 장 운영시간인지 확인 (월~금 09:30~16:00 ET)."""
-    now_utc = datetime.now(timezone.utc)
-    now_et = now_utc + ET_OFFSET  # 대략적 EST (DST 무시)
-
-    # 주말 제외
-    if now_et.weekday() >= 5:
-        return False
-
-    # 09:30 ~ 16:00
-    market_open = now_et.replace(hour=9, minute=30, second=0, microsecond=0)
-    market_close = now_et.replace(hour=16, minute=0, second=0, microsecond=0)
-
-    return market_open <= now_et <= market_close
-
-
-def is_extended_hours() -> bool:
-    """프리마켓/애프터마켓 포함 (08:00~20:00 ET)."""
-    now_utc = datetime.now(timezone.utc)
-    now_et = now_utc + ET_OFFSET
-
-    if now_et.weekday() >= 5:
-        return False
-
-    return 8 <= now_et.hour < 20
-
 
 def load_config():
     config_path = Path(__file__).parent / "config" / "settings.yaml"
@@ -73,38 +40,16 @@ def load_config():
         return yaml.safe_load(f)
 
 
-RUN_MODE = "urgent"  # 기본은 긴급만; --digest 시 하루 1번 종합 리포트
-
-
-def run_check():
-    """1회 가격 체크 및 알림."""
-    if not is_extended_hours():
-        logger.info("⏸️  장외 시간 - 스킵")
-        return
-
-    market_status = "🟢 정규장" if is_market_hours() else "🟡 시간외"
-    logger.info(f"{market_status} 가격 체크 시작... (mode={RUN_MODE})")
-
-    try:
-        config = load_config()
-        check_and_notify(config, mode=RUN_MODE)
-        logger.info("✅ 체크 완료")
-    except Exception as e:
-        logger.error(f"❌ 체크 실패: {e}")
-
-
 def main():
-    parser = argparse.ArgumentParser(description="ETF 가격 모니터링 + 알림")
-    parser.add_argument("--interval", type=int, default=5, help="체크 간격 (분, 기본: 5)")
+    parser = argparse.ArgumentParser(description="ETF 가격 체크 + 알림")
+    parser.add_argument("--interval", type=int, default=5, help="반복 간격 (분, 기본: 5)")
     parser.add_argument("--once", action="store_true", help="1회만 실행")
-    parser.add_argument("--force", action="store_true", help="장외 시간에도 실행")
-    parser.add_argument("--digest", action="store_true", help="하루 1번 종합 리포트 발송 (미지정 시 긴급 알림만)")
+    parser.add_argument("--force", action="store_true", help="(하위 호환용, 무시됨)")
+    parser.add_argument("--digest", action="store_true", help="주간 매수 가이드 발송 (미지정 시 긴급 알림만)")
     args = parser.parse_args()
 
-    global RUN_MODE
-    RUN_MODE = "digest" if args.digest else "urgent"
+    mode = "digest" if args.digest else "urgent"
 
-    # Telegram 설정 확인
     notifier = TelegramNotifier()
     if not notifier.is_configured:
         logger.error(
@@ -115,28 +60,24 @@ def main():
         )
         sys.exit(1)
 
-    logger.info(f"📊 ETF 가격 모니터 시작 (간격: {args.interval}분)")
+    logger.info(f"📊 ETF 가격 체크 시작 (mode={mode})")
     logger.info(f"   Telegram: ✅ 설정됨 (chat_id: {notifier.chat_id})")
 
-    # 1회 실행 모드
     if args.once:
-        if args.force or is_extended_hours():
-            config = load_config()
-            check_and_notify(config, mode=RUN_MODE)
-        else:
-            logger.info("장외 시간입니다. --force로 강제 실행할 수 있습니다.")
+        config = load_config()
+        check_and_notify(config, mode=mode)
         return
 
-    # 시작 메시지
-    notifier.send_message(f"📊 <b>ETF 모니터 시작</b>\n\n체크 간격: {args.interval}분")
+    # 반복 모드 (로컬 테스트용)
+    def run_check():
+        try:
+            check_and_notify(load_config(), mode=mode)
+        except Exception as e:
+            logger.error(f"❌ 체크 실패: {e}")
 
-    # 스케줄 설정
     schedule.every(args.interval).minutes.do(run_check)
-
-    # 첫 실행
     run_check()
 
-    # 루프
     logger.info(f"⏰ {args.interval}분 간격으로 모니터링 중... (Ctrl+C로 종료)")
     try:
         while True:
@@ -144,7 +85,6 @@ def main():
             time.sleep(30)
     except KeyboardInterrupt:
         logger.info("🛑 모니터 종료")
-        notifier.send_message("🛑 ETF 모니터가 종료되었습니다.")
 
 
 if __name__ == "__main__":

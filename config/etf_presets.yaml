@@ -17,8 +17,9 @@ presets:
     suggested_levels: 10
     suggested_spacing: 4.0
 
-  # --- NASDAQ 성장기업 액티브 1x (국내상장) ---
-  476850.KS:
+  # --- NASDAQ 성장기업 액티브 1x (국내상장, 2025-02 상장) ---
+  # 주의: 476850은 'KoAct 배당성장액티브'(국내 배당주)라 오등록이었음 → 0015B0으로 교정
+  0015B0.KS:
     name: "KoACT 미국나스닥성장기업액티브"
     display: "KoACT"
     underlying: "QQQ"
@@ -33,4 +34,4 @@ presets:
 # ETF underlying pairs (for decay analysis)
 underlying_pairs:
   426030.KS: "QQQ"
-  476850.KS: "QQQ"
+  0015B0.KS: "QQQ"

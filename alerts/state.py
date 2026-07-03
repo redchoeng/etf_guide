@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 
 STATE_FILE = Path(__file__).parent / "state.json"
-ALERT_COOLDOWN = 86400  # 24시간 — 같은 알림 하루에 1번만
+ALERT_COOLDOWN = 72000  # 20시간 — 매일 09:00 KST 실행 기준으로 여유 있게
 
 
 def _load_state() -> dict:

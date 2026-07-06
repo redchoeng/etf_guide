@@ -138,5 +138,12 @@ def check_and_notify(config: dict, mode: str = "digest"):
     if summaries and mode == "digest":
         notifier.send_summary(summaries, macro)
 
+    # 구성종목 수량 변동 체크 (하루 1번 dedup은 내부에서 처리)
+    try:
+        from alerts.holdings import check_holdings_changes
+        alerts_sent += check_holdings_changes(notifier, price_state, presets.get("presets", {}))
+    except Exception as e:
+        logger.warning(f"구성종목 체크 실패: {e}")
+
     _save_state(price_state)
     logger.info(f"체크 완료: {len(summaries)}종목, {alerts_sent}건 알림")

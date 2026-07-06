@@ -56,7 +56,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          git add index.html alerts/state.json
+          git add index.html alerts/state.json alerts/holdings_snapshot.json
           if ! git diff --staged --quiet; then
             git commit -m "ETF report update - $(date -u '+%Y-%m-%d %H:%M') UTC"
             git pull --rebase

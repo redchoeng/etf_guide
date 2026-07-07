@@ -2,9 +2,10 @@ name: ETF Monitor & Report
 
 on:
   schedule:
-    # 한국장 시간 30분 간격 (KST 09:00~15:30 = UTC 00:00~06:30) 월~금
+    # 한국장 시간 30분 간격 (KST 09:05~15:35 = UTC 00:05~06:35) 월~금
+    # 정각(:00/:30)은 GitHub 크론 혼잡으로 스킵이 잦아서 5분 오프셋
     # 장중 낙폭 구간 진입 시 바로 알림 — 같은 구간은 하루 1번만 (날짜 dedup)
-    - cron: '*/30 0-6 * * 1-5'
+    - cron: '5,35 0-6 * * 1-5'
 
   workflow_dispatch:  # 수동 실행 가능
 
@@ -39,14 +40,8 @@ jobs:
           echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
 
       - name: Run price check & Telegram alerts
-        run: |
-          # 월요일(KST) 또는 수동 실행 → 주간 매수 가이드(--digest)
-          # 화~금 → 긴급(급락/낙폭 구간 진입) 알림만
-          if [ "$(TZ=Asia/Seoul date +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            python run_monitor.py --once --digest
-          else
-            python run_monitor.py --once
-          fi
+        # 매일 아침 요약(--digest, 날짜 dedup으로 하루 1건) + 장중 긴급 알림
+        run: python run_monitor.py --once --digest
 
       - name: Generate HTML report
         run: python generate_report.py

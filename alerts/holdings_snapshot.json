@@ -45,7 +45,8 @@
    "LUMENTUM HOLDINGS INC": 7.0,
    "ASML HOLDING NV-NY REG SHS": 6.0,
    "ELI LILLY & CO": 6.0
-  }
+  },
+  "last_diff": null
  },
  "0015B0": {
   "date": "2026-07-06",
@@ -108,6 +109,7 @@
    "Astera Labs Inc": 3.5,
    "FIRST SOLAR INC": 1.8,
    "MONOLITHIC POWER SYSTEMS INC": 0.88
-  }
+  },
+  "last_diff": null
  }
 }

@@ -9,6 +9,10 @@ on:
 
   workflow_dispatch:  # 수동 실행 가능
 
+  push:
+    paths:
+      - '.trigger'    # 클라우드 routine이 이 파일을 갱신·push하면 실행 (API 폴백 경로)
+
 jobs:
   monitor-and-report:
     runs-on: ubuntu-latest

@@ -2,12 +2,13 @@
   "426030.KS": 53575.0,
   "426030.KS_dd": -14.423768069643,
   "_alert_crash_426030.KS": "2026-07-09",
-  "_alert_summary": "2026-07-09",
+  "_alert_summary": "2026-07-10",
   "_alert_dd_0015B0.KS_-12": "2026-07-07",
   "0015B0.KS": 22480.0,
   "0015B0.KS_dd": -14.050850697763334,
   "_alert_crash_0015B0.KS": "2026-07-09",
   "_alert_dd_426030.KS_-12": "2026-07-07",
-  "_alert_holdings_digest": "2026-07-09",
-  "_alert_holdings_426030": "2026-07-09"
+  "_alert_holdings_digest": "2026-07-10",
+  "_alert_holdings_426030": "2026-07-09",
+  "_alert_holdings_0015B0": "2026-07-10"
 }

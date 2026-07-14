@@ -1,6 +1,6 @@
 {
  "426030": {
-  "date": "2026-07-10",
+  "date": "2026-07-13",
   "holdings": {
    "INTEL CORP": 263.0,
    "ROBINHOOD MARKETS INC - A": 178.0,
@@ -47,8 +47,8 @@
    "ELI LILLY & CO": 6.0
   },
   "last_diff": {
-   "from": "2026-07-09",
-   "to": "2026-07-10",
+   "from": "2026-07-10",
+   "to": "2026-07-13",
    "added": [],
    "removed": [],
    "changed": [],
@@ -56,178 +56,155 @@
   }
  },
  "0015B0": {
-  "date": "2026-07-10",
+  "date": "2026-07-13",
   "holdings": {
-   "INTEL Corp": 359.76,
-   "NVIDIA Corp": 155.04,
-   "Snowflake Inc   - CL A": 111.17,
-   "Space Exploration Technologies Corp": 107.8,
-   "Amazon.com Inc": 101.02,
-   "ADVANCED MICRO DEVICES": 95.71,
-   "BLOOM ENERGY CORPORATION": 91.05,
-   "ALPHABET INC-CL A": 85.38,
-   "APPLE Inc": 76.39,
-   "Robinhood Markets Inc": 75.94,
-   "ARM Holdings PLC": 72.89,
-   "MARVELL TECHNOLOGY INC": 72.06,
-   "DATADOG INC - CLASS A": 70.69,
-   "LAM RESEARCH": 64.24,
-   "TESLA MOTORS": 63.46,
-   "TAKE-TWO INTERACTIVE SOFTWRE": 59.09,
-   "ILLUMINA INC": 58.12,
-   "CISCO SYSTEMS INC": 55.84,
-   "GILEAD SCIENCES INC": 43.82,
-   "MICROSOFT": 38.57,
-   "WESTERN DIGITAL": 36.97,
-   "MICRON TECH": 36.79,
-   "APPLIED MATERIALS INC": 36.3,
-   "BIOGEN": 36.3,
-   "Palantir Technologies Inc -A": 33.94,
-   "Dell Technologies Inc": 30.8,
-   "CORNING INC": 30.24,
-   "KLA Corp": 29.37,
-   "Natera Inc": 26.74,
-   "YANDEX NV-A": 26.31,
-   "SEAGATE TECHNOLOGY": 22.65,
-   "Sandisk Corp/DE": 21.2,
-   "CROWDSTRIKE HOLDINGS INC - A": 17.68,
-   "TERADYNE INC": 17.6,
-   "QUALCOMM Inc": 16.95,
-   "COINBASE GLOBAL INC -CLASS A": 16.01,
-   "BROADCOM LTD": 15.32,
-   "TEXAS INSTRUMENTS": 14.43,
-   "Credo Technology Group Holding Ltd": 14.09,
-   "FORTINET INC": 13.65,
-   "ELI LILLY & CO": 12.2,
-   "Carpenter Technology Corp": 12.04,
-   "Meta Platforms Inc-CL A": 12.0,
-   "Silicon Motion Technology Corp": 11.01,
-   "Vertiv Holdings Co": 10.89,
-   "GLOBALFOUNDRIES Inc": 9.32,
-   "ANALOG DEVICES": 7.71,
-   "MICROCHIP TECHNOLOGY INC": 7.71,
-   "PALO ALTO NETWORKS INC": 6.33,
-   "Coreweave Inc": 6.0,
-   "ASML HOLDING": 5.18,
-   "Flextronics International Ltd": 5.14,
-   "NXP SEMICONDUCTORS NV": 3.43,
-   "Astera Labs Inc": 3.39,
-   "MONOLITHIC POWER SYSTEMS INC": 0.86
+   "INTEL Corp": 364.78,
+   "NVIDIA Corp": 157.2,
+   "Snowflake Inc   - CL A": 112.72,
+   "Applied Optoelectronics Inc": 109.84,
+   "Space Exploration Technologies Corp": 109.31,
+   "Amazon.com Inc": 102.43,
+   "ADVANCED MICRO DEVICES": 97.04,
+   "BLOOM ENERGY CORPORATION": 92.32,
+   "MARVELL TECHNOLOGY INC": 88.32,
+   "SK hynix Inc": 87.58,
+   "Robinhood Markets Inc": 77.0,
+   "ARM Holdings PLC": 73.91,
+   "DATADOG INC - CLASS A": 71.67,
+   "ALPHABET INC-CL A": 65.22,
+   "LAM RESEARCH": 65.13,
+   "TESLA MOTORS": 64.34,
+   "ILLUMINA INC": 58.93,
+   "CISCO SYSTEMS INC": 56.61,
+   "APPLE Inc": 53.04,
+   "CORNING INC": 49.98,
+   "BROADCOM LTD": 45.03,
+   "WESTERN DIGITAL": 43.58,
+   "MICROSOFT": 39.11,
+   "Dell Technologies Inc": 37.33,
+   "APPLIED MATERIALS INC": 36.81,
+   "MICRON TECH": 36.29,
+   "Palantir Technologies Inc -A": 34.41,
+   "KLA Corp": 29.78,
+   "Credo Technology Group Holding Ltd": 27.51,
+   "Natera Inc": 27.11,
+   "SEAGATE TECHNOLOGY": 27.04,
+   "YANDEX NV-A": 26.68,
+   "GILEAD SCIENCES INC": 22.06,
+   "Sandisk Corp/DE": 21.5,
+   "Lumentum Holdings Inc": 18.31,
+   "CROWDSTRIKE HOLDINGS INC - A": 17.93,
+   "TERADYNE INC": 17.84,
+   "Meta Platforms Inc-CL A": 17.25,
+   "QUALCOMM Inc": 17.19,
+   "COINBASE GLOBAL INC -CLASS A": 16.23,
+   "TEXAS INSTRUMENTS": 14.63,
+   "FORTINET INC": 13.85,
+   "Carpenter Technology Corp": 12.2,
+   "Silicon Motion Technology Corp": 11.16,
+   "Vertiv Holdings Co": 11.04,
+   "GLOBALFOUNDRIES Inc": 9.45,
+   "ANALOG DEVICES": 7.82,
+   "MICROCHIP TECHNOLOGY INC": 7.82,
+   "PALO ALTO NETWORKS INC": 6.41,
+   "Coreweave Inc": 6.08,
+   "ASML HOLDING": 5.26,
+   "Flextronics International Ltd": 5.21,
+   "NXP SEMICONDUCTORS NV": 3.47,
+   "Astera Labs Inc": 3.44,
+   "MONOLITHIC POWER SYSTEMS INC": 0.87
   },
   "last_diff": {
-   "from": "2026-07-09",
-   "to": "2026-07-10",
+   "from": "2026-07-10",
+   "to": "2026-07-13",
    "added": [
     [
-     "Meta Platforms Inc-CL A",
-     12.0
+     "Applied Optoelectronics Inc",
+     109.84
+    ],
+    [
+     "SK hynix Inc",
+     87.58
+    ],
+    [
+     "Lumentum Holdings Inc",
+     18.31
     ]
    ],
    "removed": [
-    "Tower Semiconductor Ltd",
-    "Lumentum Holdings Inc",
-    "Rocket Lab USA Inc",
-    "Ciena Corp"
+    "TAKE-TWO INTERACTIVE SOFTWRE",
+    "BIOGEN",
+    "ELI LILLY & CO"
    ],
    "changed": [
     [
-     "GILEAD SCIENCES INC",
-     15.77,
-     43.82,
-     177.8693722257451
+     "BROADCOM LTD",
+     15.32,
+     45.03,
+     193.9295039164491
     ],
     [
-     "TAKE-TWO INTERACTIVE SOFTWRE",
-     29.0,
-     59.09,
-     103.75862068965517
-    ],
-    [
-     "ELI LILLY & CO",
-     6.18,
-     12.2,
-     97.41100323624595
-    ],
-    [
-     "PALO ALTO NETWORKS INC",
-     25.25,
-     6.33,
-     -74.93069306930694
-    ],
-    [
-     "ILLUMINA INC",
-     38.0,
-     58.12,
-     52.94736842105262
-    ],
-    [
-     "TERADYNE INC",
+     "Credo Technology Group Holding Ltd",
+     14.09,
      27.51,
-     17.6,
-     -36.023264267539076
+     95.24485450674239
     ],
     [
-     "KLA Corp",
-     44.24,
-     29.37,
-     -33.6121157323689
+     "CORNING INC",
+     30.24,
+     49.98,
+     65.27777777777779
+    ],
+    [
+     "GILEAD SCIENCES INC",
+     43.82,
+     22.06,
+     -49.65769055225925
+    ],
+    [
+     "Meta Platforms Inc-CL A",
+     12.0,
+     17.25,
+     43.75
+    ],
+    [
+     "APPLE Inc",
+     76.39,
+     53.04,
+     -30.566828118863725
+    ],
+    [
+     "ALPHABET INC-CL A",
+     85.38,
+     65.22,
+     -23.612087139845393
     ],
     [
      "MARVELL TECHNOLOGY INC",
-     88.79,
      72.06,
-     -18.842211960806402
+     88.32,
+     22.564529558701068
     ],
     [
-     "APPLIED MATERIALS INC",
-     43.17,
-     36.3,
-     -15.913829047949976
+     "Dell Technologies Inc",
+     30.8,
+     37.33,
+     21.201298701298693
     ],
     [
-     "LAM RESEARCH",
-     76.0,
-     64.24,
-     -15.473684210526322
+     "SEAGATE TECHNOLOGY",
+     22.65,
+     27.04,
+     19.381898454746143
     ],
     [
-     "ARM Holdings PLC",
-     85.63,
-     72.89,
-     -14.877963330608427
-    ],
-    [
-     "BLOOM ENERGY CORPORATION",
-     105.73,
-     91.05,
-     -13.88442258583184
-    ],
-    [
-     "Sandisk Corp/DE",
-     24.13,
-     21.2,
-     -12.142561127227516
-    ],
-    [
-     "MICRON TECH",
-     41.66,
-     36.79,
-     -11.689870379260677
-    ],
-    [
-     "INTEL Corp",
-     394.56,
-     359.76,
-     -8.819951338199516
-    ],
-    [
-     "ADVANCED MICRO DEVICES",
-     103.39,
-     95.71,
-     -7.4281845439597705
+     "WESTERN DIGITAL",
+     36.97,
+     43.58,
+     17.879361644576683
     ]
    ],
-   "minor": 38
+   "minor": 41
   }
  }
 }

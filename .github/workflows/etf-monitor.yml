@@ -7,6 +7,9 @@ on:
     # 장중 낙폭 구간 진입 시 바로 알림 — 같은 구간은 하루 1번만 (날짜 dedup)
     - cron: '5,35 0-6 * * 1-5'
 
+    # 미국장 마감 직후 (KST 05:10 = UTC 20:10) — 추정 iNAV 알림 + 리포트 예상가 갱신
+    - cron: '10 20 * * 1-5'
+
   workflow_dispatch:  # 수동 실행 가능
 
   push:
@@ -50,11 +53,17 @@ jobs:
           echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
 
       - name: Run price check & Telegram alerts
-        # 매일 아침 요약(--digest, 날짜 dedup으로 하루 1건) + 장중 긴급 알림
+        # UTC 19시 이후 실행 = 미국장 마감 직후 → 추정 iNAV 알림만
+        # 그 외 = 아침 요약(--digest, 날짜 dedup) + 장중 긴급 알림
         env:
           KRX_ID: ${{ secrets.KRX_ID }}
           KRX_PW: ${{ secrets.KRX_PW }}
-        run: python run_monitor.py --once --digest
+        run: |
+          if [ "$(date -u +%H)" -ge 19 ]; then
+            python run_monitor.py --inav
+          else
+            python run_monitor.py --once --digest
+          fi
 
       - name: Generate HTML report
         run: python generate_report.py

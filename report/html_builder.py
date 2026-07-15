@@ -10,6 +10,111 @@ from report.analyzer import STOP_LOSS_PCT
 _ZONE_COLORS = ["#6b7684", "#ff9500", "#f04452", "#f04452", "#d91f11", "#d91f11"]
 _ZONE_LABELS = ["기본 DCA", "1.5배 매수", "2배 매수", "3배 매수", "4배 매수", "5배 매수"]
 
+
+def _squarify(vals, x, y, w, h):
+    """Squarified treemap. vals: [(값, payload)] 내림차순 → [(x%, y%, w%, h%, payload)]."""
+    out = []
+    total = sum(v for v, _ in vals)
+    if total <= 0 or w <= 0 or h <= 0:
+        return out
+    scale = w * h / total
+    vals = [(v * scale, p) for v, p in vals if v > 0]
+
+    def worst(row, length):
+        s = sum(v for v, _ in row)
+        if s <= 0 or length <= 0:
+            return float("inf")
+        mx = max(v for v, _ in row)
+        mn = min(v for v, _ in row)
+        return max(length ** 2 * mx / s ** 2, s ** 2 / (length ** 2 * mn))
+
+    def layout(row, x, y, w, h):
+        placed = []
+        s = sum(v for v, _ in row)
+        if w >= h:
+            cw = s / h if h else 0
+            cy = y
+            for v, p in row:
+                ch = v / cw if cw else 0
+                placed.append((x, cy, cw, ch, p))
+                cy += ch
+            return placed, x + cw, y, w - cw, h
+        ch = s / w if w else 0
+        cx = x
+        for v, p in row:
+            cw2 = v / ch if ch else 0
+            placed.append((cx, y, cw2, ch, p))
+            cx += cw2
+        return placed, x, y + ch, w, h - ch
+
+    row = []
+    while vals:
+        item = vals[0]
+        length = min(w, h)
+        if not row or worst(row + [item], length) <= worst(row, length):
+            row.append(item)
+            vals.pop(0)
+        else:
+            placed, x, y, w, h = layout(row, x, y, w, h)
+            out += placed
+            row = []
+    if row:
+        placed, *_ = layout(row, x, y, w, h)
+        out += placed
+    return out
+
+
+def _tm_color(chg):
+    """트리맵 타일 색: 상승=빨강, 하락=파랑 (국내 관례), 강도는 등락폭."""
+    if chg is None:
+        return "#8b95a1"
+    a = min(0.92, 0.30 + abs(chg) / 5)
+    if chg > 0.05:
+        return f"rgba(240,68,82,{a:.2f})"
+    if chg < -0.05:
+        return f"rgba(49,130,246,{a:.2f})"
+    return "#6b7684"
+
+
+def _build_inav_block(iv, cur, now) -> str:
+    """iNAV 추정 카드 + 구성종목 트리맵."""
+    chg = (iv["est"] / iv["kr_close"] - 1) * 100
+    cls = "ip-up" if chg >= 0 else "ip-dn"
+    mult_txt = f"{iv['mult_est']:.1f}배 구간" if iv["mult_est"] > 1.0 else "기본 매수 구간"
+
+    # 트리맵: 상위 15 + 기타
+    items = iv.get("items", [])
+    top = items[:15]
+    rest_w = sum(w for _, w, _ in items[15:])
+    tm_vals = [(w, (tk, w, c)) for tk, w, c in top]
+    if rest_w > 0.5:
+        tm_vals.append((rest_w, ("기타", rest_w, None)))
+    tiles = ""
+    for tx, ty, tw, th, (tk, wpct, c) in _squarify(tm_vals, 0, 0, 100, 100):
+        area = tw * th / 100  # % 면적
+        label = ""
+        if area >= 3:
+            chg_txt = f"<br>{c:+.1f}%" if c is not None else ""
+            fs = 11 if area >= 8 else 9
+            label = f'<span style="font-size:{fs}px">{tk}{chg_txt}</span>'
+        tiles += (f'<div class="tm-tile" style="left:{tx:.2f}%;top:{ty:.2f}%;'
+                  f'width:{tw:.2f}%;height:{th:.2f}%;background:{_tm_color(c)}"'
+                  f' title="{tk} {wpct:.1f}% {"" if c is None else f"{c:+.1f}%"}">{label}</div>')
+
+    return f"""<div class="inav-card">
+<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">{now.strftime('%m/%d %H:%M')} 기준</span></div>
+<div class="inav-main">{fmt_price(iv['est'], cur)} <span class="{cls}">{chg:+.2f}%</span></div>
+<div class="inav-sub">예상 낙폭 ATH {iv['dd_est']:.1f}% → <b>{mult_txt}</b></div>
+<div class="inav-break">
+<span>포트폴리오 <b>{iv['r_basket']:+.2f}%</b></span>
+<span>환율 <b>{iv['r_fx']:+.2f}%</b></span>
+<span>🔺{iv['up_cnt']} 🔻{iv['down_cnt']}</span>
+<span>반영률 {iv['coverage']:.0f}%</span>
+</div>
+<div class="treemap">{tiles}</div>
+<div class="inav-note">추정치 — 현금·괴리율 미반영, 시초가와 다를 수 있음</div>
+</div>"""
+
 REGIME_ALLOCATION = {
     "BULL_STRONG": 0.75,
     "BULL":        0.70,
@@ -20,7 +125,8 @@ REGIME_ALLOCATION = {
 }
 
 
-def generate_html(results: list, macro: dict, now: datetime) -> str:
+def generate_html(results: list, macro: dict, now: datetime, inav: dict = None) -> str:
+    inav = inav or {}
     total = len(results)
     buy_count = len([r for r in results if r["score"] >= 60])
     avg_score = sum(r["score"] for r in results) / total if total else 0
@@ -227,6 +333,19 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .strat-item .desc b{{color:#191f28}}
 .strat-tips{{margin-top:12px;padding:12px;background:#f8f9fa;border-radius:10px;font-size:12px;color:#6b7684;line-height:1.6}}
 .strat-tips .warn{{color:#f04452;margin-top:6px;padding:8px 10px;background:#fff5f5;border-radius:6px;font-size:11px}}
+.inav-card{{background:linear-gradient(135deg,#1a2036 0%,#252d4a 100%);border-radius:14px;padding:16px;margin-bottom:12px;color:#e8ecf4}}
+.inav-head{{font-size:13px;font-weight:700;color:#aeb9d6;display:flex;justify-content:space-between;align-items:center}}
+.inav-time{{font-size:11px;font-weight:400;color:#7d89a8}}
+.inav-main{{font-size:26px;font-weight:700;margin:8px 0 2px;color:#fff}}
+.inav-main .ip-up{{font-size:16px;color:#ff6b6b}}
+.inav-main .ip-dn{{font-size:16px;color:#6ba6ff}}
+.inav-sub{{font-size:12px;color:#aeb9d6;margin-bottom:10px}}
+.inav-sub b{{color:#ffd166}}
+.inav-break{{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:#8f9bbd;margin-bottom:10px}}
+.inav-break b{{color:#e8ecf4}}
+.treemap{{position:relative;width:100%;height:220px;border-radius:10px;overflow:hidden;background:#131829}}
+.tm-tile{{position:absolute;box-sizing:border-box;border:1px solid #1a2036;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600;line-height:1.25;overflow:hidden}}
+.inav-note{{font-size:10px;color:#667191;margin-top:8px}}
 .weekly-buy-bar{{border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:12px;background:#e8f3ff;color:#1565C0;font-weight:600}}
 .weekly-buy-bar b{{font-size:18px;color:#3182f6}}
 .weekly-buy-bar.wbb-base{{background:#f2f4f6;color:#4e5968;font-weight:400}}
@@ -443,6 +562,8 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         upgrid_data_attr = "[" + ",".join(upgrid_json) + "]"
 
         config_json = f'{{"levels":{r["num_levels"]},"spacing":{r["spacing_pct"]}}}'
+        iv = inav.get(r["ticker"])
+        inav_block = _build_inav_block(iv, cur, now) if iv else ""
         wm = r.get("weekly_mult", 1.0)
         wb_base = r.get("weekly_base", 0)
         if wm > 1.0:
@@ -450,6 +571,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
         else:
             wb_bar = '<div class="weekly-buy-bar wbb-base">이번 주는 매수 금액대로 사세요</div>'
         html += f"""<div class="card" data-ticker="{r['ticker']}" data-currency="{cur}" data-grid='{grid_data_attr}' data-upgrid='{upgrid_data_attr}' data-ath="{r['ath']:.2f}" data-low52="{r['low_52w']:.2f}" data-high52="{r['high_52w']:.2f}" data-config='{config_json}' data-budget="{r['total_budget']:.0f}" data-regime="{regime}" data-weekly-base="{wb_base}" data-weekly-mult="{wm}">
+{inav_block}
 {wb_bar}
 <div class="card-head">
 <div class="left">

@@ -51,7 +51,35 @@ def main():
         print("❌ 분석 결과 없음")
         return
 
-    html = generate_html(results, macro, now)
+    # 추정 iNAV — 한국장 장외 시간에만 (장중엔 실시간 가격이 있으므로 불필요)
+    import os
+    inav = {}
+    if not (9 <= now.hour < 16) or os.environ.get("FORCE_INAV"):
+        try:
+            from alerts.holdings import _load_snapshot, _ticker_of, _fetch_us_prices
+            from alerts.inav import estimate_inav
+            snapshot = _load_snapshot()
+            tickers = set()
+            for t in presets.get("presets", {}):
+                entry = snapshot.get(t.split(".")[0]) or {}
+                for n in (entry.get("holdings") or {}):
+                    tk = _ticker_of(n)
+                    if tk:
+                        tickers.add(tk)
+            if tickers:
+                print("  추정 iNAV 계산 중...")
+                prices = _fetch_us_prices(sorted(tickers | {"KRW=X"}))
+                for r in results:
+                    iv = estimate_inav(r["ticker"], snapshot, prices,
+                                       kr_close=r["price"], ath=r["ath"])
+                    if iv:
+                        inav[r["ticker"]] = iv
+                        print(f"    {r['display']}: 예상 ₩{iv['est']:,.0f} "
+                              f"(바스켓 {iv['r_basket']:+.1f}% 환율 {iv['r_fx']:+.1f}%)")
+        except Exception as e:
+            print(f"  iNAV 추정 스킵: {e}")
+
+    html = generate_html(results, macro, now, inav)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
     print(f"\n✅ index.html 리포트 생성 ({len(results)}개 ETF)")

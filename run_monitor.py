@@ -46,7 +46,13 @@ def main():
     parser.add_argument("--once", action="store_true", help="1회만 실행")
     parser.add_argument("--force", action="store_true", help="(하위 호환용, 무시됨)")
     parser.add_argument("--digest", action="store_true", help="주간 매수 가이드 발송 (미지정 시 긴급 알림만)")
+    parser.add_argument("--inav", action="store_true", help="추정 iNAV 알림만 발송 (미국장 마감 후)")
     args = parser.parse_args()
+
+    if args.inav:
+        from alerts.inav import send_inav_alert
+        send_inav_alert(load_config())
+        return
 
     mode = "digest" if args.digest else "urgent"
 

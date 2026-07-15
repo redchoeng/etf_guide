@@ -49,8 +49,17 @@ jobs:
           echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" > .env
           echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
 
+      - name: Debug KRX PDF structure (임시)
+        env:
+          KRX_ID: ${{ secrets.KRX_ID }}
+          KRX_PW: ${{ secrets.KRX_PW }}
+        run: python debug_krx.py || true
+
       - name: Run price check & Telegram alerts
         # 매일 아침 요약(--digest, 날짜 dedup으로 하루 1건) + 장중 긴급 알림
+        env:
+          KRX_ID: ${{ secrets.KRX_ID }}
+          KRX_PW: ${{ secrets.KRX_PW }}
         run: python run_monitor.py --once --digest
 
       - name: Generate HTML report

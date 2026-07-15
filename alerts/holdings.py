@@ -252,17 +252,23 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
                         "holdings": holdings, "last_diff": last_diff})
 
     # 데일리 브리핑 (하루 1번, 변동 없어도 발송)
+    # 네이버 데이터가 오늘 기준일로 갱신된 뒤에 발송해야 어제 매매분이 담긴다.
+    # 11시(KST)까지 갱신이 안 되면 있는 데이터로라도 발송 (비상 폴백).
     if entries and state.get("_alert_holdings_digest") != today:
-        tickers = sorted({
-            _ticker_of(n) for e in entries for n in e["holdings"] if _ticker_of(n)
-        })
-        prices = _fetch_us_prices(tickers)
-        if prices:
-            msg = build_daily_digest(entries, prices)
-            if notifier.send_message(msg):
-                state["_alert_holdings_digest"] = today
-                sent += 1
-                logger.info("  🧾 구성종목 데일리 브리핑 발송")
+        fresh = all(e["trd_dt"] == today for e in entries)
+        if fresh or datetime.now(KST).hour >= 11:
+            tickers = sorted({
+                _ticker_of(n) for e in entries for n in e["holdings"] if _ticker_of(n)
+            })
+            prices = _fetch_us_prices(tickers)
+            if prices:
+                msg = build_daily_digest(entries, prices)
+                if notifier.send_message(msg):
+                    state["_alert_holdings_digest"] = today
+                    sent += 1
+                    logger.info("  🧾 구성종목 데일리 브리핑 발송")
+        else:
+            logger.info("  🧾 데일리 브리핑 대기 (기준일 아직 전일)")
 
     _save_snapshot(snap)
     return sent

@@ -51,10 +51,10 @@ def main():
         print("❌ 분석 결과 없음")
         return
 
-    # 추정 iNAV — 한국장 장외 시간에만 (장중엔 실시간 가격이 있으므로 불필요)
-    import os
+    # 추정 iNAV — 항상 계산해서 HTML에 심음 (장중 표시 여부는 페이지 JS가 결정,
+    # 장외엔 JS가 미국 시세로 라이브 재계산)
     inav = {}
-    if not (9 <= now.hour < 16) or os.environ.get("FORCE_INAV"):
+    if True:
         try:
             from alerts.holdings import _load_snapshot, _ticker_of, _fetch_us_prices
             from alerts.inav import estimate_inav

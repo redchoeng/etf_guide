@@ -41,6 +41,7 @@ def estimate_inav(kr_ticker: str, snapshot: dict, prices: dict,
     total = 0.0
     weighted_ret = 0.0
     items = []  # (티커, 평가액, 전일등락%)
+    qty_by_tk = {}
     up_cnt = down_cnt = 0
     for name, qty in holdings.items():
         tk = _ticker_of(name)
@@ -50,6 +51,7 @@ def estimate_inav(kr_ticker: str, snapshot: dict, prices: dict,
             total += v
             weighted_ret += v * (day_pct / 100)
             items.append((tk, v, day_pct))
+            qty_by_tk[tk] = qty_by_tk.get(tk, 0) + qty
             if day_pct > 0.05:
                 up_cnt += 1
             elif day_pct < -0.05:
@@ -84,6 +86,7 @@ def estimate_inav(kr_ticker: str, snapshot: dict, prices: dict,
         "down_cnt": down_cnt,
         "coverage": coverage,
         "items": tm_items,
+        "js_holdings": sorted(qty_by_tk.items(), key=lambda x: -x[1]),
     }
 
 

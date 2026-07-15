@@ -77,10 +77,14 @@ def _tm_color(chg):
 
 
 def _build_inav_block(iv, cur, now) -> str:
-    """iNAV 추정 카드 + 구성종목 트리맵."""
+    """iNAV 추정 카드 + 구성종목 트리맵 (JS가 장외 시간에 라이브 재계산)."""
+    import json as _json
+
     chg = (iv["est"] / iv["kr_close"] - 1) * 100
     cls = "ip-up" if chg >= 0 else "ip-dn"
     mult_txt = f"{iv['mult_est']:.1f}배 구간" if iv["mult_est"] > 1.0 else "기본 매수 구간"
+    holdings_json = _json.dumps(
+        [[tk, round(q, 2)] for tk, q in iv.get("js_holdings", [])])
 
     # 트리맵: 상위 15 + 기타
     items = iv.get("items", [])
@@ -97,18 +101,19 @@ def _build_inav_block(iv, cur, now) -> str:
             chg_txt = f"<br>{c:+.1f}%" if c is not None else ""
             fs = 11 if area >= 8 else 9
             label = f'<span style="font-size:{fs}px">{tk}{chg_txt}</span>'
-        tiles += (f'<div class="tm-tile" style="left:{tx:.2f}%;top:{ty:.2f}%;'
+        tk_attr = f' data-tk="{tk}"' if c is not None else ""
+        tiles += (f'<div class="tm-tile"{tk_attr} style="left:{tx:.2f}%;top:{ty:.2f}%;'
                   f'width:{tw:.2f}%;height:{th:.2f}%;background:{_tm_color(c)}"'
-                  f' title="{tk} {wpct:.1f}% {"" if c is None else f"{c:+.1f}%"}">{label}</div>')
+                  f' title="{tk} {wpct:.1f}%">{label}</div>')
 
-    return f"""<div class="inav-card">
+    return f"""<div class="inav-card" data-holdings='{holdings_json}' data-krclose="{iv['kr_close']:.2f}">
 <div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">{now.strftime('%m/%d %H:%M')} 기준</span></div>
-<div class="inav-main">{fmt_price(iv['est'], cur)} <span class="{cls}">{chg:+.2f}%</span></div>
-<div class="inav-sub">예상 낙폭 ATH {iv['dd_est']:.1f}% → <b>{mult_txt}</b></div>
+<div class="inav-main"><span class="iv-est">{fmt_price(iv['est'], cur)}</span> <span class="iv-chg {cls}">{chg:+.2f}%</span></div>
+<div class="inav-sub iv-dd">예상 낙폭 ATH {iv['dd_est']:.1f}% → <b>{mult_txt}</b></div>
 <div class="inav-break">
-<span>포트폴리오 <b>{iv['r_basket']:+.2f}%</b></span>
-<span>환율 <b>{iv['r_fx']:+.2f}%</b></span>
-<span>🔺{iv['up_cnt']} 🔻{iv['down_cnt']}</span>
+<span>포트폴리오 <b class="iv-basket">{iv['r_basket']:+.2f}%</b></span>
+<span>환율 <b class="iv-fx">{iv['r_fx']:+.2f}%</b></span>
+<span class="iv-updown">🔺{iv['up_cnt']} 🔻{iv['down_cnt']}</span>
 <span>반영률 {iv['coverage']:.0f}%</span>
 </div>
 <div class="treemap">{tiles}</div>
@@ -941,6 +946,87 @@ document.addEventListener('DOMContentLoaded',()=>{{
   }});
   checkRegimeChange();
 }});
+
+// ── 추정 iNAV 라이브 갱신 (장외 시간 페이지 열 때마다) ──
+function krMarketOpen(){{
+  const k=new Date(new Date().toLocaleString('en-US',{{timeZone:'Asia/Seoul'}}));
+  const d=k.getDay();
+  if(d===0||d===6)return false;
+  const t=k.getHours()*60+k.getMinutes();
+  return t>=540&&t<=930;
+}}
+async function sparkFetch(symbols){{
+  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/spark?symbols='+symbols.join(',')+'&range=1d&interval=30m&includePrePost=true');
+  for(let i=0;i<PROXY.length;i++){{
+    try{{
+      const r=await fetch(PROXY[(proxyIdx+i)%PROXY.length]+url,{{signal:AbortSignal.timeout(12000)}});
+      if(!r.ok)continue;
+      const j=await r.json();
+      const res=(j.spark&&j.spark.result)||j.result||[];
+      const out={{}};
+      res.forEach(it=>{{
+        const m=it.response&&it.response[0]&&it.response[0].meta;
+        if(m&&m.regularMarketPrice&&m.chartPreviousClose)out[it.symbol]={{p:m.regularMarketPrice,pc:m.chartPreviousClose}};
+      }});
+      if(Object.keys(out).length)return out;
+    }}catch(e){{continue;}}
+  }}
+  return null;
+}}
+async function refreshINAV(){{
+  const cards=document.querySelectorAll('.inav-card[data-holdings]');
+  if(!cards.length)return;
+  if(krMarketOpen()){{cards.forEach(c=>c.style.display='none');setTimeout(refreshINAV,300000);return;}}
+  cards.forEach(c=>c.style.display='');
+  const syms=new Set(['KRW=X']);
+  cards.forEach(c=>{{try{{JSON.parse(c.dataset.holdings).forEach(h=>syms.add(h[0]));}}catch(e){{}}}});
+  const q=await sparkFetch([...syms]);
+  if(q){{
+    const fx=q['KRW=X']?(q['KRW=X'].p/q['KRW=X'].pc-1):0;
+    cards.forEach(c=>{{
+      let hold;try{{hold=JSON.parse(c.dataset.holdings);}}catch(e){{return;}}
+      let tot=0,wr=0,up=0,dn=0;
+      hold.forEach(h=>{{
+        const d=q[h[0]];if(!d)return;
+        const v=h[1]*d.p;tot+=v;
+        const rr=d.p/d.pc-1;wr+=v*rr;
+        if(rr>0.0005)up++;else if(rr<-0.0005)dn++;
+      }});
+      if(tot<=0)return;
+      const rb=wr/tot;
+      const kc=parseFloat(c.dataset.krclose)||0;
+      if(!kc)return;
+      const parent=c.closest('.card');
+      const cur=parent&&parent.dataset.currency||'KRW';
+      const est=kc*(1+rb+fx);
+      const chg=(est/kc-1)*100;
+      const eEl=c.querySelector('.iv-est');if(eEl)eEl.textContent=moneyFmt(est,cur);
+      const cEl=c.querySelector('.iv-chg');if(cEl){{cEl.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'%';cEl.className='iv-chg '+(chg>=0?'ip-up':'ip-dn');}}
+      const bEl=c.querySelector('.iv-basket');if(bEl)bEl.textContent=(rb>=0?'+':'')+(rb*100).toFixed(2)+'%';
+      const fEl=c.querySelector('.iv-fx');if(fEl)fEl.textContent=(fx>=0?'+':'')+(fx*100).toFixed(2)+'%';
+      const uEl=c.querySelector('.iv-updown');if(uEl)uEl.textContent='🔺'+up+' 🔻'+dn;
+      const tEl=c.querySelector('.inav-time');
+      if(tEl){{const n=new Date();tEl.textContent='라이브 '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}}
+      const ath=parent?parseFloat(parent.dataset.ath)||0:0;
+      if(ath){{
+        const dd=(est/Math.max(ath,est)-1)*100;
+        let m=1.0;DD_MULT.forEach(z=>{{if(dd<=z[0])m=z[1];}});
+        const dEl=c.querySelector('.iv-dd');
+        if(dEl)dEl.innerHTML='예상 낙폭 ATH '+dd.toFixed(1)+'% → <b>'+(m>1?m.toFixed(1)+'배 구간':'기본 매수 구간')+'</b>';
+      }}
+      c.querySelectorAll('.tm-tile[data-tk]').forEach(t=>{{
+        const d=q[t.dataset.tk];if(!d)return;
+        const rr=(d.p/d.pc-1)*100;
+        const a=Math.min(0.92,0.30+Math.abs(rr)/5);
+        t.style.background=rr>0.05?('rgba(240,68,82,'+a.toFixed(2)+')'):(rr<-0.05?('rgba(49,130,246,'+a.toFixed(2)+')'):'#6b7684');
+        const s=t.querySelector('span');
+        if(s){{const parts=s.innerHTML.split('<br>');if(parts.length>1)s.innerHTML=parts[0]+'<br>'+(rr>=0?'+':'')+rr.toFixed(1)+'%';}}
+      }});
+    }});
+  }}
+  setTimeout(refreshINAV,300000);
+}}
+refreshINAV();
 </script>
 </body></html>"""
 

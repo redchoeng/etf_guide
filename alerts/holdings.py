@@ -40,6 +40,7 @@ NAME2TICKER = [
     ("PALANTIR", "PLTR"), ("ROBINHOOD", "HOOD"), ("NEBIUS", "NBIS"),
     ("COINBASE", "COIN"), ("NETFLIX", "NFLX"), ("COSTCO", "COST"),
     ("CISCO", "CSCO"), ("ADOBE", "ADBE"), ("SHOPIFY", "SHOP"),
+    ("ANALOG DEVICES", "ADI"), ("TEXAS INSTRUMENTS", "TXN"),
 ]
 
 
@@ -59,7 +60,7 @@ def _is_stock(name: str) -> bool:
 
 
 def fetch_cu(code: str):
-    """(기준일, {종목명: 주식수}) 반환. 실패 시 (None, None)."""
+    """네이버(wisereport) CU. (기준일, {종목명: 주식수}) 반환. 실패 시 (None, None)."""
     r = requests.get(CU_URL.format(code=code), headers=HEADERS, timeout=15)
     r.raise_for_status()
     rows = ROW_RE.findall(r.text)
@@ -74,6 +75,49 @@ def fetch_cu(code: str):
         if q > 0:
             holdings[name.strip()] = q
     return trd_dt, holdings
+
+
+def fetch_cu_krx(code: str):
+    """KRX 원본 공시 (pykrx, KRX_ID/KRX_PW 필요).
+
+    KRX는 개장 전에 당일 PDF를 공시하므로 네이버보다 반나절 빠르다.
+    (기준일=오늘 KST, {종목명: 계약수}) 반환. 미설정/실패 시 (None, None).
+    """
+    import os
+    from datetime import datetime, timezone, timedelta
+
+    if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
+        return None, None
+    try:
+        from pykrx import stock
+        df = stock.get_etf_portfolio_deposit_file(code)
+        if df is None or df.empty or "구성종목명" not in df.columns:
+            return None, None
+        holdings = {}
+        for _, row in df.iterrows():
+            name = str(row["구성종목명"]).strip()
+            try:
+                q = float(row["계약수"])
+            except (TypeError, ValueError):
+                continue
+            if q > 0 and _is_stock(name):
+                holdings[name] = q
+        if not holdings:
+            return None, None
+        kst_today = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d")
+        return kst_today, holdings
+    except Exception as e:
+        logger.warning(f"KRX PDF 조회 실패 {code}: {e}")
+        return None, None
+
+
+def fetch_cu_best(code: str):
+    """(기준일, {종목명: 수량}, 소스) — KRX 우선, 네이버 폴백."""
+    trd_dt, holdings = fetch_cu_krx(code)
+    if holdings:
+        return trd_dt, holdings, "krx"
+    trd_dt, holdings = fetch_cu(code)
+    return trd_dt, holdings, "naver"
 
 
 def _load_snapshot() -> dict:
@@ -213,18 +257,22 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
         code = ticker.split(".")[0]
         display = preset.get("display", ticker)
         try:
-            trd_dt, holdings = fetch_cu(code)
+            trd_dt, holdings, src = fetch_cu_best(code)
         except Exception as e:
             logger.warning(f"  {display} 구성종목 조회 실패: {e}")
             continue
         if not holdings:
             logger.warning(f"  {display} 구성종목 데이터 없음")
             continue
-        logger.info(f"  {display} 구성 {len(holdings)}종목 (기준일 {trd_dt})")
+        logger.info(f"  {display} 구성 {len(holdings)}종목 (기준일 {trd_dt}, 소스 {src})")
 
         prev = snap.get(code, {})
         old = prev.get("holdings")
         last_diff = prev.get("last_diff")
+        # 소스가 바뀌면 종목명 표기가 달라 가짜 diff가 나므로 재베이스라인
+        if old and prev.get("src") and prev.get("src") != src:
+            logger.info(f"  {display} 소스 전환({prev.get('src')}→{src}) — 재베이스라인")
+            old = None
         # 기준일이 바뀌었을 때만 비교 (당일 재실행 스킵)
         if old and prev.get("date") != trd_dt:
             added, removed, changed = diff_holdings(old, holdings)
@@ -247,7 +295,8 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
                     logger.info(f"  🔁 {display} 구성 변경 알림 "
                                 f"(편입 {len(added)} / 제외 {len(removed)} / 변동 {len(changed)})")
 
-        snap[code] = {"date": trd_dt, "holdings": holdings, "last_diff": last_diff}
+        snap[code] = {"date": trd_dt, "holdings": holdings,
+                      "last_diff": last_diff, "src": src}
         entries.append({"display": display, "trd_dt": trd_dt,
                         "holdings": holdings, "last_diff": last_diff})
 

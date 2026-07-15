@@ -77,8 +77,15 @@ def _tm_color(chg):
 
 
 def _build_inav_block(iv, cur, now) -> str:
-    """iNAV 추정 카드 + 구성종목 트리맵 (JS가 장외 시간에 라이브 재계산)."""
+    """iNAV 추정 카드 + 구성종목 트리맵 (JS가 장외 시간에 라이브 재계산).
+
+    공백 구간(한국장 마감 15:30 ~ 미국장 개장 22:30 KST)에는 미국 '전일 등락'이
+    이미 한국장에 반영된 값이라 이중 계산이 됨 → 숫자 대신 대기 표시.
+    """
     import json as _json
+
+    minutes = now.hour * 60 + now.minute
+    is_gap = now.weekday() < 5 and 930 <= minutes < 1350  # 15:30~22:30 KST
 
     chg = (iv["est"] / iv["kr_close"] - 1) * 100
     cls = "ip-up" if chg >= 0 else "ip-dn"
@@ -106,13 +113,25 @@ def _build_inav_block(iv, cur, now) -> str:
                   f'width:{tw:.2f}%;height:{th:.2f}%;background:{_tm_color(c)}"'
                   f' title="{tk} {wpct:.1f}%">{label}</div>')
 
+    if is_gap:
+        main = '<span class="iv-est">—</span> <span class="iv-chg"></span>'
+        sub = '🕐 미국장 개장 전 — 22:30(KST)부터 라이브 반영'
+        basket_txt = fx_txt = "—"
+        time_label = "전일 미국장 기준 트리맵"
+    else:
+        main = f'<span class="iv-est">{fmt_price(iv["est"], cur)}</span> <span class="iv-chg {cls}">{chg:+.2f}%</span>'
+        sub = f"예상 낙폭 ATH {iv['dd_est']:.1f}% → <b>{mult_txt}</b>"
+        basket_txt = f"{iv['r_basket']:+.2f}%"
+        fx_txt = f"{iv['r_fx']:+.2f}%"
+        time_label = f"{now.strftime('%m/%d %H:%M')} 기준"
+
     return f"""<div class="inav-card" data-holdings='{holdings_json}' data-krclose="{iv['kr_close']:.2f}">
-<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">{now.strftime('%m/%d %H:%M')} 기준</span></div>
-<div class="inav-main"><span class="iv-est">{fmt_price(iv['est'], cur)}</span> <span class="iv-chg {cls}">{chg:+.2f}%</span></div>
-<div class="inav-sub iv-dd">예상 낙폭 ATH {iv['dd_est']:.1f}% → <b>{mult_txt}</b></div>
+<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">{time_label}</span></div>
+<div class="inav-main">{main}</div>
+<div class="inav-sub iv-dd">{sub}</div>
 <div class="inav-break">
-<span>포트폴리오 <b class="iv-basket">{iv['r_basket']:+.2f}%</b></span>
-<span>환율 <b class="iv-fx">{iv['r_fx']:+.2f}%</b></span>
+<span>포트폴리오 <b class="iv-basket">{basket_txt}</b></span>
+<span>환율 <b class="iv-fx">{fx_txt}</b></span>
 <span class="iv-updown">🔺{iv['up_cnt']} 🔻{iv['down_cnt']}</span>
 <span>반영률 {iv['coverage']:.0f}%</span>
 </div>
@@ -955,6 +974,14 @@ function krMarketOpen(){{
   const t=k.getHours()*60+k.getMinutes();
   return t>=540&&t<=930;
 }}
+function usGapPeriod(){{
+  // 한국장 마감(15:30) ~ 미국장 개장(22:30) KST — 새 정보 없음, 이중 계산 방지
+  const k=new Date(new Date().toLocaleString('en-US',{{timeZone:'Asia/Seoul'}}));
+  const d=k.getDay();
+  if(d===0||d===6)return false;
+  const t=k.getHours()*60+k.getMinutes();
+  return t>=930&&t<1350;
+}}
 async function sparkFetch(symbols){{
   const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/spark?symbols='+symbols.join(',')+'&range=1d&interval=30m&includePrePost=true');
   for(let i=0;i<PROXY.length;i++){{
@@ -978,6 +1005,18 @@ async function refreshINAV(){{
   if(!cards.length)return;
   if(krMarketOpen()){{cards.forEach(c=>c.style.display='none');setTimeout(refreshINAV,300000);return;}}
   cards.forEach(c=>c.style.display='');
+  if(usGapPeriod()){{
+    cards.forEach(c=>{{
+      const eEl=c.querySelector('.iv-est');if(eEl)eEl.textContent='—';
+      const cEl=c.querySelector('.iv-chg');if(cEl){{cEl.textContent='';cEl.className='iv-chg';}}
+      const dEl=c.querySelector('.iv-dd');if(dEl)dEl.textContent='🕐 미국장 개장 전 — 22:30(KST)부터 라이브 반영';
+      const bEl=c.querySelector('.iv-basket');if(bEl)bEl.textContent='—';
+      const fEl=c.querySelector('.iv-fx');if(fEl)fEl.textContent='—';
+      const tEl=c.querySelector('.inav-time');if(tEl)tEl.textContent='전일 미국장 기준 트리맵';
+    }});
+    setTimeout(refreshINAV,300000);
+    return;
+  }}
   const syms=new Set(['KRW=X']);
   cards.forEach(c=>{{try{{JSON.parse(c.dataset.holdings).forEach(h=>syms.add(h[0]));}}catch(e){{}}}});
   const q=await sparkFetch([...syms]);

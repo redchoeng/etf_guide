@@ -61,6 +61,19 @@ def check_and_notify(config: dict, mode: str = "digest"):
                 logger.warning(f"{ticker}: 데이터 부족, 스킵")
                 continue
 
+            # 한국 상장 종목은 네이버 실시간 시세로 당일 가격/등락/낙폭 반영
+            # (yfinance 일봉은 장 시작 직후 전일 종가라 아침 알림이 하루 늦음)
+            if ticker.endswith(".KS"):
+                from engine.realtime import get_quote
+                q = get_quote(ticker.split(".")[0])
+                if q:
+                    m["price"] = q["price"]
+                    m["change_pct"] = q["change_pct"]
+                    if q["price"] > m["ath"]:
+                        m["ath"] = q["price"]
+                    m["drawdown_pct"] = (m["price"] / m["ath"] - 1) * 100
+                    logger.info(f"  {ticker}: 실시간 {q['price']:,.0f} ({q['change_pct']:+.1f}%) @{q['traded_at'][11:16] if q['traded_at'] else '?'}")
+
             signals = signal_gen.generate_signals(df)
             strength = signals.get("signal_strength", 0)
             rsi = signals.get("rsi_14", 50)

@@ -13,6 +13,12 @@ on:
     paths:
       - '.trigger'    # 클라우드 routine이 이 파일을 갱신·push하면 실행 (API 폴백 경로)
 
+# 같은 시각에 여러 트리거(cron-job.org + 로컬 스케줄러)가 겹쳐도
+# 순차 실행 — 뒤 실행은 앞 실행이 push한 state.json을 보고 중복 발송 스킵
+concurrency:
+  group: etf-monitor
+  cancel-in-progress: false
+
 jobs:
   monitor-and-report:
     runs-on: ubuntu-latest

@@ -52,6 +52,25 @@ def _ticker_of(name: str):
     return None
 
 
+# 매매 의도 해석용 테마 분류
+THEMES = [
+    ("반도체·HW", {"NVDA", "AMD", "AVGO", "ARM", "TSM", "MU", "SNDK", "WDC", "STX",
+                   "INTC", "LRCX", "AMAT", "KLAC", "TER", "SIMO", "CRDO", "MRVL",
+                   "ALAB", "AAOI", "LITE", "ASML", "DELL", "ADI", "TXN"}),
+    ("AI·소프트웨어", {"PLTR", "SNOW", "MSFT", "GOOGL", "META", "APP", "ADBE",
+                    "ORCL", "NFLX", "COIN", "HOOD", "SHOP", "NBIS", "CRWV"}),
+    ("전력·인프라", {"BE", "GEV", "VRT"}),
+    ("빅테크·소비", {"AAPL", "AMZN", "TSLA", "LLY", "COST", "PEP", "CSCO"}),
+]
+
+
+def _theme_of(tk: str) -> str:
+    for name, s in THEMES:
+        if tk in s:
+            return name
+    return "기타"
+
+
 def _is_stock(name: str) -> bool:
     """현금·선물·설정금 등 비주식 항목 제외."""
     up = name.upper()
@@ -165,25 +184,90 @@ def build_message(display: str, trd_dt: str, added, removed, changed) -> str:
 
 
 def _fetch_us_prices(tickers: list) -> dict:
-    """{티커: (현재가, 전일등락%)} — yfinance 배치 조회."""
+    """{티커: (현재가, 전일등락%, 1개월수익률%)} — yfinance 배치 조회."""
     import yfinance as yf
     out = {}
     if not tickers:
         return out
+
+    def _add(t, s):
+        s = s.dropna()
+        if len(s) >= 2:
+            last = float(s.iloc[-1])
+            day = (last / float(s.iloc[-2]) - 1) * 100
+            mom = (last / float(s.iloc[0]) - 1) * 100
+            out[t] = (last, day, mom)
+
     try:
-        px = yf.download(tickers, period="5d", auto_adjust=True, progress=False)["Close"]
+        px = yf.download(tickers, period="1mo", auto_adjust=True, progress=False)["Close"]
         if hasattr(px, "columns"):
             for t in px.columns:
-                s = px[t].dropna()
-                if len(s) >= 2:
-                    out[t] = (float(s.iloc[-1]), (float(s.iloc[-1]) / float(s.iloc[-2]) - 1) * 100)
+                _add(t, px[t])
         else:  # 단일 티커
-            s = px.dropna()
-            if len(s) >= 2:
-                out[tickers[0]] = (float(s.iloc[-1]), (float(s.iloc[-1]) / float(s.iloc[-2]) - 1) * 100)
+            _add(tickers[0], px)
     except Exception as e:
         logger.warning(f"미국 시세 조회 실패: {e}")
     return out
+
+
+def build_intent_lines(last_diff: dict, prices: dict) -> list:
+    """매매 의도 추정 (규칙 기반).
+
+    수량 변화 방향 x 해당 종목의 최근 1개월 주가 흐름으로 분류:
+      늘림+하락 = 저가 매수 / 늘림+상승 = 추세 확대
+      줄임+상승 = 차익 실현 / 줄임+하락 = 리스크 축소
+    """
+    if not last_diff:
+        return []
+    trades = []  # (설명, 거래대금 추정)
+    theme_net = {}
+
+    def _note(tk, delta_value, label):
+        theme = _theme_of(tk)
+        theme_net[theme] = theme_net.get(theme, 0) + delta_value
+        trades.append((f"{tk} {label}", abs(delta_value)))
+
+    for item in last_diff.get("added", []):
+        n, q = item[0], item[1]
+        tk = _ticker_of(n)
+        if tk and tk in prices:
+            _note(tk, q * prices[tk][0], "신규 진입")
+    for item in last_diff.get("removed", []):
+        n = item[0] if isinstance(item, (list, tuple)) else item
+        oq = item[1] if isinstance(item, (list, tuple)) and len(item) > 1 else 0
+        tk = _ticker_of(n)
+        if tk and tk in prices:
+            _note(tk, -oq * prices[tk][0], "전량 정리")
+    for n, o, q, pct in last_diff.get("changed", []):
+        tk = _ticker_of(n)
+        if not (tk and tk in prices):
+            continue
+        price, _day, mom = prices[tk]
+        dv = (q - o) * price
+        if dv > 0:
+            label = "저가 매수 추정" if mom < -3 else "비중 확대"
+        else:
+            label = "차익 실현 추정" if mom > 3 else "비중 축소"
+        _note(tk, dv, label)
+
+    if not trades:
+        return []
+
+    # 테마 방향 요약 (유의미한 것만)
+    sig = [(t, v) for t, v in theme_net.items() if abs(v) > 0]
+    sig.sort(key=lambda x: -abs(x[1]))
+    inc = [t for t, v in sig if v > 0][:2]
+    dec = [t for t, v in sig if v < 0][:2]
+    parts = []
+    if inc:
+        parts.append(" / ".join(inc) + " 확대")
+    if dec:
+        parts.append(" / ".join(dec) + " 축소")
+    theme_line = ", ".join(parts) if parts else "테마 변화 미미"
+
+    trades.sort(key=lambda x: -x[1])
+    detail = " · ".join(d for d, _ in trades[:3])
+    return [f"💡 의도 읽기: {theme_line}", f"   {detail}"]
 
 
 def _diff_summary_lines(last_diff: dict) -> list:
@@ -201,7 +285,8 @@ def _diff_summary_lines(last_diff: dict) -> list:
     lines = [f"🔁 매매({label}):"]
     for n, q in added[:4]:
         lines.append(f"  🆕 편입 {n} ({q:,.0f}주)")
-    for n in removed[:4]:
+    for item in removed[:4]:
+        n = item[0] if isinstance(item, (list, tuple)) else item
         lines.append(f"  ❌ 제외 {n}")
     for n, o, q, pct in changed[:5]:
         arrow = "▲" if pct > 0 else "▼"
@@ -234,6 +319,7 @@ def build_daily_digest(entries: list, prices: dict) -> str:
             emoji = "🔺" if chg > 0.05 else ("🔻" if chg < -0.05 else "▪")
             lines.append(f"  {tk} {v / total * 100:.0f}% · {emoji}{chg:+.1f}%")
         lines.extend(_diff_summary_lines(e.get("last_diff")))
+        lines.extend(build_intent_lines(e.get("last_diff"), prices))
     return "\n".join(lines)
 
 
@@ -284,12 +370,24 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
             last_diff = {
                 "from": prev.get("date"), "to": trd_dt,
                 "added": [[n, q] for n, q in added],
-                "removed": removed,
+                "removed": [[n, old.get(n, 0)] for n in removed],
                 "changed": [[n, o, q, pct] for n, o, q, pct in changed],
                 "minor": minor,
             }
             if (added or removed or changed) and _should_alert(f"holdings_{code}", state):
                 msg = build_message(display, trd_dt, added, removed, changed)
+                # 매매 의도 해석 붙이기 (관련 종목 시세만 소량 조회)
+                try:
+                    involved = sorted({
+                        _ticker_of(n) for n in
+                        ([a[0] for a in added] + removed + [c[0] for c in changed])
+                        if _ticker_of(n)
+                    })
+                    intent = build_intent_lines(last_diff, _fetch_us_prices(involved))
+                    if intent:
+                        msg += "\n\n" + "\n".join(intent)
+                except Exception as e:
+                    logger.debug(f"의도 해석 스킵: {e}")
                 if notifier.send_message(msg):
                     sent += 1
                     logger.info(f"  🔁 {display} 구성 변경 알림 "

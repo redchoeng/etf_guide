@@ -85,7 +85,7 @@ def _build_inav_block(iv, cur, now) -> str:
     import json as _json
 
     minutes = now.hour * 60 + now.minute
-    is_gap = now.weekday() < 5 and 930 <= minutes < 1350  # 15:30~22:30 KST
+    is_gap = now.weekday() < 5 and 930 <= minutes < 1020  # 15:30~17:00 KST (프리마켓 전)
 
     chg = (iv["est"] / iv["kr_close"] - 1) * 100
     cls = "ip-up" if chg >= 0 else "ip-dn"
@@ -115,7 +115,7 @@ def _build_inav_block(iv, cur, now) -> str:
 
     if is_gap:
         main = '<span class="iv-est">—</span> <span class="iv-chg"></span>'
-        sub = '🕐 미국장 개장 전 — 22:30(KST)부터 라이브 반영'
+        sub = '🕐 미국 프리마켓 대기 — 17:00(KST)부터 라이브 반영'
         basket_txt = fx_txt = "—"
         time_label = "전일 미국장 기준 트리맵"
     else:
@@ -975,12 +975,17 @@ function krMarketOpen(){{
   return t>=540&&t<=930;
 }}
 function usGapPeriod(){{
-  // 한국장 마감(15:30) ~ 미국장 개장(22:30) KST — 새 정보 없음, 이중 계산 방지
+  // 한국장 마감(15:30) ~ 미국 프리마켓 시작(17:00) KST — 새 정보 없음, 이중 계산 방지
   const k=new Date(new Date().toLocaleString('en-US',{{timeZone:'Asia/Seoul'}}));
   const d=k.getDay();
   if(d===0||d===6)return false;
   const t=k.getHours()*60+k.getMinutes();
-  return t>=930&&t<1350;
+  return t>=930&&t<1020;
+}}
+function usPreMarket(){{
+  const k=new Date(new Date().toLocaleString('en-US',{{timeZone:'Asia/Seoul'}}));
+  const t=k.getHours()*60+k.getMinutes();
+  return k.getDay()>=1&&k.getDay()<=5&&t>=1020&&t<1350;
 }}
 async function sparkFetch(symbols){{
   const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/spark?symbols='+symbols.join(',')+'&range=1d&interval=30m&includePrePost=true');
@@ -992,8 +997,15 @@ async function sparkFetch(symbols){{
       const res=(j.spark&&j.spark.result)||j.result||[];
       const out={{}};
       res.forEach(it=>{{
-        const m=it.response&&it.response[0]&&it.response[0].meta;
-        if(m&&m.regularMarketPrice&&m.chartPreviousClose)out[it.symbol]={{p:m.regularMarketPrice,pc:m.chartPreviousClose}};
+        const resp=it.response&&it.response[0];
+        if(!resp)return;
+        const m=resp.meta||{{}};
+        let last=m.regularMarketPrice;
+        const qd=resp.indicators&&resp.indicators.quote&&resp.indicators.quote[0];
+        if(qd&&qd.close){{
+          for(let k=qd.close.length-1;k>=0;k--){{if(qd.close[k]!=null){{last=qd.close[k];break;}}}}
+        }}
+        if(last&&m.chartPreviousClose)out[it.symbol]={{p:last,pc:m.chartPreviousClose}};
       }});
       if(Object.keys(out).length)return out;
     }}catch(e){{continue;}}
@@ -1009,7 +1021,7 @@ async function refreshINAV(){{
     cards.forEach(c=>{{
       const eEl=c.querySelector('.iv-est');if(eEl)eEl.textContent='—';
       const cEl=c.querySelector('.iv-chg');if(cEl){{cEl.textContent='';cEl.className='iv-chg';}}
-      const dEl=c.querySelector('.iv-dd');if(dEl)dEl.textContent='🕐 미국장 개장 전 — 22:30(KST)부터 라이브 반영';
+      const dEl=c.querySelector('.iv-dd');if(dEl)dEl.textContent='🕐 미국 프리마켓 대기 — 17:00(KST)부터 라이브 반영';
       const bEl=c.querySelector('.iv-basket');if(bEl)bEl.textContent='—';
       const fEl=c.querySelector('.iv-fx');if(fEl)fEl.textContent='—';
       const tEl=c.querySelector('.inav-time');if(tEl)tEl.textContent='전일 미국장 기준 트리맵';
@@ -1045,7 +1057,11 @@ async function refreshINAV(){{
       const fEl=c.querySelector('.iv-fx');if(fEl)fEl.textContent=(fx>=0?'+':'')+(fx*100).toFixed(2)+'%';
       const uEl=c.querySelector('.iv-updown');if(uEl)uEl.textContent='🔺'+up+' 🔻'+dn;
       const tEl=c.querySelector('.inav-time');
-      if(tEl){{const n=new Date();tEl.textContent='라이브 '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}}
+      if(tEl){{
+        const n=new Date();
+        const prefix=usPreMarket()?'프리마켓 라이브 ':'라이브 ';
+        tEl.textContent=prefix+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+      }}
       const ath=parent?parseFloat(parent.dataset.ath)||0:0;
       if(ath){{
         const dd=(est/Math.max(ath,est)-1)*100;

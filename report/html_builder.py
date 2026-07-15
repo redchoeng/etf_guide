@@ -988,26 +988,51 @@ function usPreMarket(){{
   return k.getDay()>=1&&k.getDay()<=5&&t>=1020&&t<1350;
 }}
 async function sparkFetch(symbols){{
-  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/spark?symbols='+symbols.join(',')+'&range=1d&interval=30m&includePrePost=true');
+  // 응답 형식: {{"NVDA":{{close:[...],previousClose:..}}, ...}} (심볼이 최상위 키)
+  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/spark?symbols='+symbols.join(',')+'&range=1d&interval=30m');
   for(let i=0;i<PROXY.length;i++){{
     try{{
       const r=await fetch(PROXY[(proxyIdx+i)%PROXY.length]+url,{{signal:AbortSignal.timeout(12000)}});
       if(!r.ok)continue;
       const j=await r.json();
-      const res=(j.spark&&j.spark.result)||j.result||[];
       const out={{}};
-      res.forEach(it=>{{
-        const resp=it.response&&it.response[0];
-        if(!resp)return;
-        const m=resp.meta||{{}};
-        let last=m.regularMarketPrice;
-        const qd=resp.indicators&&resp.indicators.quote&&resp.indicators.quote[0];
-        if(qd&&qd.close){{
-          for(let k=qd.close.length-1;k>=0;k--){{if(qd.close[k]!=null){{last=qd.close[k];break;}}}}
-        }}
-        if(last&&m.chartPreviousClose)out[it.symbol]={{p:last,pc:m.chartPreviousClose}};
+      Object.keys(j).forEach(sym=>{{
+        const it=j[sym];
+        if(!it||!it.close)return;
+        let last=null;
+        for(let k=it.close.length-1;k>=0;k--){{if(it.close[k]!=null){{last=it.close[k];break;}}}}
+        const pc=it.previousClose||it.chartPreviousClose;
+        if(last&&pc)out[sym]={{p:last,pc:pc}};
       }});
       if(Object.keys(out).length)return out;
+    }}catch(e){{continue;}}
+  }}
+  return null;
+}}
+async function chartFetchPre(sym){{
+  // 프리마켓 체결가 포함 개별 조회 — 기준가는 직전 정규장 종가(regularMarketPrice)
+  const url=encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+sym+'?range=1d&interval=5m&includePrePost=true');
+  for(let i=0;i<PROXY.length;i++){{
+    try{{
+      const r=await fetch(PROXY[(proxyIdx+i)%PROXY.length]+url,{{signal:AbortSignal.timeout(12000)}});
+      if(!r.ok)continue;
+      const j=await r.json();
+      const res=j.chart&&j.chart.result&&j.chart.result[0];
+      if(!res)continue;
+      const m=res.meta||{{}};
+      let last=null;
+      const qd=res.indicators&&res.indicators.quote&&res.indicators.quote[0];
+      if(qd&&qd.close){{
+        for(let k=qd.close.length-1;k>=0;k--){{if(qd.close[k]!=null){{last=qd.close[k];break;}}}}
+      }}
+      const reg=m.currentTradingPeriod&&m.currentTradingPeriod.regular;
+      const nowSec=Date.now()/1000;
+      if(reg&&nowSec<reg.start){{
+        // 프리마켓: 직전 정규장 종가가 기준 (한국장이 이미 반영한 가격)
+        if(m.regularMarketPrice)return{{p:last||m.regularMarketPrice,pc:m.regularMarketPrice}};
+      }}else if(m.chartPreviousClose){{
+        return{{p:last||m.regularMarketPrice,pc:m.chartPreviousClose}};
+      }}
     }}catch(e){{continue;}}
   }}
   return null;
@@ -1032,6 +1057,20 @@ async function refreshINAV(){{
   const syms=new Set(['KRW=X']);
   cards.forEach(c=>{{try{{JSON.parse(c.dataset.holdings).forEach(h=>syms.add(h[0]));}}catch(e){{}}}});
   const q=await sparkFetch([...syms]);
+  if(q&&usPreMarket()){{
+    // 프리마켓: spark의 '전일 등락'은 한국장이 이미 반영한 값 → 일단 전부 0으로 리셋
+    Object.keys(q).forEach(s=>{{q[s].pc=q[s].p;}});
+    // 상위 15종목(평가액 기준)만 개별 chart로 프리마켓 체결가 반영
+    const val={{}};
+    cards.forEach(c=>{{
+      try{{JSON.parse(c.dataset.holdings).forEach(h=>{{
+        if(q[h[0]])val[h[0]]=(val[h[0]]||0)+h[1]*q[h[0]].p;
+      }});}}catch(e){{}}
+    }});
+    const top=Object.keys(val).sort((a,b)=>val[b]-val[a]).slice(0,15);
+    const results=await Promise.all(top.map(s=>chartFetchPre(s)));
+    top.forEach((s,i)=>{{if(results[i])q[s]=results[i];}});
+  }}
   if(q){{
     const fx=q['KRW=X']?(q['KRW=X'].p/q['KRW=X'].pc-1):0;
     cards.forEach(c=>{{
@@ -1059,7 +1098,7 @@ async function refreshINAV(){{
       const tEl=c.querySelector('.inav-time');
       if(tEl){{
         const n=new Date();
-        const prefix=usPreMarket()?'프리마켓 라이브 ':'라이브 ';
+        const prefix=usPreMarket()?'프리마켓 라이브(상위15) ':'라이브 ';
         tEl.textContent=prefix+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
       }}
       const ath=parent?parseFloat(parent.dataset.ath)||0:0;

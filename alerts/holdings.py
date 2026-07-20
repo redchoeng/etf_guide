@@ -290,7 +290,20 @@ def _diff_summary_lines(last_diff: dict) -> list:
     removed = last_diff.get("removed", [])
     changed = last_diff.get("changed", [])
     minor = last_diff.get("minor", 0)
+    small = last_diff.get("small") or []
+
+    def _small_line():
+        parts = []
+        for item in small[:6]:
+            n, _o, _q, adj = item
+            tk = _ticker_of(n) or n[:10]
+            parts.append(f"{tk} {adj:+.1f}%")
+        more = f" 외{len(small) - 6}" if len(small) > 6 else ""
+        return f"  〰 소폭: {' · '.join(parts)}{more}"
+
     if not (added or removed or changed):
+        if small:
+            return [f"🔁 매매({label}): 큰 변동 없음", _small_line()]
         note = f" (미세조정 {minor}건)" if minor else ""
         return [f"🔁 매매({label}): 변동 없음{note}"]
     lines = [f"🔁 매매({label}):"]
@@ -305,6 +318,8 @@ def _diff_summary_lines(last_diff: dict) -> list:
     rest = max(0, len(added) - 4) + max(0, len(removed) - 4) + max(0, len(changed) - 5)
     if rest:
         lines.append(f"  …외 {rest}건")
+    if small:
+        lines.append(_small_line())
     return lines
 
 
@@ -376,20 +391,23 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
         if old:
             added, removed, changed, base = diff_holdings(old, holdings)
             has_real = bool(added or removed or changed)
-            minor = sum(
-                1 for n, q in holdings.items()
-                if n in old and old[n] > 0
-                and 0.5 <= abs((q / old[n]) / base * 100 - 100) < QTY_CHANGE_PCT
-            )
+            # 소폭 매매 (0.5% ~ 기준치): 알림은 안 울리지만 데일리에 표시
+            small = sorted(
+                ((n, old[n], q, (q / old[n]) / base * 100 - 100)
+                 for n, q in holdings.items()
+                 if n in old and old[n] > 0
+                 and 0.5 <= abs((q / old[n]) / base * 100 - 100) < QTY_CHANGE_PCT),
+                key=lambda x: -abs(x[3]))
             # 실질 변동이 있거나 기준일이 넘어갔을 때만 last_diff 갱신
             # (빈 diff로 전날의 매매 기록을 덮어쓰지 않도록)
-            if has_real or prev.get("date") != trd_dt:
+            if has_real or small or prev.get("date") != trd_dt:
                 last_diff = {
                     "from": prev.get("date"), "to": trd_dt,
                     "added": [[n, q] for n, q in added],
                     "removed": [[n, old.get(n, 0)] for n in removed],
                     "changed": [[n, o, q, pct] for n, o, q, pct in changed],
-                    "minor": minor,
+                    "small": [[n, o, q, adj] for n, o, q, adj in small[:10]],
+                    "minor": len(small),
                 }
             if has_real and _should_alert(f"holdings_{code}", state):
                 msg = build_message(display, trd_dt, added, removed, changed)

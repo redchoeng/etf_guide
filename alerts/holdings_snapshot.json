@@ -1,6 +1,6 @@
 {
  "426030": {
-  "date": "2026-07-17",
+  "date": "2026-07-20",
   "holdings": {
    "ADVANCED MICRO DEVICES": 74.0,
    "ALPHABET INC-CL A": 40.0,
@@ -48,8 +48,8 @@
    "WESTERN DIGITAL CORP": 40.0
   },
   "last_diff": {
-   "from": "2026-07-16",
-   "to": "2026-07-17",
+   "from": "2026-07-17",
+   "to": "2026-07-20",
    "added": [],
    "removed": [],
    "changed": [],
@@ -58,7 +58,7 @@
   "src": "krx"
  },
  "0015B0": {
-  "date": "2026-07-17",
+  "date": "2026-07-20",
   "holdings": {
    "ADVANCED MICRO DEVICES": 96.74,
    "ALPHABET INC-CL A": 65.02,
@@ -117,8 +117,8 @@
    "YANDEX NV-A": 26.6
   },
   "last_diff": {
-   "from": "2026-07-16",
-   "to": "2026-07-17",
+   "from": "2026-07-17",
+   "to": "2026-07-20",
    "added": [],
    "removed": [],
    "changed": [],

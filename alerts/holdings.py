@@ -19,7 +19,7 @@ CU_URL = "https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd={code}"
 HEADERS = {"User-Agent": "Mozilla/5.0", "Referer": "https://finance.naver.com/"}
 ROW_RE = re.compile(r'\{"TRD_DT":"([^"]+)","AGMT_STK_CNT":([\d.]+),"STK_NM_KOR":"([^"]+)"')
 
-QTY_CHANGE_PCT = 5.0   # 이 % 이상 수량 변동만 알림 (CU 미세조정 노이즈 제거)
+QTY_CHANGE_PCT = 3.0   # 정규화(공통 스케일 제거) 후 이 % 이상 실질 변동만 알림
 MAX_LINES = 14         # 텔레그램 메시지 줄 수 제한
 DIGEST_TOP_N = 5       # 데일리 다이제스트에 보여줄 상위 종목 수
 
@@ -154,18 +154,29 @@ def _save_snapshot(snap: dict):
 
 
 def diff_holdings(old: dict, new: dict):
-    """신규 편입 / 전량 제외 / 수량 변동(±QTY_CHANGE_PCT 이상)."""
+    """신규 편입 / 전량 제외 / 실질 수량 변동.
+
+    설정단위(CU) 재계산으로 전 종목 수량이 같은 비율로 흔들리는 날이 있어서,
+    공통 스케일(비율 중앙값)을 제거한 '실질 변동'으로 판정한다.
+    반환: (added, removed, changed, base) — changed의 pct는 정규화된 실질 %.
+    """
+    import statistics
+
     added = [(n, q) for n, q in new.items() if n not in old]
     removed = [n for n in old if n not in new]
+    ratios = [new[n] / old[n] for n in new if n in old and old[n] > 0]
+    base = statistics.median(ratios) if ratios else 1.0
+    if base <= 0:
+        base = 1.0
     changed = []
     for n, q in new.items():
         o = old.get(n)
         if o and o > 0:
-            pct = (q - o) / o * 100
-            if abs(pct) >= QTY_CHANGE_PCT:
-                changed.append((n, o, q, pct))
+            adj = (q / o) / base * 100 - 100
+            if abs(adj) >= QTY_CHANGE_PCT:
+                changed.append((n, o, q, adj))
     changed.sort(key=lambda x: -abs(x[3]))
-    return added, removed, changed
+    return added, removed, changed, base
 
 
 def build_message(display: str, trd_dt: str, added, removed, changed) -> str:
@@ -359,22 +370,28 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
         if old and prev.get("src") and prev.get("src") != src:
             logger.info(f"  {display} 소스 전환({prev.get('src')}→{src}) — 재베이스라인")
             old = None
-        # 기준일이 바뀌었을 때만 비교 (당일 재실행 스킵)
-        if old and prev.get("date") != trd_dt:
-            added, removed, changed = diff_holdings(old, holdings)
+        # 내용 기반 비교 — 매 실행마다 diff.
+        # (KRX 데이터가 같은 날 늦게 갱신되는 경우가 있어 날짜 라벨 비교는 매매를
+        #  조용히 흡수해버림. 내용이 같으면 diff가 비어서 어차피 무해함.)
+        if old:
+            added, removed, changed, base = diff_holdings(old, holdings)
+            has_real = bool(added or removed or changed)
             minor = sum(
                 1 for n, q in holdings.items()
                 if n in old and old[n] > 0
-                and 0 < abs((q - old[n]) / old[n] * 100) < QTY_CHANGE_PCT
+                and 0.5 <= abs((q / old[n]) / base * 100 - 100) < QTY_CHANGE_PCT
             )
-            last_diff = {
-                "from": prev.get("date"), "to": trd_dt,
-                "added": [[n, q] for n, q in added],
-                "removed": [[n, old.get(n, 0)] for n in removed],
-                "changed": [[n, o, q, pct] for n, o, q, pct in changed],
-                "minor": minor,
-            }
-            if (added or removed or changed) and _should_alert(f"holdings_{code}", state):
+            # 실질 변동이 있거나 기준일이 넘어갔을 때만 last_diff 갱신
+            # (빈 diff로 전날의 매매 기록을 덮어쓰지 않도록)
+            if has_real or prev.get("date") != trd_dt:
+                last_diff = {
+                    "from": prev.get("date"), "to": trd_dt,
+                    "added": [[n, q] for n, q in added],
+                    "removed": [[n, old.get(n, 0)] for n in removed],
+                    "changed": [[n, o, q, pct] for n, o, q, pct in changed],
+                    "minor": minor,
+                }
+            if has_real and _should_alert(f"holdings_{code}", state):
                 msg = build_message(display, trd_dt, added, removed, changed)
                 # 매매 의도 해석 붙이기 (관련 종목 시세만 소량 조회)
                 try:

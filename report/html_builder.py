@@ -93,23 +93,18 @@ def _build_inav_block(iv, cur, now) -> str:
     holdings_json = _json.dumps(
         [[tk, round(q, 2)] for tk, q in iv.get("js_holdings", [])])
 
-    # 트리맵: 상위 15 + 기타
+    # 트리맵: 매핑된 전 종목 개별 타일
     items = iv.get("items", [])
-    top = items[:15]
-    rest_w = sum(w for _, w, _ in items[15:])
-    tm_vals = [(w, (tk, w, c)) for tk, w, c in top]
-    if rest_w > 0.5:
-        tm_vals.append((rest_w, ("기타", rest_w, None)))
+    tm_vals = [(w, (tk, w, c)) for tk, w, c in items if w > 0.05]
     tiles = ""
     for tx, ty, tw, th, (tk, wpct, c) in _squarify(tm_vals, 0, 0, 100, 100):
         area = tw * th / 100  # % 면적
         label = ""
-        if area >= 3:
+        if area >= 1.3:
             chg_txt = f"<br>{c:+.1f}%" if c is not None else ""
-            fs = 11 if area >= 8 else 9
+            fs = 11 if area >= 8 else (9 if area >= 4 else 8)
             label = f'<span style="font-size:{fs}px">{tk}{chg_txt}</span>'
-        tk_attr = f' data-tk="{tk}"' if c is not None else ""
-        tiles += (f'<div class="tm-tile"{tk_attr} style="left:{tx:.2f}%;top:{ty:.2f}%;'
+        tiles += (f'<div class="tm-tile" data-tk="{tk}" style="left:{tx:.2f}%;top:{ty:.2f}%;'
                   f'width:{tw:.2f}%;height:{th:.2f}%;background:{_tm_color(c)}"'
                   f' title="{tk} {wpct:.1f}%">{label}</div>')
 
@@ -367,7 +362,7 @@ body{{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;bac
 .inav-sub b{{color:#ffd166}}
 .inav-break{{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:#8f9bbd;margin-bottom:10px}}
 .inav-break b{{color:#e8ecf4}}
-.treemap{{position:relative;width:100%;height:220px;border-radius:10px;overflow:hidden;background:#131829}}
+.treemap{{position:relative;width:100%;height:280px;border-radius:10px;overflow:hidden;background:#131829}}
 .tm-tile{{position:absolute;box-sizing:border-box;border:1px solid #1a2036;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600;line-height:1.25;overflow:hidden}}
 .inav-note{{font-size:10px;color:#667191;margin-top:8px}}
 .weekly-buy-bar{{border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:12px;background:#e8f3ff;color:#1565C0;font-weight:600}}
@@ -1060,16 +1055,13 @@ async function refreshINAV(){{
   if(q&&usPreMarket()){{
     // 프리마켓: spark의 '전일 등락'은 한국장이 이미 반영한 값 → 일단 전부 0으로 리셋
     Object.keys(q).forEach(s=>{{q[s].pc=q[s].p;}});
-    // 상위 15종목(평가액 기준)만 개별 chart로 프리마켓 체결가 반영
-    const val={{}};
-    cards.forEach(c=>{{
-      try{{JSON.parse(c.dataset.holdings).forEach(h=>{{
-        if(q[h[0]])val[h[0]]=(val[h[0]]||0)+h[1]*q[h[0]].p;
-      }});}}catch(e){{}}
-    }});
-    const top=Object.keys(val).sort((a,b)=>val[b]-val[a]).slice(0,15);
-    const results=await Promise.all(top.map(s=>chartFetchPre(s)));
-    top.forEach((s,i)=>{{if(results[i])q[s]=results[i];}});
+    // 전 종목 개별 chart로 프리마켓 체결가 반영 (6개씩 청크 — 프록시 부하 관리)
+    const all=[...syms].filter(s=>s!=='KRW=X');
+    for(let i=0;i<all.length;i+=6){{
+      const batch=all.slice(i,i+6);
+      const rs=await Promise.all(batch.map(s=>chartFetchPre(s)));
+      batch.forEach((s,k)=>{{if(rs[k])q[s]=rs[k];}});
+    }}
   }}
   if(q){{
     const fx=q['KRW=X']?(q['KRW=X'].p/q['KRW=X'].pc-1):0;
@@ -1098,7 +1090,7 @@ async function refreshINAV(){{
       const tEl=c.querySelector('.inav-time');
       if(tEl){{
         const n=new Date();
-        const prefix=usPreMarket()?'프리마켓 라이브(상위15) ':'라이브 ';
+        const prefix=usPreMarket()?'프리마켓 라이브 ':'라이브 ';
         tEl.textContent=prefix+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
       }}
       const ath=parent?parseFloat(parent.dataset.ath)||0:0;

@@ -1,63 +1,59 @@
 # -*- coding: utf-8 -*-
-"""7/20 놓친 대규모 매매 만회 발송 (1회성, 실행 후 삭제 예정)."""
-import json
-import subprocess
+"""7/20 놓친 대규모 매매 만회 발송 (1회성, 실행 후 삭제 예정).
+
+7/17 vs 7/20 스냅샷 비교 결과를 로컬에서 미리 계산해 하드코딩.
+(얕은 클론 환경이라 git show로 옛 커밋을 못 읽어 방식 변경)
+"""
 import sys
 
 sys.path.insert(0, ".")
-from alerts.holdings import diff_holdings, build_message, build_intent_lines, _ticker_of, _fetch_us_prices
+from alerts.holdings import build_intent_lines, _ticker_of, _fetch_us_prices
 from alerts.telegram import TelegramNotifier, report_kb
 
-
-def load(ref):
-    out = subprocess.run(["git", "show", f"{ref}:alerts/holdings_snapshot.json"],
-                         capture_output=True, text=True, encoding="utf-8").stdout
-    return json.loads(out)
+# (from daefcc9 7/17 -> HEAD 최신, diff_holdings 결과)
+TIMEFOLIO_CHANGED = [
+    ("META PLATFORMS INC-CLASS A", 12.0, 22.0, 83.3),
+    ("COINBASE GLOBAL INC -CLASS A", 56.0, 97.0, 73.2),
+    ("MICROSOFT CORP", 36.0, 53.0, 47.2),
+    ("APPLE INC", 43.0, 63.0, 46.5),
+    ("ALPHABET INC-CL A", 40.0, 58.0, 45.0),
+    ("BROADCOM INC", 38.0, 55.0, 44.7),
+    ("MARVELL TECHNOLOGY INC", 87.0, 53.0, -39.1),
+    ("CORNING INC", 54.0, 34.0, -37.0),
+    ("NVIDIA CORP", 177.0, 240.0, 35.6),
+    ("WESTERN DIGITAL CORP", 40.0, 26.0, -35.0),
+    ("ROBINHOOD MARKETS INC - A", 176.0, 234.0, 33.0),
+    ("SEAGATE TECHNOLOGY HOLDINGS", 26.0, 18.0, -30.8),
+    ("APPLIED OPTOELECTRONICS INC", 127.0, 94.0, -26.0),
+    ("DELL TECHNOLOGIES -C", 66.0, 49.0, -25.8),
+    ("ADVANCED MICRO DEVICES", 74.0, 61.0, -17.6),
+]
 
 
 def run():
-    old_snap = load("daefcc9")  # 7/17 (마지막 신뢰 가능 시점)
-    new_snap = load("HEAD")     # 최신
-
     notifier = TelegramNotifier()
     if not notifier.is_configured:
         print("Telegram 미설정")
         return
 
-    for code, name in [("426030", "TIMEFOLIO"), ("0015B0", "KoACT")]:
-        o = old_snap[code]["holdings"]
-        n = new_snap[code]["holdings"]
-        added, removed, changed, base = diff_holdings(o, n)
-        if not (added or removed or changed):
-            print(f"{name}: 변동 없음, 스킵")
-            continue
+    header = ("⚠️ <b>[지연 감지] TIMEFOLIO 구성종목 변경</b> "
+              "<i>(7/17→7/20 사이, 코드 개선 전 놓친 매매)</i>\n")
+    body_lines = []
+    for x, ov, nv, pct in TIMEFOLIO_CHANGED:
+        arrow = "▲" if pct > 0 else "▼"
+        body_lines.append(f"{arrow} {x}: {ov:,.0f} → {nv:,.0f}주 ({pct:+.0f}%)")
+    msg = header + "\n".join(body_lines)
 
-        header = f"⚠️ <b>[지연 감지] {name} 구성종목 변경</b> <i>(7/17→7/20 사이, 코드 개선 전 놓친 매매)</i>\n"
-        body_lines = []
-        for x, q in added[:4]:
-            body_lines.append(f"🆕 편입: {x} ({q:,.0f}주)")
-        for x in removed[:4]:
-            body_lines.append(f"❌ 제외: {x}")
-        for x, ov, nv, pct in changed[:12]:
-            arrow = "▲" if pct > 0 else "▼"
-            body_lines.append(f"{arrow} {x}: {ov:,.0f} → {nv:,.0f}주 ({pct:+.0f}%)")
-        rest = max(0, len(changed) - 12)
-        if rest:
-            body_lines.append(f"…외 {rest}건")
-        msg = header + "\n".join(body_lines)
+    last_diff = {"from": "2026-07-17", "to": "2026-07-20", "added": [], "removed": [],
+                 "changed": [[c, ov, nv, p] for c, ov, nv, p in TIMEFOLIO_CHANGED], "minor": 0}
+    involved = sorted({_ticker_of(x[0]) for x in TIMEFOLIO_CHANGED if _ticker_of(x[0])})
+    prices = _fetch_us_prices(involved)
+    intent = build_intent_lines(last_diff, prices)
+    if intent:
+        msg += "\n\n" + "\n".join(intent)
 
-        last_diff = {"from": "2026-07-17", "to": "2026-07-20",
-                     "added": [[a, q] for a, q in added],
-                     "removed": [[r, o.get(r, 0)] for r in removed],
-                     "changed": [[c, ov, nv, p] for c, ov, nv, p in changed], "minor": 0}
-        involved = sorted({_ticker_of(x[0]) for x in changed if _ticker_of(x[0])})
-        prices = _fetch_us_prices(involved)
-        intent = build_intent_lines(last_diff, prices)
-        if intent:
-            msg += "\n\n" + "\n".join(intent)
-
-        ok = notifier.send_message(msg, reply_markup=report_kb())
-        print(f"{name} 발송: {ok}")
+    ok = notifier.send_message(msg, reply_markup=report_kb())
+    print(f"발송: {ok}")
 
 
 if __name__ == "__main__":

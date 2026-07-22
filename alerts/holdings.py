@@ -44,7 +44,14 @@ NAME2TICKER = [
 ]
 
 
+# 공식 소스(official_holdings)가 응답에 실어주는 이름→티커 매핑을 여기 채워둔다.
+# 하드코딩 테이블(NAME2TICKER)보다 항상 우선 — 운용사가 준 진짜 값이라서.
+_DYNAMIC_TICKER_MAP: dict = {}
+
+
 def _ticker_of(name: str):
+    if name in _DYNAMIC_TICKER_MAP:
+        return _DYNAMIC_TICKER_MAP[name]
     up = name.upper()
     for kw, tk in NAME2TICKER:
         if kw in up:
@@ -172,17 +179,23 @@ def fetch_cu_krx(code: str, max_attempts: int = 4):
 
 
 def fetch_cu_best(code: str, krx_attempts: int = 1):
-    """(기준일, {종목명: 수량}, 소스) — 네이버 메인, KRX는 되면 좋은 보조.
+    """(기준일, {종목명: 수량}, 소스) — 운용사 공식 사이트가 메인.
 
-    2025-12-27 KRX가 정보데이터시스템을 회원제로 전환하며 pykrx 같은
-    비공식 클라이언트를 트래픽 유발 사유로 차단하기 시작했다. 그 결과
-    KRX 요청이 거의 항상 타임아웃(=차단)나서, 여러 번 재시도해봐야
-    시간만 날린다. 1회만 찔러보고 바로 네이버로 넘어간다.
-    개장 전(08:30 장전 브리핑)엔 그나마 성공률이 있어 재시도를 늘려 쓴다.
+    순서: ① 운용사 공식(로그인 불필요, 전종목, 티커 포함, 가장 안정적)
+          ② KRX(2025-12-27부터 비공식 클라이언트 차단 중이라 거의 항상 실패)
+          ③ 네이버(최종 폴백)
     """
+    from alerts.official_holdings import fetch_official_full
+
+    trd_dt, holdings, name_to_ticker = fetch_official_full(code)
+    if holdings:
+        _DYNAMIC_TICKER_MAP.update(name_to_ticker)
+        return trd_dt, holdings, "official"
+
     trd_dt, holdings = fetch_cu_krx(code, max_attempts=krx_attempts)
     if holdings:
         return trd_dt, holdings, "krx"
+
     trd_dt, holdings = fetch_cu(code)
     return trd_dt, holdings, "naver"
 
@@ -371,27 +384,61 @@ def _diff_summary_lines(last_diff: dict) -> list:
     return lines
 
 
+def _official_top10(ticker: str):
+    """운용사 공식 사이트 top10 (로그인 불필요, 가장 정확).
+
+    [(종목명, 비중%, 등락% 또는 None)] 또는 실패 시 None.
+    매매 감지엔 안 쓴다 — top10까지만 커버해서 diff 판정용으로는 부족.
+    """
+    from alerts.official_top10 import fetch_timefolio_top10, fetch_samsung_top10
+
+    code = ticker.split(".")[0]
+    try:
+        if code == "426030":
+            return fetch_timefolio_top10("2")
+        if code == "0015B0":
+            _dt, rows = fetch_samsung_top10("2ETFQ1")
+            return [(n, w, None) for n, w in rows] if rows else None
+    except Exception as e:
+        logger.info(f"공식 top10 조회 실패 {ticker}: {e}")
+    return None
+
+
 def build_daily_digest(entries: list, prices: dict) -> str:
     """매일 아침 구성종목 데일리 브리핑.
 
-    entries: [{display, trd_dt, holdings, last_diff}]
+    entries: [{display, trd_dt, holdings, last_diff, ticker}]
+    상위 보유 표시는 운용사 공식 top10(정확) 우선, 실패 시 KRX/네이버
+    전종목 수량 x yfinance 가격 추정치로 폴백. 매매 감지(last_diff)는
+    항상 전종목 비교 결과를 그대로 쓴다 — 여기서 손대지 않는다.
     """
     date_label = entries[0]["trd_dt"] if entries else ""
     lines = [f"🧾 <b>구성종목 데일리</b> <i>({date_label} 기준)</i>"]
     for e in entries:
-        # 추정 비중: 주식수 x 달러가 (매핑되는 종목만)
-        vals = []
-        for name, qty in e["holdings"].items():
-            tk = _ticker_of(name)
-            if tk and tk in prices:
-                vals.append((tk, qty * prices[tk][0], prices[tk][1]))
-        total = sum(v for _, v, _ in vals) or 1
-        top = sorted(vals, key=lambda x: -x[1])[:DIGEST_TOP_N]
+        official = _official_top10(e.get("ticker", ""))
         lines.append("")
-        lines.append(f"📌 <b>{e['display']}</b> — 상위 보유 (추정비중 · 전일)")
-        for tk, v, chg in top:
-            emoji = "🔺" if chg > 0.05 else ("🔻" if chg < -0.05 else "▪")
-            lines.append(f"  {tk} {v / total * 100:.0f}% · {emoji}{chg:+.1f}%")
+        if official:
+            lines.append(f"📌 <b>{e['display']}</b> — 상위 보유 (공식 비중)")
+            for name, wgt, chg in official[:DIGEST_TOP_N]:
+                tk = _ticker_of(name) or name[:14]
+                if chg is None:
+                    lines.append(f"  {tk} {wgt:.1f}%")
+                else:
+                    emoji = "🔺" if chg > 0.05 else ("🔻" if chg < -0.05 else "▪")
+                    lines.append(f"  {tk} {wgt:.1f}% · {emoji}{chg:+.1f}%")
+        else:
+            # 폴백: 전종목 수량 x 가격 추정 (기존 방식)
+            vals = []
+            for name, qty in e["holdings"].items():
+                tk = _ticker_of(name)
+                if tk and tk in prices:
+                    vals.append((tk, qty * prices[tk][0], prices[tk][1]))
+            total = sum(v for _, v, _ in vals) or 1
+            top = sorted(vals, key=lambda x: -x[1])[:DIGEST_TOP_N]
+            lines.append(f"📌 <b>{e['display']}</b> — 상위 보유 (추정비중 · 전일)")
+            for tk, v, chg in top:
+                emoji = "🔺" if chg > 0.05 else ("🔻" if chg < -0.05 else "▪")
+                lines.append(f"  {tk} {v / total * 100:.0f}% · {emoji}{chg:+.1f}%")
         lines.extend(_diff_summary_lines(e.get("last_diff")))
         lines.extend(build_intent_lines(e.get("last_diff"), prices))
     return "\n".join(lines)
@@ -484,7 +531,7 @@ def check_holdings_changes(notifier, state: dict, presets: dict, krx_attempts: i
 
         snap[code] = {"date": trd_dt, "holdings": holdings,
                       "last_diff": last_diff, "src": src}
-        entries.append({"display": display, "trd_dt": trd_dt,
+        entries.append({"display": display, "trd_dt": trd_dt, "ticker": ticker,
                         "holdings": holdings, "last_diff": last_diff})
 
     # 데일리 브리핑 (하루 1번, 변동 없어도 발송)

@@ -19,5 +19,9 @@ python-dotenv>=1.0.0
 requests>=2.31.0
 schedule>=1.2.0
 
-# KRX 원본 공시 (ETF PDF, KRX_ID/KRX_PW 필요)
+# KRX 원본 공시 (ETF PDF, KRX_ID/KRX_PW 필요) - 2025-12-27 이후 KRX가
+# 비공식 클라이언트를 차단 중이라 최후 보조 수단으로만 사용
 pykrx>=1.0.51
+
+# 운용사 공식 사이트 구성종목 엑셀 파싱 (메인 소스)
+openpyxl>=3.1.0

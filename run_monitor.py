@@ -57,11 +57,8 @@ def main():
         return
 
     if args.premarket:
-        import yaml
-        from pathlib import Path
         from alerts.holdings import check_holdings_changes
         from alerts.state import _load_state, _save_state
-        from alerts.telegram import TelegramNotifier
         from alerts.inav import send_inav_alert
 
         notifier = TelegramNotifier()

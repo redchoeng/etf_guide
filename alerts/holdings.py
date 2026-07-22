@@ -124,7 +124,8 @@ def fetch_cu_krx(code: str):
     if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
         return None, None
 
-    for attempt in range(3):
+    MAX_ATTEMPTS = 5
+    for attempt in range(MAX_ATTEMPTS):
         try:
             from pykrx import stock
             df = stock.get_etf_portfolio_deposit_file(code)
@@ -144,9 +145,9 @@ def fetch_cu_krx(code: str):
             kst_today = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d")
             return kst_today, holdings
         except Exception as e:
-            if attempt < 2:
-                logger.info(f"KRX PDF 재시도 {code} ({attempt + 1}/3): {e}")
-                time.sleep(3)
+            if attempt < MAX_ATTEMPTS - 1:
+                logger.info(f"KRX PDF 재시도 {code} ({attempt + 1}/{MAX_ATTEMPTS}): {e}")
+                time.sleep(6)
             else:
                 logger.warning(f"KRX PDF 조회 실패 {code}: {e}")
     return None, None

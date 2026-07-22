@@ -70,7 +70,7 @@ def main():
             presets = yaml.safe_load(f).get("presets", {})
         state = _load_state()
         notifier._state = state
-        n = check_holdings_changes(notifier, state, presets)
+        n = check_holdings_changes(notifier, state, presets, krx_attempts=3)
         _save_state(state)
         logger.info(f"장전 구성종목 체크 완료: {n}건 알림")
 

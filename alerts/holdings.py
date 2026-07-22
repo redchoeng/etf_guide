@@ -107,16 +107,16 @@ def fetch_cu(code: str):
                 return None, None
 
 
-def fetch_cu_krx(code: str):
+def fetch_cu_krx(code: str, max_attempts: int = 4):
     """KRX 원본 공시 (pykrx 세션 재사용 + 직접 요청, KRX_ID/KRX_PW 필요).
 
     KRX는 개장 전에 당일 PDF를 공시하므로 네이버보다 반나절 빠르다.
     (기준일=오늘 KST, {종목명: 계약수}) 반환. 미설정/실패 시 (None, None).
 
-    pykrx의 get_etf_portfolio_deposit_file()은 내부 타임아웃이 15초로
-    고정돼 있는데, KRX 서버가 이 리포트(MDCSTAT05001)에 느리게 응답할 때가
-    있어 그 안에 못 받고 ReadTimeoutError가 난다. 로그인 세션(auth.py)만
-    재사용하고 실제 데이터 요청은 넉넉한 타임아웃으로 직접 보낸다.
+    실측 결과 KRX 서버가 이 리포트(MDCSTAT05001)에 장중(특히 오전 11시
+    이후)엔 45초를 줘도 응답을 아예 안 주는 경우가 잦다(ReadTimeout).
+    타임아웃 문제가 아니라 서버 쪽 가용성 문제로 보인다 — 개장 전에는
+    안정적으로 응답했다. max_attempts로 시간대별 재시도 강도를 조절한다.
     """
     import os
     import time
@@ -125,7 +125,7 @@ def fetch_cu_krx(code: str):
     if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
         return None, None
 
-    MAX_ATTEMPTS = 4
+    MAX_ATTEMPTS = max_attempts
     for attempt in range(MAX_ATTEMPTS):
         try:
             from pykrx.website.comm.auth import get_auth_session
@@ -171,9 +171,16 @@ def fetch_cu_krx(code: str):
     return None, None
 
 
-def fetch_cu_best(code: str):
-    """(기준일, {종목명: 수량}, 소스) — KRX 우선, 네이버 폴백."""
-    trd_dt, holdings = fetch_cu_krx(code)
+def fetch_cu_best(code: str, krx_attempts: int = 1):
+    """(기준일, {종목명: 수량}, 소스) — 네이버 메인, KRX는 되면 좋은 보조.
+
+    2025-12-27 KRX가 정보데이터시스템을 회원제로 전환하며 pykrx 같은
+    비공식 클라이언트를 트래픽 유발 사유로 차단하기 시작했다. 그 결과
+    KRX 요청이 거의 항상 타임아웃(=차단)나서, 여러 번 재시도해봐야
+    시간만 날린다. 1회만 찔러보고 바로 네이버로 넘어간다.
+    개장 전(08:30 장전 브리핑)엔 그나마 성공률이 있어 재시도를 늘려 쓴다.
+    """
+    trd_dt, holdings = fetch_cu_krx(code, max_attempts=krx_attempts)
     if holdings:
         return trd_dt, holdings, "krx"
     trd_dt, holdings = fetch_cu(code)
@@ -390,12 +397,15 @@ def build_daily_digest(entries: list, prices: dict) -> str:
     return "\n".join(lines)
 
 
-def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
+def check_holdings_changes(notifier, state: dict, presets: dict, krx_attempts: int = 1) -> int:
     """구성종목 수량 변동 체크 + 알림 + 데일리 브리핑. 발송 건수 반환.
 
     스냅샷은 holdings_snapshot.json에 저장되어 런 간 유지된다 (git 커밋).
     - 변동 알림: 기준일이 바뀌고 실제 매매(편입/제외/수량 5%+)가 있을 때 즉시
     - 데일리 브리핑: 매일 첫 실행 때 1건 (변동 없어도 발송)
+
+    krx_attempts: KRX가 차단 중이라 대부분 시간대엔 1회만 찔러보고 네이버로
+    넘어간다. 개장 전(08:30 장전 브리핑)만 성공률이 있어 호출부에서 높여 줌.
     """
     import time
     from datetime import datetime, timezone, timedelta
@@ -411,11 +421,9 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
         code = ticker.split(".")[0]
         display = preset.get("display", ticker)
         if i > 0:
-            # 연속 요청 시 KRX가 두 번째 종목부터 순간적으로 빈 응답을 주는
-            # 경향이 있어 (레이트리밋 추정) 종목 사이 텀을 둔다.
-            time.sleep(4)
+            time.sleep(2)
         try:
-            trd_dt, holdings, src = fetch_cu_best(code)
+            trd_dt, holdings, src = fetch_cu_best(code, krx_attempts=krx_attempts)
         except Exception as e:
             logger.warning(f"  {display} 구성종목 조회 실패: {e}")
             continue

@@ -2,12 +2,16 @@ name: ETF Monitor & Report
 
 on:
   schedule:
+    # 장전 브리핑 (KST 08:30 = UTC 23:30, 일~목) — 구성종목 매매내역 + 추정 iNAV
+    # 개장 전이라 KRX 트래픽이 적어 가장 안정적으로 당일 공시를 잡는 시간대
+    - cron: '30 23 * * 0-4'
+
     # 한국장 시간 30분 간격 (KST 09:05~15:35 = UTC 00:05~06:35) 월~금
     # 정각(:00/:30)은 GitHub 크론 혼잡으로 스킵이 잦아서 5분 오프셋
     # 장중 낙폭 구간 진입 시 바로 알림 — 같은 구간은 하루 1번만 (날짜 dedup)
     - cron: '5,35 0-6 * * 1-5'
 
-    # 미국장 마감 직후 (KST 05:10 = UTC 20:10) — 추정 iNAV 알림 + 리포트 예상가 갱신
+    # 미국장 마감 직후 (KST 05:10 = UTC 20:10) — 리포트 예상가 갱신 (알림 없음)
     - cron: '10 20 * * 1-5'
 
   workflow_dispatch:  # 수동 실행 가능
@@ -53,12 +57,17 @@ jobs:
           echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
 
       - name: Run price check & Telegram alerts
-        # UTC 19시 이후(미국장 마감 직후) 실행은 리포트 예상가 갱신만 — 알림 없음
+        # UTC 23시(KST 08:30, 장전) = 구성종목+iNAV 브리핑
+        # UTC 19~22시(미국장 마감 직후) = 리포트 예상가 갱신만, 알림 없음
+        # 그 외(한국장 시간) = 가격 체크 + 긴급/요약 알림
         env:
           KRX_ID: ${{ secrets.KRX_ID }}
           KRX_PW: ${{ secrets.KRX_PW }}
         run: |
-          if [ "$(date -u +%H)" -ge 19 ]; then
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" = "23" ]; then
+            python run_monitor.py --premarket
+          elif [ "$HOUR" -ge 19 ]; then
             echo "미국장 마감 — 리포트 갱신만 (알림 스킵)"
           else
             python run_monitor.py --once --digest

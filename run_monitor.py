@@ -47,10 +47,36 @@ def main():
     parser.add_argument("--force", action="store_true", help="(하위 호환용, 무시됨)")
     parser.add_argument("--digest", action="store_true", help="주간 매수 가이드 발송 (미지정 시 긴급 알림만)")
     parser.add_argument("--inav", action="store_true", help="추정 iNAV 알림만 발송 (미국장 마감 후)")
+    parser.add_argument("--premarket", action="store_true",
+                        help="장전 브리핑 (08:30) — 구성종목 매매내역 + 추정 iNAV 예상가")
     args = parser.parse_args()
 
     if args.inav:
         from alerts.inav import send_inav_alert
+        send_inav_alert(load_config())
+        return
+
+    if args.premarket:
+        import yaml
+        from pathlib import Path
+        from alerts.holdings import check_holdings_changes
+        from alerts.state import _load_state, _save_state
+        from alerts.telegram import TelegramNotifier
+        from alerts.inav import send_inav_alert
+
+        notifier = TelegramNotifier()
+        if not notifier.is_configured:
+            logger.error("Telegram 설정이 필요합니다.")
+            sys.exit(1)
+        preset_path = Path(__file__).parent / "config" / "etf_presets.yaml"
+        with open(preset_path, "r", encoding="utf-8") as f:
+            presets = yaml.safe_load(f).get("presets", {})
+        state = _load_state()
+        notifier._state = state
+        n = check_holdings_changes(notifier, state, presets)
+        _save_state(state)
+        logger.info(f"장전 구성종목 체크 완료: {n}건 알림")
+
         send_inav_alert(load_config())
         return
 

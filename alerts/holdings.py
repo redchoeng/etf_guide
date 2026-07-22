@@ -80,20 +80,31 @@ def _is_stock(name: str) -> bool:
 
 def fetch_cu(code: str):
     """네이버(wisereport) CU. (기준일, {종목명: 주식수}) 반환. 실패 시 (None, None)."""
-    r = requests.get(CU_URL.format(code=code), headers=HEADERS, timeout=15)
-    r.raise_for_status()
-    rows = ROW_RE.findall(r.text)
-    if not rows:
-        return None, None
-    trd_dt = rows[0][0]
-    holdings = {}
-    for dt, qty, name in rows:
-        if dt != trd_dt or not _is_stock(name):
-            continue
-        q = float(qty)
-        if q > 0:
-            holdings[name.strip()] = q
-    return trd_dt, holdings
+    import time
+
+    for attempt in range(2):
+        try:
+            r = requests.get(CU_URL.format(code=code), headers=HEADERS, timeout=15)
+            r.raise_for_status()
+            rows = ROW_RE.findall(r.text)
+            if not rows:
+                return None, None
+            trd_dt = rows[0][0]
+            holdings = {}
+            for dt, qty, name in rows:
+                if dt != trd_dt or not _is_stock(name):
+                    continue
+                q = float(qty)
+                if q > 0:
+                    holdings[name.strip()] = q
+            return trd_dt, holdings
+        except Exception as e:
+            if attempt == 0:
+                logger.info(f"네이버 CU 재시도 {code}: {e}")
+                time.sleep(2)
+            else:
+                logger.warning(f"네이버 CU 조회 실패 {code}: {e}")
+                return None, None
 
 
 def fetch_cu_krx(code: str):
@@ -101,33 +112,44 @@ def fetch_cu_krx(code: str):
 
     KRX는 개장 전에 당일 PDF를 공시하므로 네이버보다 반나절 빠르다.
     (기준일=오늘 KST, {종목명: 계약수}) 반환. 미설정/실패 시 (None, None).
+
+    pykrx는 날짜를 안 넘기면 무조건 '오늘'로 요청하는데, KRX가 당일 PDF를
+    아직 준비 못 한 순간엔 빈 응답(JSONDecodeError)을 준다. 같은 실행 안에서도
+    앞 종목은 성공하고 바로 다음 종목은 실패하는 게 이 때문이라 짧게 재시도한다.
     """
     import os
+    import time
     from datetime import datetime, timezone, timedelta
 
     if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
         return None, None
-    try:
-        from pykrx import stock
-        df = stock.get_etf_portfolio_deposit_file(code)
-        if df is None or df.empty or "구성종목명" not in df.columns:
-            return None, None
-        holdings = {}
-        for _, row in df.iterrows():
-            name = str(row["구성종목명"]).strip()
-            try:
-                q = float(row["계약수"])
-            except (TypeError, ValueError):
-                continue
-            if q > 0 and _is_stock(name):
-                holdings[name] = q
-        if not holdings:
-            return None, None
-        kst_today = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d")
-        return kst_today, holdings
-    except Exception as e:
-        logger.warning(f"KRX PDF 조회 실패 {code}: {e}")
-        return None, None
+
+    for attempt in range(3):
+        try:
+            from pykrx import stock
+            df = stock.get_etf_portfolio_deposit_file(code)
+            if df is None or df.empty or "구성종목명" not in df.columns:
+                raise ValueError("empty response")
+            holdings = {}
+            for _, row in df.iterrows():
+                name = str(row["구성종목명"]).strip()
+                try:
+                    q = float(row["계약수"])
+                except (TypeError, ValueError):
+                    continue
+                if q > 0 and _is_stock(name):
+                    holdings[name] = q
+            if not holdings:
+                raise ValueError("no holdings parsed")
+            kst_today = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d")
+            return kst_today, holdings
+        except Exception as e:
+            if attempt < 2:
+                logger.info(f"KRX PDF 재시도 {code} ({attempt + 1}/3): {e}")
+                time.sleep(3)
+            else:
+                logger.warning(f"KRX PDF 조회 실패 {code}: {e}")
+    return None, None
 
 
 def fetch_cu_best(code: str):

@@ -378,6 +378,7 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
     - 변동 알림: 기준일이 바뀌고 실제 매매(편입/제외/수량 5%+)가 있을 때 즉시
     - 데일리 브리핑: 매일 첫 실행 때 1건 (변동 없어도 발송)
     """
+    import time
     from datetime import datetime, timezone, timedelta
     from alerts.state import _should_alert
 
@@ -387,9 +388,13 @@ def check_holdings_changes(notifier, state: dict, presets: dict) -> int:
     snap = _load_snapshot()
     sent = 0
     entries = []
-    for ticker, preset in presets.items():
+    for i, (ticker, preset) in enumerate(presets.items()):
         code = ticker.split(".")[0]
         display = preset.get("display", ticker)
+        if i > 0:
+            # 연속 요청 시 KRX가 두 번째 종목부터 순간적으로 빈 응답을 주는
+            # 경향이 있어 (레이트리밋 추정) 종목 사이 텀을 둔다.
+            time.sleep(4)
         try:
             trd_dt, holdings, src = fetch_cu_best(code)
         except Exception as e:

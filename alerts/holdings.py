@@ -108,14 +108,15 @@ def fetch_cu(code: str):
 
 
 def fetch_cu_krx(code: str):
-    """KRX 원본 공시 (pykrx, KRX_ID/KRX_PW 필요).
+    """KRX 원본 공시 (pykrx 세션 재사용 + 직접 요청, KRX_ID/KRX_PW 필요).
 
     KRX는 개장 전에 당일 PDF를 공시하므로 네이버보다 반나절 빠르다.
     (기준일=오늘 KST, {종목명: 계약수}) 반환. 미설정/실패 시 (None, None).
 
-    pykrx는 날짜를 안 넘기면 무조건 '오늘'로 요청하는데, KRX가 당일 PDF를
-    아직 준비 못 한 순간엔 빈 응답(JSONDecodeError)을 준다. 같은 실행 안에서도
-    앞 종목은 성공하고 바로 다음 종목은 실패하는 게 이 때문이라 짧게 재시도한다.
+    pykrx의 get_etf_portfolio_deposit_file()은 내부 타임아웃이 15초로
+    고정돼 있는데, KRX 서버가 이 리포트(MDCSTAT05001)에 느리게 응답할 때가
+    있어 그 안에 못 받고 ReadTimeoutError가 난다. 로그인 세션(auth.py)만
+    재사용하고 실제 데이터 요청은 넉넉한 타임아웃으로 직접 보낸다.
     """
     import os
     import time
@@ -124,18 +125,35 @@ def fetch_cu_krx(code: str):
     if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
         return None, None
 
-    MAX_ATTEMPTS = 5
+    MAX_ATTEMPTS = 4
     for attempt in range(MAX_ATTEMPTS):
         try:
-            from pykrx import stock
-            df = stock.get_etf_portfolio_deposit_file(code)
-            if df is None or df.empty or "구성종목명" not in df.columns:
+            from pykrx.website.comm.auth import get_auth_session
+            from pykrx.website.krx.etx.wrap import get_etx_isin
+
+            krxs = get_auth_session()
+            if krxs is None:
+                raise ValueError("KRX 인증 세션 없음")
+            isin = get_etx_isin(code)
+            trd_dt = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
+            headers = krxs.get_headers()
+            headers["User-Agent"] = "Mozilla/5.0"
+            resp = krxs.session.post(
+                "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+                headers=headers,
+                data={"bld": "dbms/MDC/STAT/standard/MDCSTAT05001",
+                      "isuCd": isin, "trdDd": trd_dt},
+                timeout=45,
+            )
+            data = resp.json()
+            rows = data.get("output") or []
+            if not rows:
                 raise ValueError("empty response")
             holdings = {}
-            for _, row in df.iterrows():
-                name = str(row["구성종목명"]).strip()
+            for row in rows:
+                name = str(row.get("COMPST_ISU_NM", "")).strip()
                 try:
-                    q = float(row["계약수"])
+                    q = float(str(row.get("COMPST_ISU_CU1_SHRS", "0")).replace(",", ""))
                 except (TypeError, ValueError):
                     continue
                 if q > 0 and _is_stock(name):
@@ -147,7 +165,7 @@ def fetch_cu_krx(code: str):
         except Exception as e:
             if attempt < MAX_ATTEMPTS - 1:
                 logger.info(f"KRX PDF 재시도 {code} ({attempt + 1}/{MAX_ATTEMPTS}): {e}")
-                time.sleep(6)
+                time.sleep(5)
             else:
                 logger.warning(f"KRX PDF 조회 실패 {code}: {e}")
     return None, None

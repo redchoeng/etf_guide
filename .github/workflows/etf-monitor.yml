@@ -56,12 +56,6 @@ jobs:
           echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" > .env
           echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
 
-      - name: Debug KRX raw response (임시)
-        env:
-          KRX_ID: ${{ secrets.KRX_ID }}
-          KRX_PW: ${{ secrets.KRX_PW }}
-        run: python debug_krx2.py || true
-
       - name: Run price check & Telegram alerts
         # UTC 23시(KST 08:30, 장전) = 구성종목+iNAV 브리핑
         # UTC 19~22시(미국장 마감 직후) = 리포트 예상가 갱신만, 알림 없음

@@ -89,14 +89,15 @@ def check_and_notify(config: dict, mode: str = "digest"):
             )
             logger.info(f"  {ticker}: {m['price']:.2f} ({m['change_pct']:+.1f}%) | {score}점 {verdict}")
 
-            # '지금 더 사라' — x1.5(-7%)부터, 이전보다 깊어졌을 때만
-            prev_dd = price_state.get(f"{ticker}_dd", 0)
+            # '지금 더 사라' — x1.5(-7%)부터, 종목당 하루 1건만
+            # (구간별로 나누면 -12→-20처럼 깊어질 때마다, 혹은 경계에서
+            #  오르내릴 때마다 재알림이 가서 하루에 여러 번 오게 됨)
             current_zone = None
             for threshold, zone_name, mult in DD_ZONES:
                 if m["drawdown_pct"] <= threshold:
                     current_zone = (threshold, zone_name, mult)
-            if current_zone and current_zone[2] > 1.0 and prev_dd > current_zone[0]:
-                zone_key = f"dd_{ticker}_{current_zone[0]}"
+            if current_zone and current_zone[2] > 1.0:
+                zone_key = f"dd_{ticker}"
                 if _should_alert(zone_key, price_state):
                     dd_alerts.append({
                         "ticker": ticker,

@@ -1,168 +1,247 @@
 {
  "426030": {
-  "date": "2026-08-10",
+  "date": "2026-08-11",
   "holdings": {
    "NVIDIA Corp": 204.0,
-   "Microsoft Corp": 81.0,
-   "Amazon.com Inc": 121.0,
-   "Advanced Micro Devices Inc": 66.0,
-   "Alphabet Inc": 90.0,
-   "Intel Corp": 316.0,
-   "Sandisk Corp": 24.0,
+   "Microsoft Corp": 80.0,
+   "Amazon.com Inc": 120.0,
+   "Applied Optoelectronics Inc": 227.0,
+   "Intel Corp": 251.0,
+   "Alphabet Inc": 71.0,
+   "Advanced Micro Devices Inc": 52.0,
    "Micron Technology Inc": 27.0,
-   "Applied Optoelectronics Inc": 179.0,
+   "Sandisk Corp": 18.0,
    "Credo Technology Group Holding Ltd": 86.0,
+   "Tower Semiconductor Ltd": 81.0,
    "Nebius Group NV": 97.0,
+   "Lumentum Holdings Inc": 19.0,
    "Broadcom Inc": 37.0,
    "Dell Technologies Inc": 33.0,
    "Apple Inc": 42.0,
-   "SK hynix Inc": 88.0,
    "Meta Platforms Inc": 21.0,
-   "Tower Semiconductor Ltd": 55.0,
-   "Robinhood Markets Inc": 128.0,
+   "SK hynix Inc": 88.0,
+   "Corning Inc": 73.0,
    "Applied Materials Inc": 22.0,
+   "Robinhood Markets Inc": 127.0,
    "Marvell Technology Inc": 52.0,
    "Coinbase Global Inc": 72.0,
    "Teradyne Inc": 27.0,
-   "Lumentum Holdings Inc": 12.0,
-   "Seagate Technology Holdings PLC": 11.0,
    "Tesla Inc": 29.0,
+   "Seagate Technology Holdings PLC": 11.0,
    "Western Digital Corp": 19.0,
-   "Vertiv Holdings Co": 29.0,
    "CoreWeave Inc": 90.0,
+   "Vertiv Holdings Co": 29.0,
    "ARM Holdings PLC": 26.0,
    "Eli Lilly & Co": 6.0,
+   "Palantir Technologies Inc": 41.0,
    "Walmart Inc": 63.0,
    "Lam Research Corp": 22.0,
-   "Costco Wholesale Corp": 7.0,
    "Astera Labs Inc": 20.0,
-   "Palantir Technologies Inc": 41.0,
+   "Costco Wholesale Corp": 7.0,
+   "Space Exploration Technologies Corp": 49.0,
    "GE Vernova Inc": 6.0,
    "Taiwan Semiconductor Manufacturing Co Ltd": 14.0,
-   "Space Exploration Technologies Corp": 49.0,
    "QUALCOMM Inc": 33.0,
-   "Bloom Energy Corp": 23.0,
-   "Corning Inc": 33.0,
    "Strategy Inc": 52.0,
+   "Bloom Energy Corp": 23.0,
    "Rocket Lab Corp": 54.0,
    "Silicon Motion Technology Corp": 14.0,
    "KLA Corp": 15.0,
    "ASML Holding NV": 1.0
   },
   "last_diff": {
-   "from": "2026-08-07",
-   "to": "2026-08-10",
+   "from": "2026-08-10",
+   "to": "2026-08-11",
    "added": [],
    "removed": [],
-   "changed": [],
-   "small": [],
-   "minor": 0
+   "changed": [
+    [
+     "Corning Inc",
+     33.0,
+     73.0,
+     121.21212121212119
+    ],
+    [
+     "Lumentum Holdings Inc",
+     12.0,
+     19.0,
+     58.333333333333314
+    ],
+    [
+     "Tower Semiconductor Ltd",
+     55.0,
+     81.0,
+     47.27272727272725
+    ],
+    [
+     "Applied Optoelectronics Inc",
+     179.0,
+     227.0,
+     26.815642458100555
+    ],
+    [
+     "Sandisk Corp",
+     24.0,
+     18.0,
+     -25.0
+    ],
+    [
+     "Advanced Micro Devices Inc",
+     66.0,
+     52.0,
+     -21.212121212121218
+    ],
+    [
+     "Alphabet Inc",
+     90.0,
+     71.0,
+     -21.111111111111114
+    ],
+    [
+     "Intel Corp",
+     316.0,
+     251.0,
+     -20.569620253164558
+    ]
+   ],
+   "small": [
+    [
+     "Microsoft Corp",
+     81.0,
+     80.0,
+     -1.2345679012345698
+    ],
+    [
+     "Amazon.com Inc",
+     121.0,
+     120.0,
+     -0.8264462809917319
+    ],
+    [
+     "Robinhood Markets Inc",
+     128.0,
+     127.0,
+     -0.78125
+    ]
+   ],
+   "minor": 3
   },
   "src": "official"
  },
  "0015B0": {
-  "date": "2026-08-10",
+  "date": "2026-08-11",
   "holdings": {
-   "ADVANCED MICRO DEVICES": 93.28,
-   "BLOOM ENERGY CORPORATION": 166.6,
-   "INTEL Corp": 363.21,
-   "Snowflake Inc   - CL A": 112.23,
-   "Sandisk Corp/DE": 22.43,
-   "Amazon.com Inc": 101.99,
-   "SEAGATE TECHNOLOGY": 27.09,
-   "Applied Optoelectronics Inc": 184.93,
-   "Palantir Technologies Inc -A": 136.96,
-   "ARM Holdings PLC": 73.59,
-   "ALPHABET INC-CL A": 57.69,
-   "LAM RESEARCH": 64.85,
-   "MICROSOFT": 35.35,
-   "WESTERN DIGITAL": 38.71,
-   "Coreweave Inc": 203.01,
-   "DATADOG INC - CLASS A": 71.36,
-   "Astera Labs Inc": 47.81,
-   "ALIBABA GROUP HOLDING-SP ADR": 118.36,
-   "Lumentum Holdings Inc": 17.8,
-   "YANDEX NV-A": 76.04,
-   "DYNATRACE INC": 273.39,
-   "Dell Technologies Inc": 28.99,
-   "APPLIED MATERIALS INC": 23.36,
-   "FORTINET INC": 76.82,
-   "MICRON TECH": 12.92,
-   "ILLUMINA INC": 58.67,
-   "MARVELL TECHNOLOGY INC": 51.15,
-   "BROADCOM LTD": 25.48,
-   "Moog Inc": 24.53,
-   "AXT Inc": 126.26,
-   "Timken Co/The": 72.56,
-   "LB Pharmaceuticals Inc": 183.6,
-   "OKTA INC": 59.88,
-   "NVIDIA Corp": 33.3,
-   "Natera Inc": 27.0,
-   "TERADYNE INC": 17.76,
-   "JAZZ PHARMACEUTICALS PLC": 26.57,
-   "Carpenter Technology Corp": 12.15,
-   "BeOne Medicines Ltd": 20.44,
-   "PALO ALTO NETWORKS INC": 10.36,
-   "Oruka Therapeutics Inc": 37.81,
-   "CROWDSTRIKE HOLDINGS INC - A": 17.85,
-   "GILEAD SCIENCES INC": 21.96,
-   "COINBASE GLOBAL INC -CLASS A": 16.16
+   "ADVANCED MICRO DEVICES": 93.18,
+   "Snowflake Inc   - CL A": 112.11,
+   "BLOOM ENERGY CORPORATION": 166.42,
+   "INTEL Corp": 294.18,
+   "Amazon.com Inc": 101.88,
+   "Applied Optoelectronics Inc": 184.73,
+   "Palantir Technologies Inc -A": 136.81,
+   "SEAGATE TECHNOLOGY": 27.06,
+   "ARM Holdings PLC": 73.51,
+   "ALPHABET INC-CL A": 57.63,
+   "Sandisk Corp/DE": 16.44,
+   "Coreweave Inc": 202.79,
+   "Cloudflare Inc": 59.61,
+   "MICROSOFT": 35.31,
+   "Astera Labs Inc": 47.76,
+   "Lumentum Holdings Inc": 17.78,
+   "ALIBABA GROUP HOLDING-SP ADR": 118.23,
+   "YANDEX NV-A": 75.96,
+   "DYNATRACE INC": 273.1,
+   "Dell Technologies Inc": 28.96,
+   "LAM RESEARCH": 41.9,
+   "FORTINET INC": 76.74,
+   "MICRON TECH": 12.91,
+   "MARVELL TECHNOLOGY INC": 51.1,
+   "AXT Inc": 126.12,
+   "ILLUMINA INC": 58.61,
+   "BROADCOM LTD": 25.45,
+   "SERVICENOW INC": 86.36,
+   "NETAPP INC": 52.6,
+   "Moog Inc": 24.5,
+   "DATADOG INC - CLASS A": 41.45,
+   "Akamai Technologies Inc": 86.36,
+   "Timken Co/The": 72.48,
+   "OKTA INC": 59.81,
+   "APPLIED MATERIALS INC": 16.38,
+   "LB Pharmaceuticals Inc": 183.4,
+   "Natera Inc": 26.97,
+   "NVIDIA Corp": 33.26,
+   "BeOne Medicines Ltd": 20.42,
+   "Carpenter Technology Corp": 12.14,
+   "JAZZ PHARMACEUTICALS PLC": 26.54,
+   "TERADYNE INC": 17.74,
+   "CROWDSTRIKE HOLDINGS INC - A": 17.83,
+   "PALO ALTO NETWORKS INC": 10.35,
+   "Oruka Therapeutics Inc": 37.77,
+   "WESTERN DIGITAL": 7.83,
+   "GILEAD SCIENCES INC": 21.94
   },
   "last_diff": {
-   "from": "2026-08-07",
-   "to": "2026-08-10",
+   "from": "2026-08-10",
+   "to": "2026-08-11",
    "added": [
     [
-     "DYNATRACE INC",
-     273.39
+     "Cloudflare Inc",
+     59.61
     ],
     [
-     "OKTA INC",
-     59.88
+     "SERVICENOW INC",
+     86.36
+    ],
+    [
+     "NETAPP INC",
+     52.6
+    ],
+    [
+     "Akamai Technologies Inc",
+     86.36
     ]
    ],
    "removed": [
     [
-     "Interactive Brokers Group Inc",
-     115.32
+     "COINBASE GLOBAL INC -CLASS A",
+     16.16
     ]
    ],
    "changed": [
     [
-     "Palantir Technologies Inc -A",
-     53.64,
-     136.96,
-     156.22781064600815
-    ],
-    [
-     "LB Pharmaceuticals Inc",
-     98.45,
-     183.6,
-     87.14500669372981
-    ],
-    [
-     "PALO ALTO NETWORKS INC",
-     6.41,
-     10.36,
-     62.18960401708944
-    ],
-    [
-     "MICRON TECH",
-     25.94,
-     12.92,
-     -50.01797705945968
-    ],
-    [
      "WESTERN DIGITAL",
-     58.79,
      38.71,
-     -33.92441775726044
+     7.83,
+     -79.75061040249237
     ],
     [
-     "SEAGATE TECHNOLOGY",
-     36.16,
-     27.09,
-     -24.820077994746825
+     "DATADOG INC - CLASS A",
+     71.36,
+     41.45,
+     -41.85089441589117
+    ],
+    [
+     "LAM RESEARCH",
+     64.85,
+     41.9,
+     -35.31890134855287
+    ],
+    [
+     "APPLIED MATERIALS INC",
+     23.36,
+     16.38,
+     -29.803670396319163
+    ],
+    [
+     "Sandisk Corp/DE",
+     22.43,
+     16.44,
+     -26.62537661091261
+    ],
+    [
+     "INTEL Corp",
+     363.21,
+     294.18,
+     -18.91720850767318
     ]
    ],
    "small": [],

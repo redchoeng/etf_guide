@@ -1,148 +1,209 @@
 {
  "426030": {
-  "date": "2026-09-04",
+  "date": "2026-09-07",
   "holdings": {
    "NVIDIA Corp": 229.0,
    "Dell Technologies Inc": 64.0,
    "Sandisk Corp": 20.0,
+   "Bloom Energy Corp": 124.0,
    "Amazon.com Inc": 105.0,
-   "SK hynix Inc": 144.0,
    "Tesla Inc": 64.0,
-   "Microsoft Corp": 45.0,
-   "Micron Technology Inc": 23.0,
-   "Bloom Energy Corp": 96.0,
    "Robinhood Markets Inc": 193.0,
-   "Lumentum Holdings Inc": 22.0,
-   "Intel Corp": 210.0,
+   "SK hynix Inc": 144.0,
+   "Microsoft Corp": 45.0,
    "Coinbase Global Inc": 108.0,
-   "Snowflake Inc": 59.0,
-   "Alphabet Inc": 51.0,
+   "Snowflake Inc": 58.0,
+   "Intel Corp": 210.0,
+   "Lumentum Holdings Inc": 22.0,
+   "Alphabet Inc": 50.0,
    "Nebius Group NV": 78.0,
-   "Marvell Technology Inc": 74.0,
-   "Applied Optoelectronics Inc": 141.0,
    "Strategy Inc": 109.0,
+   "Marvell Technology Inc": 74.0,
+   "Micron Technology Inc": 16.0,
+   "Applied Optoelectronics Inc": 141.0,
+   "Palantir Technologies Inc": 74.0,
    "Advanced Micro Devices Inc": 29.0,
-   "Palantir Technologies Inc": 75.0,
-   "Broadcom Inc": 28.0,
    "Vertiv Holdings Co": 40.0,
    "Space Exploration Technologies Corp": 71.0,
-   "Apple Inc": 30.0,
+   "Broadcom Inc": 28.0,
    "CoreWeave Inc": 118.0,
+   "Apple Inc": 30.0,
    "Tower Semiconductor Ltd": 45.0,
-   "Seagate Technology Holdings PLC": 11.0,
    "Meta Platforms Inc": 15.0,
    "Teradyne Inc": 26.0,
+   "Seagate Technology Holdings PLC": 11.0,
    "Western Digital Corp": 19.0,
    "Credo Technology Group Holding Ltd": 45.0,
    "Corning Inc": 45.0,
    "ServiceNow Inc": 44.0,
    "ARM Holdings PLC": 25.0,
    "Eli Lilly & Co": 5.0,
-   "Palo Alto Networks Inc": 17.0,
    "GE Vernova Inc": 6.0,
-   "QUALCOMM Inc": 32.0,
+   "Palo Alto Networks Inc": 17.0,
    "Taiwan Semiconductor Manufacturing Co Ltd": 13.0,
+   "QUALCOMM Inc": 32.0,
    "Astera Labs Inc": 19.0
   },
   "last_diff": {
-   "from": "2026-09-03",
-   "to": "2026-09-04",
+   "from": "2026-09-04",
+   "to": "2026-09-07",
    "added": [],
    "removed": [],
    "changed": [
     [
-     "Credo Technology Group Holding Ltd",
-     84.0,
-     45.0,
-     -46.42857142857143
-    ],
-    [
-     "Tesla Inc",
-     47.0,
-     64.0,
-     36.170212765957444
-    ],
-    [
-     "Dell Technologies Inc",
-     51.0,
-     64.0,
-     25.490196078431367
-    ],
-    [
      "Micron Technology Inc",
-     27.0,
      23.0,
-     -14.81481481481481
+     16.0,
+     -30.434782608695656
     ],
     [
-     "Microsoft Corp",
-     51.0,
-     45.0,
-     -11.764705882352942
+     "Bloom Energy Corp",
+     96.0,
+     124.0,
+     29.166666666666686
     ]
    ],
-   "small": [],
-   "minor": 0
+   "small": [
+    [
+     "Alphabet Inc",
+     51.0,
+     50.0,
+     -1.9607843137254974
+    ],
+    [
+     "Snowflake Inc",
+     59.0,
+     58.0,
+     -1.6949152542372872
+    ],
+    [
+     "Palantir Technologies Inc",
+     75.0,
+     74.0,
+     -1.3333333333333286
+    ]
+   ],
+   "minor": 3
   },
   "src": "official"
  },
  "0015B0": {
-  "date": "2026-09-04",
+  "date": "2026-09-07",
   "holdings": {
-   "Palantir Technologies Inc -A": 336.42,
+   "Palantir Technologies Inc -A": 326.38,
+   "Snowflake Inc   - CL A": 118.28,
    "Sandisk Corp/DE": 23.87,
-   "Snowflake Inc   - CL A": 114.13,
    "NVIDIA Corp": 155.18,
    "MICRON TECH": 31.13,
    "Lumentum Holdings Inc": 28.29,
-   "ADVANCED MICRO DEVICES": 45.32,
-   "BLOOM ENERGY CORPORATION": 89.61,
-   "MONGODB INC": 50.55,
    "Strategy Inc": 150.4,
    "Circle Internet Group Inc": 204.54,
+   "BLOOM ENERGY CORPORATION": 89.61,
+   "ADVANCED MICRO DEVICES": 45.32,
+   "MONGODB INC": 50.55,
    "Applied Optoelectronics Inc": 166.03,
-   "NETAPP INC": 88.93,
    "YANDEX NV-A": 77.32,
+   "NETAPP INC": 86.97,
    "MICROSOFT": 29.7,
    "DYNATRACE INC": 278.02,
-   "SK hynix Inc": 85.25,
-   "OKTA INC": 83.13,
    "Dell Technologies Inc": 27.49,
+   "OKTA INC": 83.13,
+   "SK hynix Inc": 85.25,
    "SEAGATE TECHNOLOGY": 15.46,
    "Akamai Technologies Inc": 115.34,
    "FORTINET INC": 78.12,
-   "Cloudflare Inc": 43.45,
    "Amazon.com Inc": 45.84,
+   "Cloudflare Inc": 40.96,
    "ARM Holdings PLC": 46.72,
-   "MARVELL TECHNOLOGY INC": 52.02,
-   "INTEL Corp": 118.61,
    "Coreweave Inc": 131.32,
-   "PALO ALTO NETWORKS INC": 28.74,
+   "INTEL Corp": 118.61,
+   "MARVELL TECHNOLOGY INC": 52.02,
    "ALPHABET INC-CL A": 27.25,
-   "Natera Inc": 27.45,
    "DATADOG INC - CLASS A": 42.19,
+   "Natera Inc": 27.45,
+   "PALO ALTO NETWORKS INC": 25.59,
    "SERVICENOW INC": 51.4,
    "APPLIED MATERIALS INC": 15.72,
-   "CROWDSTRIKE HOLDINGS INC - A": 31.38,
    "LAM RESEARCH": 20.42,
-   "BROADCOM LTD": 15.85,
+   "CROWDSTRIKE HOLDINGS INC - A": 27.49,
    "JAZZ PHARMACEUTICALS PLC": 20.92,
+   "BROADCOM LTD": 14.07,
    "TERADYNE INC": 14.04,
-   "AXT Inc": 81.32,
    "Astera Labs Inc": 16.6,
+   "AXT Inc": 81.32,
    "Tempus AI Inc": 64.03,
    "ILLUMINA INC": 18.11,
    "Oruka Therapeutics Inc": 24.47,
+   "Gitlab Inc": 23.94,
+   "Vertex Pharmaceuticals Inc": 1.69,
+   "TESLA MOTORS": 2.38,
    "ALIBABA GROUP HOLDING-SP ADR": 7.43
   },
   "last_diff": {
-   "from": "2026-09-03",
-   "to": "2026-09-04",
-   "added": [],
+   "from": "2026-09-04",
+   "to": "2026-09-07",
+   "added": [
+    [
+     "Gitlab Inc",
+     23.94
+    ],
+    [
+     "Vertex Pharmaceuticals Inc",
+     1.69
+    ],
+    [
+     "TESLA MOTORS",
+     2.38
+    ]
+   ],
    "removed": [],
-   "changed": [],
-   "small": [],
-   "minor": 0
+   "changed": [
+    [
+     "CROWDSTRIKE HOLDINGS INC - A",
+     31.38,
+     27.49,
+     -12.396430847673685
+    ],
+    [
+     "BROADCOM LTD",
+     15.85,
+     14.07,
+     -11.230283911671918
+    ],
+    [
+     "PALO ALTO NETWORKS INC",
+     28.74,
+     25.59,
+     -10.960334029227553
+    ],
+    [
+     "Cloudflare Inc",
+     43.45,
+     40.96,
+     -5.730724971231311
+    ],
+    [
+     "Snowflake Inc   - CL A",
+     114.13,
+     118.28,
+     3.63620432839744
+    ]
+   ],
+   "small": [
+    [
+     "Palantir Technologies Inc -A",
+     336.42,
+     326.38,
+     -2.984364782117595
+    ],
+    [
+     "NETAPP INC",
+     88.93,
+     86.97,
+     -2.2039806589452553
+    ]
+   ],
+   "minor": 2
   },
   "src": "official"
  }

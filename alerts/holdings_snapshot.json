@@ -1,6 +1,6 @@
 {
  "426030": {
-  "date": "2026-09-08",
+  "date": "2026-09-09",
   "holdings": {
    "NVIDIA Corp": 229.0,
    "Sandisk Corp": 20.0,
@@ -45,8 +45,8 @@
    "QUALCOMM Inc": 32.0
   },
   "last_diff": {
-   "from": "2026-09-07",
-   "to": "2026-09-08",
+   "from": "2026-09-08",
+   "to": "2026-09-09",
    "added": [],
    "removed": [],
    "changed": [],
@@ -56,7 +56,7 @@
   "src": "official"
  },
  "0015B0": {
-  "date": "2026-09-08",
+  "date": "2026-09-09",
   "holdings": {
    "Palantir Technologies Inc -A": 326.38,
    "Sandisk Corp/DE": 23.87,
@@ -107,89 +107,11 @@
    "BROADCOM LTD": 1.07
   },
   "last_diff": {
-   "from": "2026-09-07",
-   "to": "2026-09-08",
+   "from": "2026-09-08",
+   "to": "2026-09-09",
    "added": [],
-   "removed": [
-    [
-     "ALIBABA GROUP HOLDING-SP ADR",
-     7.43
-    ]
-   ],
-   "changed": [
-    [
-     "TESLA MOTORS",
-     2.38,
-     35.38,
-     1386.5546218487398
-    ],
-    [
-     "Tempus AI Inc",
-     64.03,
-     142.03,
-     121.81789786037794
-    ],
-    [
-     "BROADCOM LTD",
-     14.07,
-     1.07,
-     -92.3951670220327
-    ],
-    [
-     "SERVICENOW INC",
-     51.4,
-     94.4,
-     83.65758754863813
-    ],
-    [
-     "LAM RESEARCH",
-     20.42,
-     9.42,
-     -53.868756121449564
-    ],
-    [
-     "Akamai Technologies Inc",
-     115.34,
-     55.34,
-     -52.020114444251774
-    ],
-    [
-     "APPLIED MATERIALS INC",
-     15.72,
-     7.72,
-     -50.890585241730285
-    ],
-    [
-     "Dell Technologies Inc",
-     27.49,
-     39.49,
-     43.65223717715534
-    ],
-    [
-     "JAZZ PHARMACEUTICALS PLC",
-     20.92,
-     12.92,
-     -38.24091778202677
-    ],
-    [
-     "SEAGATE TECHNOLOGY",
-     15.46,
-     11.46,
-     -25.8732212160414
-    ],
-    [
-     "ADVANCED MICRO DEVICES",
-     45.32,
-     38.32,
-     -15.445719329214484
-    ],
-    [
-     "SK hynix Inc",
-     85.25,
-     73.25,
-     -14.076246334310852
-    ]
-   ],
+   "removed": [],
+   "changed": [],
    "small": [],
    "minor": 0
   },

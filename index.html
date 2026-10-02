@@ -32,7 +32,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 .macro-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .macro-chip{background:#f2f4f6;border-radius:20px;padding:6px 14px;font-size:12px;color:#4e5968;display:flex;align-items:center;gap:4px}
 .macro-chip .val{font-weight:700;color:#191f28}
-.regime-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;color:#E65100;background:#FFF3E0}
+.regime-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;color:#2E7D32;background:#E8F5E9}
 .macro-desc{font-size:13px;color:#6b7684;line-height:1.6;margin-top:8px}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #f2f4f6}
 .stat{text-align:center;padding:16px 8px;border-right:1px solid #f2f4f6}
@@ -252,11 +252,11 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="header-icon"><img src="./icons/icon-192.png" alt="딩쵱"></div>
 <h1>우당탕탕 딩쵱 하우스 마련 대작전</h1>
 <div class="sub">무한매수법 그리드 전략</div>
-<div class="date">2026-10-02 10:05 KST</div>
+<div class="date">2026-10-02 11:05 KST</div>
 <div class="market-pulse">
-<div class="pulse-item"><div class="pulse-dot yellow"></div>횡보장</div>
+<div class="pulse-item"><div class="pulse-dot green"></div>상승장</div>
 <div class="pulse-item">VIX 16.4</div>
-<div class="pulse-item">0종목 매수 추천</div>
+<div class="pulse-item">1종목 매수 추천</div>
 </div>
 </div>
 
@@ -271,48 +271,48 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <button class="noti-toggle off" id="notiToggle" onclick="toggleNoti()"></button>
 </div>
 <div class="noti-alert-list" id="notiList">
-<div class="noti-alert"><div class="na-dot info"></div><div class="na-text">현재 특별한 매수 시그널이 없습니다. 그리드 레벨 도달 시 알려드릴게요.</div></div>
+<div class="noti-alert"><div class="na-dot buy"></div><div class="na-text"><b>TIMEFOLIO</b> 매수 점수 60점 — 매수 고려</div></div>
 </div>
 
 <div class="section">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-<span class="regime-badge">➡️ 횡보장</span>
+<span class="regime-badge">📈 상승장</span>
 </div>
 <div class="macro-chips">
 <div class="macro-chip">VIX <span class="val">16.4</span></div>
 <div class="macro-chip">금리 <span class="val">5.24%</span></div>
-<div class="macro-chip">S&P500 <span class="val">+nan%</span></div>
-<div class="macro-chip">매크로 <span class="val">40%</span></div>
+<div class="macro-chip">S&P500 <span class="val">+0.5%</span></div>
+<div class="macro-chip">매크로 <span class="val">38%</span></div>
 </div>
-<div class="macro-desc">방향성이 불확실합니다. 그리드 매수를 천천히 진행하세요. (금리 5.2% - 고금리 부담)</div>
+<div class="macro-desc">상승 추세입니다. 단기 조정 시 분할매수를 시작하기 좋은 환경입니다. (금리 5.2% - 고금리 부담)</div>
 </div>
 
 <div class="section">
 <div class="stats-row">
 <div class="stat"><div class="sl">분석 ETF</div><div class="sv">2</div></div>
-<div class="stat"><div class="sl">매수 추천</div><div class="sv green">0</div></div>
-<div class="stat"><div class="sl">평균 점수</div><div class="sv">49</div></div>
-<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">TIMEFOLIO 53</div></div>
+<div class="stat"><div class="sl">매수 추천</div><div class="sv green">1</div></div>
+<div class="stat"><div class="sl">평균 점수</div><div class="sv">53</div></div>
+<div class="stat"><div class="sl">최고 점수</div><div class="sv blue">TIMEFOLIO 60</div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-title">📅 이번 주 매수 가이드</div>
-<div class="weekly-guide"><div class="wg-row"><span class="wg-name">TIMEFOLIO</span><span class="wg-dd">ATH -23%</span><span class="wg-mult hot">×3.0</span><span class="wg-action">3.0배로 사세요</span></div><div class="wg-row"><span class="wg-name">KoACT</span><span class="wg-dd">ATH -24%</span><span class="wg-mult hot">×3.0</span><span class="wg-action">3.0배로 사세요</span></div></div>
+<div class="weekly-guide"><div class="wg-row"><span class="wg-name">TIMEFOLIO</span><span class="wg-dd">ATH -23%</span><span class="wg-mult hot">×3.0</span><span class="wg-action">3.0배로 사세요</span></div><div class="wg-row"><span class="wg-name">KoACT</span><span class="wg-dd">ATH -25%</span><span class="wg-mult hot">×3.0</span><span class="wg-action">3.0배로 사세요</span></div></div>
 </div>
 
-<div class="card" data-ticker="426030.KS" data-currency="KRW" data-grid='[{"l":1,"p":46507.20,"q":11},{"l":2,"p":44569.40,"q":12},{"l":3,"p":42631.60,"q":12},{"l":4,"p":40693.80,"q":13},{"l":5,"p":38756.00,"q":14},{"l":6,"p":36818.20,"q":14},{"l":7,"p":34880.40,"q":15},{"l":8,"p":32942.60,"q":16},{"l":9,"p":31004.80,"q":17},{"l":10,"p":29067.00,"q":18}]' data-upgrid='[{"l":1,"p":49898.35,"q":6},{"l":2,"p":51351.70,"q":6},{"l":3,"p":52805.05,"q":6},{"l":4,"p":54258.40,"q":6},{"l":5,"p":55711.75,"q":5}]' data-ath="62605.00" data-low52="32736.96" data-high52="62605.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="SIDEWAYS" data-weekly-base="250000" data-weekly-mult="3.0">
-<div class="inav-card" data-holdings='[["INTC", 240.0], ["NVDA", 226.0], ["HOOD", 161.0], ["CRWV", 155.0], ["BE", 134.0], ["AAOI", 105.0], ["COIN", 88.0], ["NBIS", 77.0], ["MRVL", 73.0], ["PLTR", 73.0], ["DELL", 69.0], ["QCOM", 68.0], ["AMZN", 51.0], ["GOOGL", 50.0], ["TSLA", 45.0], ["CRDO", 45.0], ["AMD", 41.0], ["MSFT", 38.0], ["SNOW", 38.0], ["TER", 35.0], ["ALAB", 31.0], ["MU", 29.0], ["AAPL", 29.0], ["AVGO", 28.0], ["VRT", 28.0], ["ARM", 25.0], ["LITE", 22.0], ["SNDK", 18.0], ["WDC", 18.0], ["META", 14.0], ["TSM", 13.0], ["STX", 11.0], ["GEV", 6.0], ["LLY", 5.0]]' data-krclose="48445.00">
-<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">10/02 10:05 기준</span></div>
-<div class="inav-main"><span class="iv-est">₩48,579</span> <span class="iv-chg ip-up">+0.28%</span></div>
-<div class="inav-sub iv-dd">예상 낙폭 ATH -22.4% → <b>3.0배 구간</b></div>
+<div class="card" data-ticker="426030.KS" data-currency="KRW" data-grid='[{"l":1,"p":46368.00,"q":15},{"l":2,"p":44436.00,"q":15},{"l":3,"p":42504.00,"q":16},{"l":4,"p":40572.00,"q":17},{"l":5,"p":38640.00,"q":18},{"l":6,"p":36708.00,"q":19},{"l":7,"p":34776.00,"q":20},{"l":8,"p":32844.00,"q":21},{"l":9,"p":30912.00,"q":22},{"l":10,"p":28980.00,"q":24}]' data-upgrid='[{"l":1,"p":49749.00,"q":8},{"l":2,"p":51198.00,"q":8},{"l":3,"p":52647.00,"q":7},{"l":4,"p":54096.00,"q":7},{"l":5,"p":55545.00,"q":7}]' data-ath="62605.00" data-low52="32736.96" data-high52="62605.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL" data-weekly-base="250000" data-weekly-mult="3.0">
+<div class="inav-card" data-holdings='[["INTC", 240.0], ["NVDA", 226.0], ["HOOD", 161.0], ["CRWV", 155.0], ["BE", 134.0], ["AAOI", 105.0], ["COIN", 88.0], ["NBIS", 77.0], ["MRVL", 73.0], ["PLTR", 73.0], ["DELL", 69.0], ["QCOM", 68.0], ["AMZN", 51.0], ["GOOGL", 50.0], ["TSLA", 45.0], ["CRDO", 45.0], ["AMD", 41.0], ["MSFT", 38.0], ["SNOW", 38.0], ["TER", 35.0], ["ALAB", 31.0], ["MU", 29.0], ["AAPL", 29.0], ["AVGO", 28.0], ["VRT", 28.0], ["ARM", 25.0], ["LITE", 22.0], ["SNDK", 18.0], ["WDC", 18.0], ["META", 14.0], ["TSM", 13.0], ["STX", 11.0], ["GEV", 6.0], ["LLY", 5.0]]' data-krclose="48300.00">
+<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">10/02 11:05 기준</span></div>
+<div class="inav-main"><span class="iv-est">₩49,030</span> <span class="iv-chg ip-up">+1.51%</span></div>
+<div class="inav-sub iv-dd">예상 낙폭 ATH -21.7% → <b>3.0배 구간</b></div>
 <div class="inav-break">
-<span>포트폴리오 <b class="iv-basket">-0.15%</b></span>
-<span>환율 <b class="iv-fx">+0.43%</b></span>
-<span class="iv-updown">🔺15 🔻16</span>
+<span>포트폴리오 <b class="iv-basket">+1.29%</b></span>
+<span>환율 <b class="iv-fx">+0.22%</b></span>
+<span class="iv-updown">🔺23 🔻10</span>
 <span>반영률 83%</span>
 </div>
-<div class="treemap"><div class="tm-tile" data-tk="NVDA" style="left:0.00%;top:0.00%;width:27.24%;height:32.84%;background:rgba(240,68,82,0.40)" title="NVDA 8.9%"><span style="font-size:11px">NVDA<br>+0.5%</span></div><div class="tm-tile" data-tk="DELL" style="left:0.00%;top:32.84%;width:27.24%;height:23.62%;background:rgba(49,130,246,0.36)" title="DELL 6.4%"><span style="font-size:9px">DELL<br>-0.3%</span></div><div class="tm-tile" data-tk="BE" style="left:0.00%;top:56.46%;width:27.24%;height:23.62%;background:rgba(49,130,246,0.92)" title="BE 6.4%"><span style="font-size:9px">BE<br>-4.9%</span></div><div class="tm-tile" data-tk="SNDK" style="left:0.00%;top:80.07%;width:27.24%;height:19.93%;background:rgba(240,68,82,0.42)" title="SNDK 5.4%"><span style="font-size:9px">SNDK<br>+0.6%</span></div><div class="tm-tile" data-tk="MU" style="left:27.24%;top:0.00%;width:26.49%;height:20.21%;background:#6b7684" title="MU 5.4%"><span style="font-size:9px">MU<br>+0.0%</span></div><div class="tm-tile" data-tk="INTC" style="left:53.74%;top:0.00%;width:24.75%;height:20.21%;background:rgba(240,68,82,0.92)" title="INTC 5.0%"><span style="font-size:9px">INTC<br>+3.7%</span></div><div class="tm-tile" data-tk="AMD" style="left:78.49%;top:0.00%;width:21.51%;height:20.21%;background:rgba(240,68,82,0.44)" title="AMD 4.3%"><span style="font-size:9px">AMD<br>+0.7%</span></div><div class="tm-tile" data-tk="LITE" style="left:27.24%;top:20.21%;width:19.85%;height:18.66%;background:rgba(49,130,246,0.35)" title="LITE 3.7%"><span style="font-size:8px">LITE<br>-0.2%</span></div><div class="tm-tile" data-tk="MSFT" style="left:47.10%;top:20.21%;width:18.11%;height:18.66%;background:rgba(240,68,82,0.45)" title="MSFT 3.4%"><span style="font-size:8px">MSFT<br>+0.8%</span></div><div class="tm-tile" data-tk="MRVL" style="left:65.20%;top:20.21%;width:17.92%;height:18.66%;background:rgba(240,68,82,0.37)" title="MRVL 3.3%"><span style="font-size:8px">MRVL<br>+0.4%</span></div><div class="tm-tile" data-tk="NBIS" style="left:83.12%;top:20.21%;width:16.88%;height:18.66%;background:rgba(49,130,246,0.42)" title="NBIS 3.1%"><span style="font-size:8px">NBIS<br>-0.6%</span></div><div class="tm-tile" data-tk="HOOD" style="left:27.24%;top:38.86%;width:19.19%;height:16.36%;background:rgba(49,130,246,0.92)" title="HOOD 3.1%"><span style="font-size:8px">HOOD<br>-3.2%</span></div><div class="tm-tile" data-tk="GOOGL" style="left:27.24%;top:55.22%;width:19.19%;height:15.54%;background:rgba(240,68,82,0.49)" title="GOOGL 3.0%"><span style="font-size:8px">GOOGL<br>+0.9%</span></div><div class="tm-tile" data-tk="COIN" style="left:27.24%;top:70.76%;width:19.19%;height:14.82%;background:rgba(49,130,246,0.68)" title="COIN 2.8%"><span style="font-size:8px">COIN<br>-1.9%</span></div><div class="tm-tile" data-tk="TSLA" style="left:27.24%;top:85.58%;width:19.19%;height:14.42%;background:rgba(240,68,82,0.41)" title="TSLA 2.8%"><span style="font-size:8px">TSLA<br>+0.6%</span></div><div class="tm-tile" data-tk="TER" style="left:46.43%;top:38.86%;width:18.25%;height:13.33%;background:rgba(49,130,246,0.40)" title="TER 2.4%"><span style="font-size:8px">TER<br>-0.5%</span></div><div class="tm-tile" data-tk="PLTR" style="left:64.68%;top:38.86%;width:17.76%;height:13.33%;background:#6b7684" title="PLTR 2.4%"><span style="font-size:8px">PLTR<br>+0.0%</span></div><div class="tm-tile" data-tk="CRWV" style="left:82.44%;top:38.86%;width:17.56%;height:13.33%;background:rgba(240,68,82,0.58)" title="CRWV 2.3%"><span style="font-size:8px">CRWV<br>+1.4%</span></div><div class="tm-tile" data-tk="SNOW" style="left:46.43%;top:52.19%;width:13.82%;height:16.18%;background:rgba(240,68,82,0.86)" title="SNOW 2.2%"><span style="font-size:8px">SNOW<br>+2.8%</span></div><div class="tm-tile" data-tk="AMZN" style="left:46.43%;top:68.37%;width:13.82%;height:15.93%;background:rgba(240,68,82,0.50)" title="AMZN 2.2%"><span style="font-size:8px">AMZN<br>+1.0%</span></div><div class="tm-tile" data-tk="QCOM" style="left:46.43%;top:84.31%;width:13.82%;height:15.69%;background:#6b7684" title="QCOM 2.2%"><span style="font-size:8px">QCOM<br>-0.0%</span></div><div class="tm-tile" data-tk="ALAB" style="left:60.26%;top:52.19%;width:13.87%;height:13.79%;background:rgba(49,130,246,0.40)" title="ALAB 1.9%"><span style="font-size:8px">ALAB<br>-0.5%</span></div><div class="tm-tile" data-tk="AAOI" style="left:74.13%;top:52.19%;width:13.10%;height:13.79%;background:rgba(49,130,246,0.58)" title="AAOI 1.8%"><span style="font-size:8px">AAOI<br>-1.4%</span></div><div class="tm-tile" data-tk="META" style="left:87.24%;top:52.19%;width:12.76%;height:13.79%;background:rgba(49,130,246,0.67)" title="META 1.8%"><span style="font-size:8px">META<br>-1.8%</span></div><div class="tm-tile" data-tk="STX" style="left:60.26%;top:65.98%;width:15.10%;height:11.65%;background:rgba(240,68,82,0.49)" title="STX 1.8%"><span style="font-size:8px">STX<br>+1.0%</span></div><div class="tm-tile" data-tk="AVGO" style="left:60.26%;top:77.63%;width:15.10%;height:11.29%;background:rgba(49,130,246,0.52)" title="AVGO 1.7%"><span style="font-size:8px">AVGO<br>-1.1%</span></div><div class="tm-tile" data-tk="AAPL" style="left:60.26%;top:88.91%;width:15.10%;height:11.09%;background:rgba(240,68,82,0.52)" title="AAPL 1.7%"><span style="font-size:8px">AAPL<br>+1.1%</span></div><div class="tm-tile" data-tk="CRDO" style="left:75.36%;top:65.98%;width:12.75%;height:11.92%;background:rgba(240,68,82,0.55)" title="CRDO 1.5%"><span style="font-size:8px">CRDO<br>+1.3%</span></div><div class="tm-tile" data-tk="WDC" style="left:88.10%;top:65.98%;width:11.90%;height:11.92%;background:rgba(240,68,82,0.34)" title="WDC 1.4%"><span style="font-size:8px">WDC<br>+0.2%</span></div><div class="tm-tile" data-tk="ARM" style="left:75.36%;top:77.90%;width:10.98%;height:11.43%;background:rgba(49,130,246,0.57)" title="ARM 1.3%"></div><div class="tm-tile" data-tk="VRT" style="left:75.36%;top:89.33%;width:10.98%;height:10.67%;background:rgba(49,130,246,0.87)" title="VRT 1.2%"></div><div class="tm-tile" data-tk="TSM" style="left:86.34%;top:77.90%;width:13.66%;height:7.52%;background:rgba(49,130,246,0.33)" title="TSM 1.0%"></div><div class="tm-tile" data-tk="LLY" style="left:86.34%;top:85.42%;width:13.66%;height:7.34%;background:rgba(49,130,246,0.77)" title="LLY 1.0%"></div><div class="tm-tile" data-tk="GEV" style="left:86.34%;top:92.76%;width:13.66%;height:7.24%;background:rgba(49,130,246,0.55)" title="GEV 1.0%"></div></div>
+<div class="treemap"><div class="tm-tile" data-tk="NVDA" style="left:0.00%;top:0.00%;width:27.21%;height:32.83%;background:rgba(240,68,82,0.52)" title="NVDA 8.9%"><span style="font-size:11px">NVDA<br>+1.1%</span></div><div class="tm-tile" data-tk="DELL" style="left:0.00%;top:32.83%;width:27.21%;height:23.52%;background:rgba(240,68,82,0.44)" title="DELL 6.4%"><span style="font-size:9px">DELL<br>+0.7%</span></div><div class="tm-tile" data-tk="BE" style="left:0.00%;top:56.35%;width:27.21%;height:23.40%;background:rgba(240,68,82,0.34)" title="BE 6.4%"><span style="font-size:9px">BE<br>+0.2%</span></div><div class="tm-tile" data-tk="SNDK" style="left:0.00%;top:79.75%;width:27.21%;height:20.25%;background:rgba(240,68,82,0.85)" title="SNDK 5.5%"><span style="font-size:9px">SNDK<br>+2.7%</span></div><div class="tm-tile" data-tk="MU" style="left:27.21%;top:0.00%;width:26.98%;height:20.20%;background:rgba(240,68,82,0.91)" title="MU 5.4%"><span style="font-size:9px">MU<br>+3.0%</span></div><div class="tm-tile" data-tk="INTC" style="left:54.19%;top:0.00%;width:24.41%;height:20.20%;background:rgba(49,130,246,0.34)" title="INTC 4.9%"><span style="font-size:9px">INTC<br>-0.2%</span></div><div class="tm-tile" data-tk="AMD" style="left:78.60%;top:0.00%;width:21.40%;height:20.20%;background:rgba(240,68,82,0.43)" title="AMD 4.3%"><span style="font-size:9px">AMD<br>+0.6%</span></div><div class="tm-tile" data-tk="LITE" style="left:27.21%;top:20.20%;width:20.94%;height:18.81%;background:rgba(240,68,82,0.92)" title="LITE 3.9%"><span style="font-size:8px">LITE<br>+7.7%</span></div><div class="tm-tile" data-tk="MRVL" style="left:48.16%;top:20.20%;width:17.81%;height:18.81%;background:rgba(240,68,82,0.59)" title="MRVL 3.4%"><span style="font-size:8px">MRVL<br>+1.5%</span></div><div class="tm-tile" data-tk="MSFT" style="left:65.97%;top:20.20%;width:17.74%;height:18.81%;background:#6b7684" title="MSFT 3.3%"><span style="font-size:8px">MSFT<br>-0.0%</span></div><div class="tm-tile" data-tk="HOOD" style="left:83.71%;top:20.20%;width:16.29%;height:18.81%;background:rgba(49,130,246,0.54)" title="HOOD 3.1%"><span style="font-size:8px">HOOD<br>-1.2%</span></div><div class="tm-tile" data-tk="NBIS" style="left:27.21%;top:39.01%;width:18.92%;height:16.19%;background:rgba(49,130,246,0.61)" title="NBIS 3.1%"><span style="font-size:8px">NBIS<br>-1.5%</span></div><div class="tm-tile" data-tk="GOOGL" style="left:27.21%;top:55.20%;width:18.92%;height:15.31%;background:rgba(49,130,246,0.64)" title="GOOGL 2.9%"><span style="font-size:8px">GOOGL<br>-1.7%</span></div><div class="tm-tile" data-tk="COIN" style="left:27.21%;top:70.50%;width:18.92%;height:15.08%;background:rgba(240,68,82,0.61)" title="COIN 2.9%"><span style="font-size:8px">COIN<br>+1.5%</span></div><div class="tm-tile" data-tk="TSLA" style="left:27.21%;top:85.58%;width:18.92%;height:14.42%;background:rgba(49,130,246,0.34)" title="TSLA 2.7%"><span style="font-size:8px">TSLA<br>-0.2%</span></div><div class="tm-tile" data-tk="TER" style="left:46.13%;top:39.01%;width:14.22%;height:17.53%;background:rgba(240,68,82,0.92)" title="TER 2.5%"><span style="font-size:8px">TER<br>+3.7%</span></div><div class="tm-tile" data-tk="PLTR" style="left:60.34%;top:39.01%;width:13.55%;height:17.53%;background:rgba(240,68,82,0.62)" title="PLTR 2.4%"><span style="font-size:8px">PLTR<br>+1.6%</span></div><div class="tm-tile" data-tk="CRWV" style="left:73.90%;top:39.01%;width:13.41%;height:17.53%;background:rgba(240,68,82,0.63)" title="CRWV 2.4%"><span style="font-size:8px">CRWV<br>+1.7%</span></div><div class="tm-tile" data-tk="SNOW" style="left:87.31%;top:39.01%;width:12.69%;height:17.53%;background:rgba(240,68,82,0.44)" title="SNOW 2.2%"><span style="font-size:8px">SNOW<br>+0.7%</span></div><div class="tm-tile" data-tk="AMZN" style="left:46.13%;top:56.54%;width:14.30%;height:15.15%;background:rgba(49,130,246,0.37)" title="AMZN 2.2%"><span style="font-size:8px">AMZN<br>-0.4%</span></div><div class="tm-tile" data-tk="QCOM" style="left:46.13%;top:71.69%;width:14.30%;height:14.82%;background:rgba(49,130,246,0.51)" title="QCOM 2.1%"><span style="font-size:8px">QCOM<br>-1.1%</span></div><div class="tm-tile" data-tk="AAOI" style="left:46.13%;top:86.51%;width:14.30%;height:13.49%;background:rgba(240,68,82,0.92)" title="AAOI 1.9%"><span style="font-size:8px">AAOI<br>+8.1%</span></div><div class="tm-tile" data-tk="ALAB" style="left:60.43%;top:56.54%;width:13.83%;height:13.68%;background:rgba(240,68,82,0.33)" title="ALAB 1.9%"><span style="font-size:8px">ALAB<br>+0.1%</span></div><div class="tm-tile" data-tk="STX" style="left:74.26%;top:56.54%;width:13.02%;height:13.68%;background:rgba(240,68,82,0.80)" title="STX 1.8%"><span style="font-size:8px">STX<br>+2.5%</span></div><div class="tm-tile" data-tk="META" style="left:87.28%;top:56.54%;width:12.72%;height:13.68%;background:rgba(240,68,82,0.32)" title="META 1.7%"><span style="font-size:8px">META<br>+0.1%</span></div><div class="tm-tile" data-tk="AVGO" style="left:60.43%;top:70.22%;width:11.04%;height:14.93%;background:rgba(49,130,246,0.73)" title="AVGO 1.6%"><span style="font-size:8px">AVGO<br>-2.1%</span></div><div class="tm-tile" data-tk="AAPL" style="left:60.43%;top:85.14%;width:11.04%;height:14.86%;background:rgba(49,130,246,0.46)" title="AAPL 1.6%"><span style="font-size:8px">AAPL<br>-0.8%</span></div><div class="tm-tile" data-tk="CRDO" style="left:71.47%;top:70.22%;width:15.17%;height:10.67%;background:rgba(240,68,82,0.92)" title="CRDO 1.6%"><span style="font-size:8px">CRDO<br>+7.9%</span></div><div class="tm-tile" data-tk="WDC" style="left:86.64%;top:70.22%;width:13.36%;height:10.67%;background:rgba(240,68,82,0.66)" title="WDC 1.4%"><span style="font-size:8px">WDC<br>+1.8%</span></div><div class="tm-tile" data-tk="ARM" style="left:71.47%;top:80.89%;width:12.72%;height:9.84%;background:rgba(240,68,82,0.49)" title="ARM 1.3%"></div><div class="tm-tile" data-tk="VRT" style="left:71.47%;top:90.73%;width:12.72%;height:9.27%;background:rgba(240,68,82,0.70)" title="VRT 1.2%"></div><div class="tm-tile" data-tk="TSM" style="left:84.19%;top:80.89%;width:7.93%;height:12.88%;background:rgba(240,68,82,0.43)" title="TSM 1.0%"></div><div class="tm-tile" data-tk="GEV" style="left:92.13%;top:80.89%;width:7.87%;height:12.88%;background:rgba(240,68,82,0.92)" title="GEV 1.0%"></div><div class="tm-tile" data-tk="LLY" style="left:84.19%;top:93.77%;width:15.81%;height:6.23%;background:rgba(49,130,246,0.42)" title="LLY 1.0%"></div></div>
 <div class="inav-note">추정치 — 현금·괴리율 미반영, 시초가와 다를 수 있음</div>
 </div>
 <div class="weekly-buy-bar"><b>이번 주는 3.0배로 사세요</b> 📈</div>
@@ -327,31 +327,31 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 </div>
 </div>
 <div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="65.0" stroke-linecap="round"/></svg>
-<span class="num" style="color:#E65100">53</span>
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#2196F3" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="55.3" stroke-linecap="round"/></svg>
+<span class="num" style="color:#1565C0">60</span>
 </div>
 </div>
 
-<div class="verdict-bar" style="background:#FFF3E0">
-<div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[횡보장] 뚜렷한 시그널 없음. 가격 변동 관찰 후 진입하세요.</div>
+<div class="verdict-bar" style="background:#E3F2FD">
+<div class="vd-title" style="color:#1565C0">🔵 매수 고려</div>
+<div class="vd-detail" style="color:#1565C0">[상승장] 추세 양호. 소량 분할매수 또는 다음 풀백 대기.</div>
 </div>
 
 <div class="price-area" id="pa-426030.KS">
-<span class="price" id="pr-426030.KS">₩48,445</span>
-<span class="chg-pill down" id="chg-426030.KS">-0.43%</span>
+<span class="price" id="pr-426030.KS">₩48,300</span>
+<span class="chg-pill down" id="chg-426030.KS">-0.73%</span>
 </div>
 <div class="live-alert" id="la-426030.KS" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>₩32,737</span><span>52주</span><span>₩62,605</span></div>
-<div class="range-track"><div class="range-fill" style="width:53%;background:#ff9500"></div><div class="range-dot" style="left:53%"></div></div>
+<div class="range-track"><div class="range-fill" style="width:52%;background:#ff9500"></div><div class="range-dot" style="left:52%"></div></div>
 </div>
 
 <div class="metrics">
-<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">64</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-22.6%</div></div>
-<div class="metric warn" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+8.2%</div></div>
+<div class="metric " onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">63</div></div>
+<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-22.8%</div></div>
+<div class="metric " onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+7.9%</div></div>
 <div class="metric hi" onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">정배열</div></div>
 </div>
 
@@ -378,8 +378,8 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 <div class="sr-grid">
 <div class="sr-item">
 <div class="sr-label">시장 레짐</div>
-<div class="sr-val side" id="regime-426030.KS">횡보장</div>
-<div class="sr-sub" id="regime-sub-426030.KS">SIDEWAYS</div>
+<div class="sr-val bull" id="regime-426030.KS">상승장</div>
+<div class="sr-sub" id="regime-sub-426030.KS">BULL</div>
 <div class="sr-change neutral" id="regime-chg-426030.KS">—</div>
 </div>
 <div class="sr-item">
@@ -392,7 +392,7 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
-<div class="sr-val loss" id="ath-dd-426030.KS">-22.6%</div>
+<div class="sr-val loss" id="ath-dd-426030.KS">-22.8%</div>
 <div class="sr-sub">ATH ₩62,605</div>
 <div class="ath-bar"><div class="ath-fill" style="width:77%;background:#f04452"></div></div>
 </div>
@@ -401,25 +401,25 @@ body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;back
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 ₩24,222 (-50%)</span>
+<span class="info-chip danger">손절 ₩24,150 (-50%)</span>
 </div>
 
 <div class="details">
-ATH ₩62,605 · SMA20 ₩46,242 · SMA50 ₩46,190 · SMA200 ₩44,742 · 3M -16.6% · Vol 33%
+ATH ₩62,605 · SMA20 ₩46,234 · SMA50 ₩46,187 · SMA200 ₩44,741 · 3M -16.9% · Vol 33%
 </div>
 </div>
-<div class="card" data-ticker="0015B0.KS" data-currency="KRW" data-grid='[{"l":1,"p":19027.20,"q":28},{"l":2,"p":18234.40,"q":30},{"l":3,"p":17441.60,"q":31},{"l":4,"p":16648.80,"q":33},{"l":5,"p":15856.00,"q":34},{"l":6,"p":15063.20,"q":36},{"l":7,"p":14270.40,"q":38},{"l":8,"p":13477.60,"q":40},{"l":9,"p":12684.80,"q":43},{"l":10,"p":11892.00,"q":46}]' data-upgrid='[{"l":1,"p":20414.60,"q":16},{"l":2,"p":21009.20,"q":15},{"l":3,"p":21603.80,"q":15},{"l":4,"p":22198.40,"q":14},{"l":5,"p":22793.00,"q":14}]' data-ath="26155.00" data-low52="12805.00" data-high52="26155.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="SIDEWAYS" data-weekly-base="250000" data-weekly-mult="3.0">
-<div class="inav-card" data-holdings='[["PLTR", 303.53], ["INTC", 242.63], ["AAOI", 164.48], ["CRWV", 130.1], ["BE", 128.18], ["SNOW", 104.3], ["NVDA", 100.19], ["DELL", 65.18], ["MRVL", 64.83], ["ARM", 53.9], ["AMD", 42.95], ["TSLA", 35.05], ["MU", 30.87], ["AMZN", 29.51], ["LITE", 29.03], ["GOOGL", 27.0], ["SNDK", 23.64], ["ALAB", 20.43], ["LRCX", 16.29], ["MSFT", 15.53], ["TER", 14.9], ["STX", 11.35], ["AMAT", 7.65], ["AVGO", 1.06]]' data-krclose="19820.00">
-<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">10/02 10:05 기준</span></div>
-<div class="inav-main"><span class="iv-est">₩19,943</span> <span class="iv-chg ip-up">+0.62%</span></div>
-<div class="inav-sub iv-dd">예상 낙폭 ATH -23.8% → <b>3.0배 구간</b></div>
+<div class="card" data-ticker="0015B0.KS" data-currency="KRW" data-grid='[{"l":1,"p":18955.20,"q":36},{"l":2,"p":18165.40,"q":38},{"l":3,"p":17375.60,"q":40},{"l":4,"p":16585.80,"q":42},{"l":5,"p":15796.00,"q":44},{"l":6,"p":15006.20,"q":46},{"l":7,"p":14216.40,"q":49},{"l":8,"p":13426.60,"q":52},{"l":9,"p":12636.80,"q":55},{"l":10,"p":11847.00,"q":59}]' data-upgrid='[{"l":1,"p":20337.35,"q":20},{"l":2,"p":20929.70,"q":20},{"l":3,"p":21522.05,"q":19},{"l":4,"p":22114.40,"q":18},{"l":5,"p":22706.75,"q":18}]' data-ath="26155.00" data-low52="12805.00" data-high52="26155.00" data-config='{"levels":10,"spacing":4.0}' data-budget="10000000" data-regime="BULL" data-weekly-base="250000" data-weekly-mult="3.0">
+<div class="inav-card" data-holdings='[["PLTR", 303.53], ["INTC", 242.63], ["AAOI", 164.48], ["CRWV", 130.1], ["BE", 128.18], ["SNOW", 104.3], ["NVDA", 100.19], ["DELL", 65.18], ["MRVL", 64.83], ["ARM", 53.9], ["AMD", 42.95], ["TSLA", 35.05], ["MU", 30.87], ["AMZN", 29.51], ["LITE", 29.03], ["GOOGL", 27.0], ["SNDK", 23.64], ["ALAB", 20.43], ["LRCX", 16.29], ["MSFT", 15.53], ["TER", 14.9], ["STX", 11.35], ["AMAT", 7.65], ["AVGO", 1.06]]' data-krclose="19745.00">
+<div class="inav-head">🌙 미국장 반영 추정 iNAV <span class="inav-time">10/02 11:05 기준</span></div>
+<div class="inav-main"><span class="iv-est">₩20,159</span> <span class="iv-chg ip-up">+2.10%</span></div>
+<div class="inav-sub iv-dd">예상 낙폭 ATH -22.9% → <b>3.0배 구간</b></div>
 <div class="inav-break">
-<span>포트폴리오 <b class="iv-basket">+0.19%</b></span>
-<span>환율 <b class="iv-fx">+0.43%</b></span>
-<span class="iv-updown">🔺13 🔻9</span>
+<span>포트폴리오 <b class="iv-basket">+1.87%</b></span>
+<span>환율 <b class="iv-fx">+0.22%</b></span>
+<span class="iv-updown">🔺18 🔻5</span>
 <span>반영률 55%</span>
 </div>
-<div class="treemap"><div class="tm-tile" data-tk="PLTR" style="left:0.00%;top:0.00%;width:28.14%;height:42.56%;background:#6b7684" title="PLTR 12.0%"><span style="font-size:11px">PLTR<br>+0.0%</span></div><div class="tm-tile" data-tk="SNDK" style="left:0.00%;top:42.56%;width:28.14%;height:30.83%;background:rgba(240,68,82,0.42)" title="SNDK 8.7%"><span style="font-size:11px">SNDK<br>+0.6%</span></div><div class="tm-tile" data-tk="BE" style="left:0.00%;top:73.39%;width:28.14%;height:26.61%;background:rgba(49,130,246,0.92)" title="BE 7.5%"><span style="font-size:9px">BE<br>-4.9%</span></div><div class="tm-tile" data-tk="SNOW" style="left:28.14%;top:0.00%;width:24.62%;height:30.34%;background:rgba(240,68,82,0.86)" title="SNOW 7.5%"><span style="font-size:9px">SNOW<br>+2.8%</span></div><div class="tm-tile" data-tk="DELL" style="left:52.76%;top:0.00%;width:24.38%;height:30.34%;background:rgba(49,130,246,0.36)" title="DELL 7.4%"><span style="font-size:9px">DELL<br>-0.3%</span></div><div class="tm-tile" data-tk="MU" style="left:77.14%;top:0.00%;width:22.86%;height:30.34%;background:#6b7684" title="MU 6.9%"><span style="font-size:9px">MU<br>+0.0%</span></div><div class="tm-tile" data-tk="INTC" style="left:28.14%;top:30.34%;width:25.33%;height:24.30%;background:rgba(240,68,82,0.92)" title="INTC 6.2%"><span style="font-size:9px">INTC<br>+3.7%</span></div><div class="tm-tile" data-tk="LITE" style="left:28.14%;top:54.63%;width:25.33%;height:23.48%;background:rgba(49,130,246,0.35)" title="LITE 5.9%"><span style="font-size:9px">LITE<br>-0.2%</span></div><div class="tm-tile" data-tk="AMD" style="left:28.14%;top:78.12%;width:25.33%;height:21.88%;background:rgba(240,68,82,0.44)" title="AMD 5.5%"><span style="font-size:9px">AMD<br>+0.7%</span></div><div class="tm-tile" data-tk="NVDA" style="left:53.47%;top:30.34%;width:26.61%;height:18.14%;background:rgba(240,68,82,0.40)" title="NVDA 4.8%"><span style="font-size:9px">NVDA<br>+0.5%</span></div><div class="tm-tile" data-tk="MRVL" style="left:80.08%;top:30.34%;width:19.92%;height:18.14%;background:rgba(240,68,82,0.37)" title="MRVL 3.6%"><span style="font-size:8px">MRVL<br>+0.4%</span></div><div class="tm-tile" data-tk="AAOI" style="left:53.47%;top:48.48%;width:17.12%;height:20.11%;background:rgba(49,130,246,0.58)" title="AAOI 3.4%"><span style="font-size:8px">AAOI<br>-1.4%</span></div><div class="tm-tile" data-tk="ARM" style="left:70.59%;top:48.48%;width:16.37%;height:20.11%;background:rgba(49,130,246,0.57)" title="ARM 3.3%"><span style="font-size:8px">ARM<br>-1.4%</span></div><div class="tm-tile" data-tk="TSLA" style="left:86.96%;top:48.48%;width:13.04%;height:20.11%;background:rgba(240,68,82,0.41)" title="TSLA 2.6%"><span style="font-size:8px">TSLA<br>+0.6%</span></div><div class="tm-tile" data-tk="CRWV" style="left:53.47%;top:68.59%;width:14.64%;height:16.33%;background:rgba(240,68,82,0.58)" title="CRWV 2.4%"><span style="font-size:8px">CRWV<br>+1.4%</span></div><div class="tm-tile" data-tk="STX" style="left:53.47%;top:84.92%;width:14.64%;height:15.08%;background:rgba(240,68,82,0.49)" title="STX 2.2%"><span style="font-size:8px">STX<br>+1.0%</span></div><div class="tm-tile" data-tk="GOOGL" style="left:68.11%;top:68.59%;width:11.59%;height:16.91%;background:rgba(240,68,82,0.49)" title="GOOGL 2.0%"><span style="font-size:8px">GOOGL<br>+0.9%</span></div><div class="tm-tile" data-tk="MSFT" style="left:68.11%;top:85.50%;width:11.59%;height:14.50%;background:rgba(240,68,82,0.45)" title="MSFT 1.7%"><span style="font-size:8px">MSFT<br>+0.8%</span></div><div class="tm-tile" data-tk="AMZN" style="left:79.70%;top:68.59%;width:10.21%;height:15.19%;background:rgba(240,68,82,0.50)" title="AMZN 1.6%"><span style="font-size:8px">AMZN<br>+1.0%</span></div><div class="tm-tile" data-tk="ALAB" style="left:89.90%;top:68.59%;width:10.10%;height:15.19%;background:rgba(49,130,246,0.40)" title="ALAB 1.5%"><span style="font-size:8px">ALAB<br>-0.5%</span></div><div class="tm-tile" data-tk="TER" style="left:79.70%;top:83.78%;width:14.73%;height:8.55%;background:rgba(49,130,246,0.40)" title="TER 1.3%"></div><div class="tm-tile" data-tk="LRCX" style="left:79.70%;top:92.34%;width:14.73%;height:7.66%;background:rgba(240,68,82,0.59)" title="LRCX 1.1%"></div><div class="tm-tile" data-tk="AMAT" style="left:94.43%;top:83.78%;width:5.57%;height:14.81%;background:rgba(49,130,246,0.32)" title="AMAT 0.8%"></div><div class="tm-tile" data-tk="AVGO" style="left:94.43%;top:98.59%;width:5.57%;height:1.41%;background:rgba(49,130,246,0.52)" title="AVGO 0.1%"></div></div>
+<div class="treemap"><div class="tm-tile" data-tk="PLTR" style="left:0.00%;top:0.00%;width:28.09%;height:42.53%;background:rgba(240,68,82,0.62)" title="PLTR 11.9%"><span style="font-size:11px">PLTR<br>+1.6%</span></div><div class="tm-tile" data-tk="SNDK" style="left:0.00%;top:42.53%;width:28.09%;height:31.16%;background:rgba(240,68,82,0.85)" title="SNDK 8.8%"><span style="font-size:11px">SNDK<br>+2.7%</span></div><div class="tm-tile" data-tk="SNOW" style="left:0.00%;top:73.70%;width:28.09%;height:26.30%;background:rgba(240,68,82,0.44)" title="SNOW 7.4%"><span style="font-size:9px">SNOW<br>+0.7%</span></div><div class="tm-tile" data-tk="BE" style="left:28.09%;top:0.00%;width:24.42%;height:30.18%;background:rgba(240,68,82,0.34)" title="BE 7.4%"><span style="font-size:9px">BE<br>+0.2%</span></div><div class="tm-tile" data-tk="DELL" style="left:52.51%;top:0.00%;width:24.24%;height:30.18%;background:rgba(240,68,82,0.44)" title="DELL 7.3%"><span style="font-size:9px">DELL<br>+0.7%</span></div><div class="tm-tile" data-tk="MU" style="left:76.75%;top:0.00%;width:23.25%;height:30.18%;background:rgba(240,68,82,0.91)" title="MU 7.0%"><span style="font-size:9px">MU<br>+3.0%</span></div><div class="tm-tile" data-tk="LITE" style="left:28.09%;top:30.18%;width:25.49%;height:24.67%;background:rgba(240,68,82,0.92)" title="LITE 6.3%"><span style="font-size:9px">LITE<br>+7.7%</span></div><div class="tm-tile" data-tk="INTC" style="left:28.09%;top:54.85%;width:25.49%;height:23.66%;background:rgba(49,130,246,0.34)" title="INTC 6.0%"><span style="font-size:9px">INTC<br>-0.2%</span></div><div class="tm-tile" data-tk="AMD" style="left:28.09%;top:78.51%;width:25.49%;height:21.49%;background:rgba(240,68,82,0.43)" title="AMD 5.5%"><span style="font-size:9px">AMD<br>+0.6%</span></div><div class="tm-tile" data-tk="NVDA" style="left:53.59%;top:30.18%;width:26.32%;height:18.20%;background:rgba(240,68,82,0.52)" title="NVDA 4.8%"><span style="font-size:9px">NVDA<br>+1.1%</span></div><div class="tm-tile" data-tk="AAOI" style="left:79.91%;top:30.18%;width:20.09%;height:18.20%;background:rgba(240,68,82,0.92)" title="AAOI 3.7%"><span style="font-size:8px">AAOI<br>+8.1%</span></div><div class="tm-tile" data-tk="MRVL" style="left:53.59%;top:48.38%;width:17.71%;height:20.33%;background:rgba(240,68,82,0.59)" title="MRVL 3.6%"><span style="font-size:8px">MRVL<br>+1.5%</span></div><div class="tm-tile" data-tk="ARM" style="left:71.30%;top:48.38%;width:16.06%;height:20.33%;background:rgba(240,68,82,0.49)" title="ARM 3.3%"><span style="font-size:8px">ARM<br>+0.9%</span></div><div class="tm-tile" data-tk="TSLA" style="left:87.35%;top:48.38%;width:12.65%;height:20.33%;background:rgba(49,130,246,0.34)" title="TSLA 2.6%"><span style="font-size:8px">TSLA<br>-0.2%</span></div><div class="tm-tile" data-tk="CRWV" style="left:53.59%;top:68.71%;width:14.73%;height:16.20%;background:rgba(240,68,82,0.63)" title="CRWV 2.4%"><span style="font-size:8px">CRWV<br>+1.7%</span></div><div class="tm-tile" data-tk="STX" style="left:53.59%;top:84.91%;width:14.73%;height:15.09%;background:rgba(240,68,82,0.80)" title="STX 2.2%"><span style="font-size:8px">STX<br>+2.5%</span></div><div class="tm-tile" data-tk="GOOGL" style="left:68.32%;top:68.71%;width:11.32%;height:16.71%;background:rgba(49,130,246,0.64)" title="GOOGL 1.9%"><span style="font-size:8px">GOOGL<br>-1.7%</span></div><div class="tm-tile" data-tk="MSFT" style="left:68.32%;top:85.42%;width:11.32%;height:14.58%;background:#6b7684" title="MSFT 1.6%"><span style="font-size:8px">MSFT<br>-0.0%</span></div><div class="tm-tile" data-tk="AMZN" style="left:79.64%;top:68.71%;width:10.21%;height:14.86%;background:rgba(49,130,246,0.37)" title="AMZN 1.5%"><span style="font-size:8px">AMZN<br>-0.4%</span></div><div class="tm-tile" data-tk="ALAB" style="left:89.85%;top:68.71%;width:10.15%;height:14.86%;background:rgba(240,68,82,0.33)" title="ALAB 1.5%"><span style="font-size:8px">ALAB<br>+0.1%</span></div><div class="tm-tile" data-tk="TER" style="left:79.64%;top:83.57%;width:14.80%;height:8.67%;background:rgba(240,68,82,0.92)" title="TER 1.3%"></div><div class="tm-tile" data-tk="LRCX" style="left:79.64%;top:92.24%;width:14.80%;height:7.76%;background:rgba(240,68,82,0.92)" title="LRCX 1.1%"></div><div class="tm-tile" data-tk="AMAT" style="left:94.44%;top:83.57%;width:5.56%;height:15.07%;background:rgba(240,68,82,0.92)" title="AMAT 0.8%"></div><div class="tm-tile" data-tk="AVGO" style="left:94.44%;top:98.64%;width:5.56%;height:1.36%;background:rgba(49,130,246,0.73)" title="AVGO 0.1%"></div></div>
 <div class="inav-note">추정치 — 현금·괴리율 미반영, 시초가와 다를 수 있음</div>
 </div>
 <div class="weekly-buy-bar"><b>이번 주는 3.0배로 사세요</b> 📈</div>
@@ -434,31 +434,31 @@ ATH ₩62,605 · SMA20 ₩46,242 · SMA50 ₩46,190 · SMA200 ₩44,742 · 3M -1
 </div>
 </div>
 <div class="score-ring">
-<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="76.0" stroke-linecap="round"/></svg>
-<span class="num" style="color:#E65100">45</span>
+<svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#f2f4f6" stroke-width="4"/><circle cx="26" cy="26" r="22" fill="none" stroke="#FF9800" stroke-width="4" stroke-dasharray="138.2" stroke-dashoffset="74.6" stroke-linecap="round"/></svg>
+<span class="num" style="color:#E65100">46</span>
 </div>
 </div>
 
 <div class="verdict-bar" style="background:#FFF3E0">
 <div class="vd-title" style="color:#E65100">🟡 관망</div>
-<div class="vd-detail" style="color:#E65100">[횡보장] RSI 71 과매수 접근. 추가 매수보다 대기가 유리합니다.</div>
+<div class="vd-detail" style="color:#E65100">[상승장] RSI 69 과매수 접근. 추가 매수보다 대기가 유리합니다.</div>
 </div>
 
 <div class="price-area" id="pa-0015B0.KS">
-<span class="price" id="pr-0015B0.KS">₩19,820</span>
-<span class="chg-pill up" id="chg-0015B0.KS">+0.13%</span>
+<span class="price" id="pr-0015B0.KS">₩19,745</span>
+<span class="chg-pill down" id="chg-0015B0.KS">-0.25%</span>
 </div>
 <div class="live-alert" id="la-0015B0.KS" style="display:none"></div>
 
 <div class="range-bar">
 <div class="range-labels"><span>₩12,805</span><span>52주</span><span>₩26,155</span></div>
-<div class="range-track"><div class="range-fill" style="width:53%;background:#ff9500"></div><div class="range-dot" style="left:53%"></div></div>
+<div class="range-track"><div class="range-fill" style="width:52%;background:#ff9500"></div><div class="range-dot" style="left:52%"></div></div>
 </div>
 
 <div class="metrics">
-<div class="metric warn" onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">71</div></div>
-<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-24.2%</div></div>
-<div class="metric warn" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+8.5%</div></div>
+<div class="metric warn" onclick="showInfo('rsi')"><div class="ml">RSI</div><div class="mv">69</div></div>
+<div class="metric hi" onclick="showInfo('dd')"><div class="ml">ATH 낙폭</div><div class="mv">-24.5%</div></div>
+<div class="metric warn" onclick="showInfo('mom')"><div class="ml">1개월</div><div class="mv">+8.0%</div></div>
 <div class="metric " onclick="showInfo('sma')"><div class="ml">추세</div><div class="mv">역배열</div></div>
 </div>
 
@@ -485,8 +485,8 @@ ATH ₩62,605 · SMA20 ₩46,242 · SMA50 ₩46,190 · SMA200 ₩44,742 · 3M -1
 <div class="sr-grid">
 <div class="sr-item">
 <div class="sr-label">시장 레짐</div>
-<div class="sr-val side" id="regime-0015B0.KS">횡보장</div>
-<div class="sr-sub" id="regime-sub-0015B0.KS">SIDEWAYS</div>
+<div class="sr-val bull" id="regime-0015B0.KS">상승장</div>
+<div class="sr-sub" id="regime-sub-0015B0.KS">BULL</div>
 <div class="sr-change neutral" id="regime-chg-0015B0.KS">—</div>
 </div>
 <div class="sr-item">
@@ -499,20 +499,20 @@ ATH ₩62,605 · SMA20 ₩46,242 · SMA50 ₩46,190 · SMA200 ₩44,742 · 3M -1
 </div>
 <div class="sr-item">
 <div class="sr-label">ATH 대비</div>
-<div class="sr-val loss" id="ath-dd-0015B0.KS">-24.2%</div>
+<div class="sr-val loss" id="ath-dd-0015B0.KS">-24.5%</div>
 <div class="sr-sub">ATH ₩26,155</div>
-<div class="ath-bar"><div class="ath-fill" style="width:76%;background:#f04452"></div></div>
+<div class="ath-bar"><div class="ath-fill" style="width:75%;background:#f04452"></div></div>
 </div>
 </div>
 </div>
 
 <div class="info-row">
 <span class="info-chip">무한매수 · 장기 보유</span>
-<span class="info-chip danger">손절 ₩9,910 (-50%)</span>
+<span class="info-chip danger">손절 ₩9,872 (-50%)</span>
 </div>
 
 <div class="details">
-ATH ₩26,155 · SMA20 ₩18,650 · SMA50 ₩18,836 · SMA200 ₩18,695 · 3M -18.3% · Vol 41%
+ATH ₩26,155 · SMA20 ₩18,646 · SMA50 ₩18,834 · SMA200 ₩18,695 · 3M -18.6% · Vol 41%
 </div>
 </div>
 
@@ -532,7 +532,7 @@ ATH ₩26,155 · SMA20 ₩18,650 · SMA50 ₩18,836 · SMA200 ₩18,695 · 3M -1
 
 <div class="footer">
 <p>본 리포트는 교육/참고 목적이며 투자 조언이 아닙니다.</p>
-<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-10-02 10:05 KST</p>
+<p style="margin-top:4px"><a href="https://github.com/redchoeng/etf_guide">GitHub</a> · 2026-10-02 11:05 KST</p>
 </div>
 </div>
 
@@ -567,7 +567,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')hideInfo();});
 
 const NOTI_KEY='ding_noti_enabled';
 const NOTI_SENT_KEY='ding_noti_sent';
-const alerts=[];
+const alerts=[{"type":"buy","ticker":"426030.KS","name":"TIMEFOLIO","msg":"TIMEFOLIO 60점 — 매수 고려"}];
 let swReg=null;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});}
 function initNoti(){

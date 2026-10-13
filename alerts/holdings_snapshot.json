@@ -1,271 +1,222 @@
 {
  "426030": {
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "holdings": {
-   "NVIDIA Corp": 238.0,
+   "NVIDIA Corp": 239.0,
+   "Microsoft Corp": 70.0,
    "Dell Technologies Inc": 62.0,
-   "Bloom Energy Corp": 120.0,
-   "Microsoft Corp": 57.0,
+   "Alphabet Inc": 89.0,
    "Micron Technology Inc": 29.0,
-   "Lumentum Holdings Inc": 25.0,
-   "Sandisk Corp": 16.0,
-   "Intel Corp": 237.0,
-   "Advanced Micro Devices Inc": 40.0,
-   "Alphabet Inc": 69.0,
-   "Marvell Technology Inc": 85.0,
-   "Palantir Technologies Inc": 106.0,
-   "Space Exploration Technologies Corp": 133.0,
-   "Amazon.com Inc": 77.0,
-   "SK hynix Inc": 119.0,
+   "Bloom Energy Corp": 108.0,
+   "Advanced Micro Devices Inc": 41.0,
+   "Intel Corp": 238.0,
+   "Apple Inc": 70.0,
+   "Amazon.com Inc": 91.0,
+   "Palantir Technologies Inc": 107.0,
+   "Lumentum Holdings Inc": 22.0,
+   "Sandisk Corp": 13.0,
+   "Marvell Technology Inc": 72.0,
+   "Space Exploration Technologies Corp": 112.0,
    "Snowflake Inc": 47.0,
-   "Apple Inc": 50.0,
+   "SK hynix Inc": 99.0,
+   "Tesla Inc": 38.0,
    "Palo Alto Networks Inc": 35.0,
-   "Tesla Inc": 37.0,
-   "Nebius Group NV": 60.0,
    "Taiwan Semiconductor Manufacturing Co Ltd": 28.0,
    "QUALCOMM Inc": 67.0,
-   "Applied Optoelectronics Inc": 104.0,
-   "Robinhood Markets Inc": 96.0,
    "Meta Platforms Inc": 14.0,
-   "Broadcom Inc": 27.0,
-   "CoreWeave Inc": 111.0,
+   "Broadcom Inc": 28.0,
+   "Nebius Group NV": 44.0,
    "Strategy Inc": 59.0,
-   "Coinbase Global Inc": 48.0,
+   "CoreWeave Inc": 111.0,
+   "Coinbase Global Inc": 49.0,
    "Tower Semiconductor Ltd": 35.0,
-   "Credo Technology Group Holding Ltd": 34.0,
+   "Applied Optoelectronics Inc": 71.0,
+   "Robinhood Markets Inc": 65.0,
+   "Credo Technology Group Holding Ltd": 35.0,
    "Western Digital Corp": 18.0,
+   "Datadog Inc": 24.0,
    "Okta Inc": 30.0,
-   "Crowdstrike Holdings Inc": 25.0,
-   "Astera Labs Inc": 20.0,
-   "Teradyne Inc": 17.0,
    "Natera Inc": 17.0,
-   "Datadog Inc": 23.0,
+   "Crowdstrike Holdings Inc": 25.0,
+   "Teradyne Inc": 17.0,
+   "Astera Labs Inc": 20.0,
    "GE Vernova Inc": 6.0,
    "Seagate Technology Holdings PLC": 6.0,
+   "Everpure Inc": 22.0,
    "ServiceNow Inc": 18.0
   },
   "last_diff": {
-   "from": "2026-10-12",
-   "to": "2026-10-13",
+   "from": "2026-10-13",
+   "to": "2026-10-14",
    "added": [
     [
-     "Okta Inc",
-     30.0
-    ],
-    [
-     "Crowdstrike Holdings Inc",
-     25.0
-    ],
-    [
-     "Datadog Inc",
-     23.0
+     "Everpure Inc",
+     22.0
     ]
    ],
-   "removed": [
-    [
-     "ARM Holdings PLC",
-     25.0
-    ],
-    [
-     "Vertiv Holdings Co",
-     28.0
-    ],
-    [
-     "Eli Lilly & Co",
-     5.0
-    ]
-   ],
+   "removed": [],
    "changed": [
     [
-     "Palo Alto Networks Inc",
-     18.0,
-     35.0,
-     94.44444444444443
-    ],
-    [
      "Apple Inc",
-     29.0,
      50.0,
-     72.41379310344826
-    ],
-    [
-     "Microsoft Corp",
-     37.0,
-     57.0,
-     54.05405405405406
-    ],
-    [
-     "Amazon.com Inc",
-     50.0,
-     77.0,
-     54.0
-    ],
-    [
-     "Teradyne Inc",
-     34.0,
-     17.0,
-     -50.0
-    ],
-    [
-     "Seagate Technology Holdings PLC",
-     11.0,
-     6.0,
-     -45.45454545454546
-    ],
-    [
-     "Palantir Technologies Inc",
-     73.0,
-     106.0,
-     45.20547945205479
-    ],
-    [
-     "Alphabet Inc",
-     49.0,
-     69.0,
-     40.81632653061226
-    ],
-    [
-     "Astera Labs Inc",
-     31.0,
-     20.0,
-     -35.483870967741936
-    ],
-    [
-     "Coinbase Global Inc",
-     68.0,
-     48.0,
-     -29.411764705882348
-    ],
-    [
-     "Strategy Inc",
-     82.0,
-     59.0,
-     -28.048780487804876
-    ],
-    [
-     "CoreWeave Inc",
-     154.0,
-     111.0,
-     -27.922077922077932
-    ],
-    [
-     "Snowflake Inc",
-     37.0,
-     47.0,
-     27.027027027027017
+     70.0,
+     40.0
     ],
     [
      "Robinhood Markets Inc",
-     128.0,
      96.0,
-     -25.0
+     65.0,
+     -32.29166666666666
     ],
     [
-     "Credo Technology Group Holding Ltd",
-     44.0,
-     34.0,
-     -22.727272727272734
+     "Applied Optoelectronics Inc",
+     104.0,
+     71.0,
+     -31.730769230769226
+    ],
+    [
+     "Alphabet Inc",
+     69.0,
+     89.0,
+     28.985507246376812
     ],
     [
      "Nebius Group NV",
-     76.0,
      60.0,
-     -21.05263157894737
+     44.0,
+     -26.66666666666667
     ],
     [
-     "Marvell Technology Inc",
-     72.0,
-     85.0,
-     18.055555555555557
-    ],
-    [
-     "Tesla Inc",
-     45.0,
-     37.0,
-     -17.777777777777786
-    ],
-    [
-     "SK hynix Inc",
-     141.0,
-     119.0,
-     -15.60283687943263
-    ],
-    [
-     "Space Exploration Technologies Corp",
-     155.0,
-     133.0,
-     -14.193548387096783
-    ],
-    [
-     "Lumentum Holdings Inc",
-     22.0,
-     25.0,
-     13.63636363636364
+     "Microsoft Corp",
+     57.0,
+     70.0,
+     22.807017543859658
     ],
     [
      "Sandisk Corp",
-     18.0,
      16.0,
-     -11.111111111111114
+     13.0,
+     -18.75
+    ],
+    [
+     "Amazon.com Inc",
+     77.0,
+     91.0,
+     18.181818181818187
+    ],
+    [
+     "SK hynix Inc",
+     119.0,
+     99.0,
+     -16.806722689075627
+    ],
+    [
+     "Space Exploration Technologies Corp",
+     133.0,
+     112.0,
+     -15.789473684210535
+    ],
+    [
+     "Marvell Technology Inc",
+     85.0,
+     72.0,
+     -15.294117647058826
+    ],
+    [
+     "Lumentum Holdings Inc",
+     25.0,
+     22.0,
+     -12.0
     ],
     [
      "Bloom Energy Corp",
-     133.0,
      120.0,
-     -9.774436090225564
+     108.0,
+     -10.0
     ],
     [
-     "Dell Technologies Inc",
-     68.0,
-     62.0,
-     -8.82352941176471
+     "Datadog Inc",
+     23.0,
+     24.0,
+     4.347826086956516
     ],
     [
      "Broadcom Inc",
-     28.0,
      27.0,
-     -3.5714285714285694
+     28.0,
+     3.7037037037036953
     ]
    ],
-   "small": [],
-   "minor": 0
+   "small": [
+    [
+     "Credo Technology Group Holding Ltd",
+     34.0,
+     35.0,
+     2.941176470588232
+    ],
+    [
+     "Tesla Inc",
+     37.0,
+     38.0,
+     2.7027027027026946
+    ],
+    [
+     "Advanced Micro Devices Inc",
+     40.0,
+     41.0,
+     2.499999999999986
+    ],
+    [
+     "Coinbase Global Inc",
+     48.0,
+     49.0,
+     2.0833333333333286
+    ],
+    [
+     "Palantir Technologies Inc",
+     106.0,
+     107.0,
+     0.9433962264151035
+    ]
+   ],
+   "minor": 5
   },
   "src": "official"
  },
  "0015B0": {
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "holdings": {
    "Palantir Technologies Inc -A": 290.59,
    "Dell Technologies Inc": 64.98,
    "BLOOM ENERGY CORPORATION": 127.79,
    "Snowflake Inc   - CL A": 92.96,
-   "Lumentum Holdings Inc": 30.94,
    "Sandisk Corp/DE": 21.57,
+   "Lumentum Holdings Inc": 30.94,
    "MICRON TECH": 30.77,
    "ADVANCED MICRO DEVICES": 45.82,
    "INTEL Corp": 241.88,
    "NVIDIA Corp": 99.88,
    "MARVELL TECHNOLOGY INC": 76.65,
-   "Strategy Inc": 130.63,
-   "Applied Optoelectronics Inc": 181.0,
-   "NETAPP INC": 83.2,
    "DYNATRACE INC": 310.63,
+   "Strategy Inc": 130.63,
+   "NETAPP INC": 83.2,
    "OKTA INC": 82.1,
    "Circle Internet Group Inc": 222.03,
    "FORTINET INC": 96.18,
+   "Applied Optoelectronics Inc": 181.0,
    "YANDEX NV-A": 76.37,
    "TESLA MOTORS": 32.7,
    "DATADOG INC - CLASS A": 41.67,
-   "CROWDSTRIKE HOLDINGS INC - A": 40.17,
    "Natera Inc": 27.11,
-   "ARM Holdings PLC": 40.71,
-   "AXT Inc": 157.51,
+   "CROWDSTRIKE HOLDINGS INC - A": 40.17,
    "Coreweave Inc": 129.7,
-   "PALO ALTO NETWORKS INC": 25.27,
+   "ARM Holdings PLC": 40.71,
    "Space Exploration Technologies Corp": 63.0,
+   "PALO ALTO NETWORKS INC": 25.27,
+   "AXT Inc": 157.51,
    "Tempus AI Inc": 140.27,
-   "SK hynix Inc": 57.2,
    "ALPHABET INC-CL A": 26.91,
+   "SK hynix Inc": 57.2,
    "MONGODB INC": 23.17,
    "SEAGATE TECHNOLOGY": 11.32,
    "MICROSOFT": 15.48,
@@ -282,20 +233,13 @@
    "BROADCOM LTD": 1.06
   },
   "last_diff": {
-   "from": "2026-10-12",
-   "to": "2026-10-13",
+   "from": "2026-10-13",
+   "to": "2026-10-14",
    "added": [],
    "removed": [],
    "changed": [],
-   "small": [
-    [
-     "BROADCOM LTD",
-     1.05,
-     1.06,
-     0.7946839240773329
-    ]
-   ],
-   "minor": 1
+   "small": [],
+   "minor": 0
   },
   "src": "official"
  }

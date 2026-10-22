@@ -1,17 +1,17 @@
 {
  "426030": {
-  "date": "2026-10-22",
+  "date": "2026-10-23",
   "holdings": {
    "NVIDIA Corp": 239.0,
    "Microsoft Corp": 70.0,
    "Alphabet Inc": 107.0,
    "Apple Inc": 93.0,
    "Micron Technology Inc": 29.0,
-   "Amazon.com Inc": 91.0,
    "Dell Technologies Inc": 50.0,
+   "Amazon.com Inc": 91.0,
    "Advanced Micro Devices Inc": 41.0,
-   "Intel Corp": 238.0,
    "Bloom Energy Corp": 95.0,
+   "Intel Corp": 238.0,
    "Palantir Technologies Inc": 107.0,
    "Space Exploration Technologies Corp": 134.0,
    "Meta Platforms Inc": 28.0,
@@ -29,16 +29,16 @@
    "Coinbase Global Inc": 49.0,
    "Nebius Group NV": 44.0,
    "Western Digital Corp": 18.0,
-   "Natera Inc": 16.0,
-   "Eli Lilly & Co": 5.0,
    "Robinhood Markets Inc": 65.0,
-   "Cisco Systems Inc": 58.0,
+   "Natera Inc": 16.0,
    "Datadog Inc": 24.0,
-   "Texas Instruments Inc": 22.0,
+   "Eli Lilly & Co": 5.0,
    "Okta Inc": 30.0,
+   "Texas Instruments Inc": 22.0,
+   "Cisco Systems Inc": 58.0,
+   "Crowdstrike Holdings Inc": 25.0,
    "Teradyne Inc": 17.0,
    "Astera Labs Inc": 20.0,
-   "Crowdstrike Holdings Inc": 25.0,
    "GE Vernova Inc": 6.0,
    "Seagate Technology Holdings PLC": 6.0,
    "CoreWeave Inc": 62.0,
@@ -46,166 +46,162 @@
    "Credo Technology Group Holding Ltd": 16.0
   },
   "last_diff": {
-   "from": "2026-10-21",
-   "to": "2026-10-22",
-   "added": [
-    [
-     "Cisco Systems Inc",
-     58.0
-    ],
-    [
-     "Texas Instruments Inc",
-     22.0
-    ]
-   ],
-   "removed": [
-    [
-     "Applied Optoelectronics Inc",
-     71.0
-    ],
-    [
-     "Everpure Inc",
-     22.0
-    ],
-    [
-     "ServiceNow Inc",
-     18.0
-    ]
-   ],
-   "changed": [
-    [
-     "Credo Technology Group Holding Ltd",
-     35.0,
-     16.0,
-     -54.285714285714285
-    ],
-    [
-     "Tower Semiconductor Ltd",
-     35.0,
-     18.0,
-     -48.57142857142858
-    ],
-    [
-     "Meta Platforms Inc",
-     19.0,
-     28.0,
-     47.36842105263156
-    ],
-    [
-     "Natera Inc",
-     25.0,
-     16.0,
-     -36.0
-    ],
-    [
-     "Lumentum Holdings Inc",
-     18.0,
-     14.0,
-     -22.222222222222214
-    ],
-    [
-     "Snowflake Inc",
-     47.0,
-     37.0,
-     -21.276595744680847
-    ],
-    [
-     "Alphabet Inc",
-     89.0,
-     107.0,
-     20.224719101123597
-    ],
-    [
-     "Space Exploration Technologies Corp",
-     113.0,
-     134.0,
-     18.584070796460182
-    ],
-    [
-     "Bloom Energy Corp",
-     81.0,
-     95.0,
-     17.283950617283963
-    ],
-    [
-     "Sandisk Corp",
-     13.0,
-     11.0,
-     -15.384615384615387
-    ]
-   ],
-   "small": [
-    [
-     "QUALCOMM Inc",
-     68.0,
-     67.0,
-     -1.470588235294116
-    ]
-   ],
-   "minor": 1
+   "from": "2026-10-22",
+   "to": "2026-10-23",
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "small": [],
+   "minor": 0
   },
   "src": "official"
  },
  "0015B0": {
-  "date": "2026-10-22",
+  "date": "2026-10-23",
   "holdings": {
-   "Palantir Technologies Inc -A": 296.61,
-   "Snowflake Inc   - CL A": 94.89,
-   "NVIDIA Corp": 101.95,
-   "ADVANCED MICRO DEVICES": 39.65,
-   "DYNATRACE INC": 317.07,
-   "NETAPP INC": 84.92,
-   "Sandisk Corp/DE": 12.85,
-   "MICRON TECH": 19.19,
-   "FORTINET INC": 98.18,
-   "OKTA INC": 83.81,
-   "Gitlab Inc": 288.1,
-   "Circle Internet Group Inc": 181.79,
-   "ACCENTURE PLC-CL A": 65.13,
-   "Strategy Inc": 108.88,
-   "MICROSOFT": 29.05,
-   "UNITEDHEALTH GROUP INC": 35.62,
-   "DOLLAR GENERAL CORP": 107.86,
-   "COCA-COLA CO/THE": 153.65,
-   "ELI LILLY & CO": 11.19,
-   "WAL-MART STORES INC": 121.09,
-   "APPLE Inc": 40.7,
-   "Meta Platforms Inc-CL A": 19.36,
-   "Space Exploration Technologies Corp": 86.73,
-   "Lumentum Holdings Inc": 15.3,
-   "TESLA MOTORS": 33.38,
-   "INTEL Corp": 129.8,
-   "MARVELL TECHNOLOGY INC": 48.73,
-   "Natera Inc": 27.68,
-   "DATADOG INC - CLASS A": 42.54,
-   "ALPHABET INC-CL A": 27.47,
-   "CROWDSTRIKE HOLDINGS INC - A": 41.0,
-   "PALO ALTO NETWORKS INC": 25.8,
-   "MONGODB INC": 23.65,
-   "Amazon.com Inc": 30.03,
-   "SEAGATE TECHNOLOGY": 11.55,
-   "Dell Technologies Inc": 16.45,
-   "Cloudflare Inc": 20.85,
-   "Tempus AI Inc": 88.14,
-   "SERVICENOW INC": 39.2,
-   "ARM Holdings PLC": 26.29,
-   "BLOOM ENERGY CORPORATION": 23.56,
-   "ILLUMINA INC": 18.26,
-   "APPLIED MATERIALS INC": 7.78,
-   "Akamai Technologies Inc": 34.32,
-   "TERADYNE INC": 9.05,
-   "SK hynix Inc": 19.71,
-   "LAM RESEARCH": 8.43,
-   "Applied Optoelectronics Inc": 25.93,
-   "Astera Labs Inc": 6.54,
-   "BROADCOM LTD": 1.08
+   "Palantir Technologies Inc -A": 257.04,
+   "Snowflake Inc   - CL A": 93.1,
+   "NVIDIA Corp": 100.03,
+   "ADVANCED MICRO DEVICES": 38.9,
+   "DYNATRACE INC": 311.11,
+   "Lumentum Holdings Inc": 22.02,
+   "NETAPP INC": 83.32,
+   "Dell Technologies Inc": 36.14,
+   "Sandisk Corp/DE": 12.61,
+   "MICRON TECH": 18.83,
+   "OKTA INC": 82.23,
+   "FORTINET INC": 96.33,
+   "Strategy Inc": 106.84,
+   "UNITEDHEALTH GROUP INC": 38.95,
+   "Circle Internet Group Inc": 178.37,
+   "Gitlab Inc": 282.68,
+   "ACCENTURE PLC-CL A": 63.9,
+   "ELI LILLY & CO": 11.98,
+   "MICROSOFT": 28.51,
+   "BLOOM ENERGY CORPORATION": 57.12,
+   "Space Exploration Technologies Corp": 85.1,
+   "Meta Platforms Inc-CL A": 19.0,
+   "TESLA MOTORS": 32.75,
+   "INTEL Corp": 127.36,
+   "MARVELL TECHNOLOGY INC": 47.82,
+   "DATADOG INC - CLASS A": 41.74,
+   "Natera Inc": 27.16,
+   "DOLLAR GENERAL CORP": 81.84,
+   "COCA-COLA CO/THE": 115.77,
+   "AXT Inc": 167.0,
+   "CROWDSTRIKE HOLDINGS INC - A": 40.23,
+   "MONGODB INC": 23.21,
+   "ALPHABET INC-CL A": 26.96,
+   "PALO ALTO NETWORKS INC": 25.31,
+   "SEAGATE TECHNOLOGY": 11.34,
+   "Amazon.com Inc": 29.47,
+   "Vicor Corp": 31.0,
+   "Guardant Health Inc": 39.0,
+   "Applied Optoelectronics Inc": 83.44,
+   "WESTERN DIGITAL": 17.0,
+   "Cloudflare Inc": 20.46,
+   "SERVICENOW INC": 38.47,
+   "Tempus AI Inc": 86.49,
+   "ARM Holdings PLC": 25.8,
+   "ILLUMINA INC": 17.92,
+   "APPLIED MATERIALS INC": 7.64,
+   "TERADYNE INC": 8.88,
+   "Akamai Technologies Inc": 33.67,
+   "SK hynix Inc": 19.34,
+   "APPLE Inc": 7.94,
+   "LAM RESEARCH": 8.27,
+   "Astera Labs Inc": 6.41,
+   "BROADCOM LTD": 1.06
   },
   "last_diff": {
-   "from": "2026-10-21",
-   "to": "2026-10-22",
-   "added": [],
-   "removed": [],
-   "changed": [],
+   "from": "2026-10-22",
+   "to": "2026-10-23",
+   "added": [
+    [
+     "AXT Inc",
+     167.0
+    ],
+    [
+     "Vicor Corp",
+     31.0
+    ],
+    [
+     "Guardant Health Inc",
+     39.0
+    ],
+    [
+     "WESTERN DIGITAL",
+     17.0
+    ]
+   ],
+   "removed": [
+    [
+     "WAL-MART STORES INC",
+     121.09
+    ]
+   ],
+   "changed": [
+    [
+     "Applied Optoelectronics Inc",
+     25.93,
+     83.44,
+     227.94846524117645
+    ],
+    [
+     "BLOOM ENERGY CORPORATION",
+     23.56,
+     57.12,
+     147.08520236146407
+    ],
+    [
+     "Dell Technologies Inc",
+     16.45,
+     36.14,
+     123.90101898883853
+    ],
+    [
+     "APPLE Inc",
+     40.7,
+     7.94,
+     -80.11800696364455
+    ],
+    [
+     "Lumentum Holdings Inc",
+     15.3,
+     22.02,
+     46.676219580549116
+    ],
+    [
+     "COCA-COLA CO/THE",
+     153.65,
+     115.77,
+     -23.2113039576616
+    ],
+    [
+     "DOLLAR GENERAL CORP",
+     107.86,
+     81.84,
+     -22.67159917992403
+    ],
+    [
+     "Palantir Technologies Inc -A",
+     296.61,
+     257.04,
+     -11.682097183633658
+    ],
+    [
+     "UNITEDHEALTH GROUP INC",
+     35.62,
+     38.95,
+     11.441608281857185
+    ],
+    [
+     "ELI LILLY & CO",
+     11.19,
+     11.98,
+     9.108995039026098
+    ]
+   ],
    "small": [],
    "minor": 0
   },

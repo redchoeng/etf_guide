@@ -1,18 +1,18 @@
 {
  "426030": {
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "holdings": {
    "INTEL CORP": 190.0,
    "IONQ INC": 155.0,
    "AMAZON.COM INC": 139.0,
-   "QUANTINUUM INC-A": 136.0,
-   "XCEL ENERGY INC": 135.0,
-   "NVIDIA CORP": 129.0,
+   "QUANTINUUM INC-A": 137.0,
+   "NVIDIA CORP": 130.0,
    "SPACE EXPLORATION TECHN-CL A": 111.0,
    "APPLE INC": 108.0,
    "ALPHABET INC-CL A": 105.0,
-   "NEXTERA ENERGY INC": 103.0,
+   "XCEL ENERGY INC": 102.0,
    "BLOOM ENERGY CORP- A": 93.0,
+   "NEXTERA ENERGY INC": 84.0,
    "QUALCOMM INC": 82.0,
    "SK HYNIX INC-ADR": 76.0,
    "MICROSOFT CORP": 74.0,
@@ -20,15 +20,17 @@
    "COREWEAVE INC-CL A": 71.0,
    "ADVANCED MICRO DEVICES": 70.0,
    "ROBINHOOD MARKETS INC - A": 64.0,
-   "CISCO SYSTEMS INC": 57.0,
+   "BENDING SPOONS SPA": 61.0,
    "BROADCOM INC": 44.0,
    "TEXAS INSTRUMENTS INC": 43.0,
    "ARISTA NETWORKS INC": 42.0,
+   "CISCO SYSTEMS INC": 41.0,
    "KLA CORP": 39.0,
    "TESLA INC": 37.0,
    "CROWDSTRIKE HOLDINGS INC - A": 36.0,
    "NEBIUS GROUP NV": 34.0,
    "PALO ALTO NETWORKS INC": 34.0,
+   "ANTHROPIC PBC-CL A": 31.0,
    "OKTA INC": 29.0,
    "COINBASE GLOBAL INC -CLASS A": 28.0,
    "META PLATFORMS INC-CLASS A": 27.0,
@@ -46,18 +48,59 @@
    "SANDISK CORP": 5.0
   },
   "last_diff": {
-   "from": "2026-11-17",
-   "to": "2026-11-18",
-   "added": [],
+   "from": "2026-11-19",
+   "to": "2026-11-20",
+   "added": [
+    [
+     "BENDING SPOONS SPA",
+     61.0
+    ],
+    [
+     "ANTHROPIC PBC-CL A",
+     31.0
+    ]
+   ],
    "removed": [],
-   "changed": [],
-   "small": [],
-   "minor": 0
+   "changed": [
+    [
+     "CISCO SYSTEMS INC",
+     57.0,
+     41.0,
+     -28.070175438596493
+    ],
+    [
+     "XCEL ENERGY INC",
+     135.0,
+     102.0,
+     -24.444444444444443
+    ],
+    [
+     "NEXTERA ENERGY INC",
+     103.0,
+     84.0,
+     -18.446601941747574
+    ]
+   ],
+   "small": [
+    [
+     "NVIDIA CORP",
+     129.0,
+     130.0,
+     0.7751937984496067
+    ],
+    [
+     "QUANTINUUM INC-A",
+     136.0,
+     137.0,
+     0.735294117647058
+    ]
+   ],
+   "minor": 2
   },
   "src": "naver"
  },
  "0015B0": {
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "holdings": {
    "BLOOM ENERGY CORPORATION": 231.3,
    "AXT Inc": 203.27,
@@ -73,14 +116,13 @@
    "Circle Internet Group Inc": 78.12,
    "MICRON TECH": 59.97,
    "MICROSOFT": 49.64,
-   "UNITEDHEALTH GROUP INC": 37.98,
+   "Tempus AI Inc": 36.7,
    "NETAPP INC": 33.4,
    "OKTA INC": 32.35,
    "Akamai Technologies Inc": 30.98,
    "TESLA MOTORS": 30.13,
    "NXP SEMICONDUCTORS NV": 29.76,
    "INTEL Corp": 28.83,
-   "Tempus AI Inc": 28.7,
    "Lumentum Holdings Inc": 25.16,
    "TEXAS INSTRUMENTS": 25.11,
    "SK hynix Inc": 17.8,
@@ -89,18 +131,19 @@
    "Meta Platforms Inc-CL A": 12.87,
    "CROWDSTRIKE HOLDINGS INC - A": 12.86,
    "ELI LILLY & CO": 11.31,
+   "ILLUMINA INC": 9.9,
    "TERADYNE INC": 8.17,
+   "Natera Inc": 8.15,
    "LAM RESEARCH": 7.61,
    "DATADOG INC - CLASS A": 7.38,
    "WESTERN DIGITAL": 7.27,
    "APPLIED MATERIALS INC": 7.03,
+   "THERMO FISHER SCIENTIFIC INC": 7.0,
    "Guardant Health Inc": 6.73,
    "Vicor Corp": 6.44,
    "FORTINET INC": 6.36,
    "PALO ALTO NETWORKS INC": 5.92,
    "SEAGATE TECHNOLOGY": 5.78,
-   "Natera Inc": 5.15,
-   "ILLUMINA INC": 4.9,
    "NVIDIA Corp": 4.56,
    "MONGODB INC": 3.98,
    "FIRST SOLAR INC": 1.93,
@@ -109,11 +152,40 @@
    "Nextpower Inc": 1.41
   },
   "last_diff": {
-   "from": "2026-11-18",
-   "to": "2026-11-19",
-   "added": [],
-   "removed": [],
-   "changed": [],
+   "from": "2026-11-19",
+   "to": "2026-11-20",
+   "added": [
+    [
+     "THERMO FISHER SCIENTIFIC INC",
+     7.0
+    ]
+   ],
+   "removed": [
+    [
+     "UNITEDHEALTH GROUP INC",
+     37.98
+    ]
+   ],
+   "changed": [
+    [
+     "ILLUMINA INC",
+     4.9,
+     9.9,
+     102.0408163265306
+    ],
+    [
+     "Natera Inc",
+     5.15,
+     8.15,
+     58.25242718446603
+    ],
+    [
+     "Tempus AI Inc",
+     28.7,
+     36.7,
+     27.874564459930326
+    ]
+   ],
    "small": [],
    "minor": 0
   },
